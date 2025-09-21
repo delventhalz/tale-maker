@@ -80,10 +80,26 @@ The <piece>{name entrance_door}</piece> is open, revealing the <piece>{name parl
 <name Darkened Parlor>
 <ref a6 parlor>
 
+
 = handler =
 <name Alder Mink>
 <ref ec alder mink handler guide>
 <place entrance>
 
+<i>{name} nods as you step closer to him.</i>
+
+This is the first part of your trial. Feel free to ask me questions about anything you see, and I may or may not provide advice.
+
+== repeat ==
+<i>{name} leans forward slightly as you return to him.</i>
+
+Yes?
+
+
+> handler >
+
+>> interact >>
+
+<goto handler>
 
 
