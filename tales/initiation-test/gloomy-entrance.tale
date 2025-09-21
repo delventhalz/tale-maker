@@ -38,12 +38,12 @@ The inside of the building is just as rundown as the outside – it looks like i
 
 "Welcome to the trial. Somewhere in this building are your membership medallions for The Shattered Band. Your task is simple: find and claim them. Do so, and you will become a lifelong member of our guild. I will be following along with you to observe, test, and potentially provide help. Feel free to ask me questions at any time, although I may not always provide answers. Good luck."
 
-Other than <piece>{name handler}</piece>, the room also contains a closed <piece>{name barrel}</piece> in the SOUTHEAST corner and an <piece>{name entrance-door}</piece> to the NORTH.
+Other than <piece>{name handler}</piece>, the room also contains a closed <piece>{name barrel}</piece> in the SOUTHEAST corner and an <piece>{name entrance_door}</piece> to the NORTH.
 
-Unless otherwise instructed, remember to always place highlighted tokens in the current room by putting items and standees on top of the current room's tile, and putting doors and hallways next to it in the indicated direction. In other words, place <piece>{ref handler}</piece> and <piece>{name barrel}</piece> on top of <piece>{ref entrance}</piece>, and <piece>{ref entrance-door}</piece> to the north in the little matching notch. Which way is north? It doesn't matter as long as you are consistent across the entire scenario, but we recommend orienting things so that "up" corresponds to north.
+Unless otherwise instructed, remember to always place highlighted tokens in the current room by putting items and standees on top of the current room's tile, and putting doors and hallways next to it in the indicated direction. In other words, place <piece>{ref handler}</piece> and <piece>{name barrel}</piece> on top of <piece>{ref entrance}</piece>, and <piece>{ref entrance_door}</piece> to the north in the little matching notch. Which way is north? It doesn't matter as long as you are consistent across the entire scenario, but we recommend orienting things so that "up" corresponds to north.
 
 === repeat ===
-There isn't much to this rather small entryway. You suspect that it contained coat racks and shelves for boots or some such when the building was in use. {pull entrance barrel examine} {pull entrance handler examine} {pull entrance entrance-door examine}
+There isn't much to this rather small entryway. You suspect that it contained coat racks and shelves for boots or some such when the building was in use. {pull entrance barrel examine} {pull entrance handler examine} {pull entrance entrance_door examine}
 
 >> barrel >>
 
@@ -64,13 +64,14 @@ Broken bits of what used to be an old barrel lay strewn on the floor, too damage
 ==== not here ====
 You are alone in the room.
 
->> entrance-door >>
+>> entrance_door >>
 
 >>> examine >>>
-The <piece>{name entrance-door}</piece> is closed and locked.
+The <piece>{name entrance_door}</piece> is closed and locked.
 
 ==== open ====
-The <piece>{name entrance-door}</piece> is open, revealing the <piece>{name parlor}</piece> beyond.
+The <piece>{name entrance_door}</piece> is open, revealing the <piece>{name parlor}</piece> beyond.
+
 
 = parlor =
 <name Darkened Parlor>
