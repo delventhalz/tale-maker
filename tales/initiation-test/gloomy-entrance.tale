@@ -26,7 +26,7 @@ As you do actions, the scenario updates will appear in messages like this – on
 
 "After you," he says, waving the way through the now-open doorway. With a gulp, you step past the threshold of the trial..."
 
-[case again]
+== repeat ==
 <title>{name}</title>
 You've returned to the entrance for your test. It's as dank and tattered as ever. {pull entrance barrel examine} {pull entrance handler examine}
 
@@ -42,7 +42,7 @@ Other than <piece>{name handler}</piece>, the room also contains a closed <piece
 
 Unless otherwise instructed, remember to always place highlighted tokens in the current room by putting items and standees on top of the current room's tile, and putting doors and hallways next to it in the indicated direction. In other words, place <piece>{ref handler}</piece> and <piece>{name barrel}</piece> on top of <piece>{ref entrance}</piece>, and <piece>{ref entrance-door}</piece> to the north in the little matching notch. Which way is north? It doesn't matter as long as you are consistent across the entire scenario, but we recommend orienting things so that "up" corresponds to north.
 
-[case again]
+=== repeat ===
 There isn't much to this rather small entryway. You suspect that it contained coat racks and shelves for boots or some such when the building was in use. {pull entrance barrel examine} {pull entrance handler examine} {pull entrance entrance-door examine}
 
 >> barrel >>
@@ -51,21 +51,26 @@ There isn't much to this rather small entryway. You suspect that it contained co
 
 The barrel <piece>{ref barrel}</piece> sits in the southeast corner.
 
-[case broken]
-Broken bits of what used to be an old barrel lay strewn on the floor, too damaged to be useful for anything. [if not player has rope !!TODO] A long bundle of rope <piece>{ref rope}</piece> is found within the debris.
+==== broken ====
+Broken bits of what used to be an old barrel lay strewn on the floor, too damaged to be useful for anything. <if not player has rope>A long bundle of rope <piece>{ref rope}</piece> is found within the debris.</if>
 
 
 >> handler >>
 
 >>> examine >>>
-[case here] <piece>{name handler}</piece> stands a few feet away, watching you.
-[case not here] You are alone in the room.
+
+<piece>{name handler}</piece> stands a few feet away, watching you.
+
+==== not here ====
+You are alone in the room.
 
 >> entrance-door >>
 
 >>> examine >>>
 The <piece>{name entrance-door}</piece> is closed and locked.
-[case open] The <piece>{name entrance-door}</piece> is open, revealing the <piece>{name parlor}</piece> beyond.
+
+==== open ====
+The <piece>{name entrance-door}</piece> is open, revealing the <piece>{name parlor}</piece> beyond.
 
 = parlor =
 <name Darkened Parlor>
