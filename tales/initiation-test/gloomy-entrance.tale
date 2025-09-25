@@ -10,7 +10,7 @@
 <place player>
 <place handler>
 <place barrel>
-<place entrance_door entrance parlor>
+<place entrance_door entrance parlor> <! This needs work, where is the door?>
 
 <title>Starting the Scenario</title>
 Now that you have selected classes, each player should take their character and combat cards (basic cards only) and place them in front of themselves. Each scenario in Taelmoor starts by placing a room and any starting pieces in the center of the table as instructed.
