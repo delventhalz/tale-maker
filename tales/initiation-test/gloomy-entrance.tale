@@ -1,7 +1,13 @@
 <name "Initiation Test">
 <name examine Examine>
 <ref examine cx examine inspect look search>
-<name player The Player>
+
+
+= player =
+<name The Player>
+<place search_key>
+<place lockpicks>
+<place lockpicking>
 
 
 = entrance =
@@ -48,32 +54,62 @@ Unless otherwise instructed, remember to always place highlighted tokens in the 
 === repeat ===
 There isn't much to this rather small entryway. You suspect that it contained coat racks and shelves for boots or some such when the building was in use. {pull entrance barrel examine} {pull entrance handler examine} {pull entrance entrance_door examine}
 
->> barrel >>
-
->>> examine >>>
-
-The barrel <piece>{ref barrel}</piece> sits in the southeast corner.
-
-==== broken ====
-Broken bits of what used to be an old barrel lay strewn on the floor, too damaged to be useful for anything. <if not player has rope>A long bundle of rope <piece>{ref rope}</piece> is found within the debris.</if>
-
-
 >> handler >>
 
 >>> examine >>>
-
 {name handler} <piece>{ref handler}</piece> stands a few feet away, watching you.
 
 ==== not here ====
 You are alone in the room.
 
->> entrance_door >>
+>> barrel >>
 
 >>> examine >>>
-The <piece>{name entrance_door}</piece> is closed and locked.
+The barrel <piece>{ref barrel}</piece> sits in the southeast corner.
+
+==== broken ====
+Broken bits of what used to be an old barrel lay strewn on the floor, too damaged to be useful for anything. <if not player has rope>A long bundle of rope <piece>{ref rope}</piece> is found within the debris.</if>
+
+>> search_key >>
+<retain-turn no>
+You pull out your divining key and dangle it from its chain. Sure enough, you feel a slight tug towards the SOUTHEAST. There is something hidden there.
+
+=== barrel is broken ===
+{pull search_key "nothing"}
+
+>> entrance_door >>
+
+=== "success" ===
+
+>>> examine >>>
+The {name entrance_door} <piece>{ref entrance_door}</piece> is closed and locked.
 
 ==== open ====
-The <piece>{name entrance_door}</piece> is open, revealing the <piece>{name parlor}</piece> beyond.
+The {name entrance_door} <piece>{ref entrance_door}</piece> is open, revealing the {name parlor} <piece>{ref parlor}</piece> beyond.
+
+>>> lockpicks >>>
+<set entrance_door to open>
+With {name handler} <piece>{ref handler}</piece> watching, you wiggle your fingers and prepare to show him your skills. Hopefully this door isn't some unpickable trick.
+
+Your worries turn out to be unfounded, as it takes you only seconds to trip the latch and open the door. It swings wide, revealing another room <piece>{ref parlor}</piece> to the NORTH.
+
+{pull entrance entrance_door "success"}
+
+==== entrance_door is open ====
+{pull "door already open"}
+
+==== player not has lockpicking ====
+You start to reach for your companion's {name lockpicks} <piece>{ref lockpicks}</piece> so you can try to open the door, but you realize you would probably just look like an idiot in front of {name handler} <piece>{ref handler}</piece> if you did. Now's not the time for learning new things – better let the expert do it instead.
+
+<i>The {name lockpicks} <piece>{ref lockpicks}</piece> belong to just a single player - you should not be using them!</i>
+
+>>> search_key >>>
+You pull out the {name search_key} and hold it near the door. Unfortunately, it doesn't give even the slightest twitch. Apparently this door must be opened in a more... <i>obvious</i> way.
+
+{pull "wasted action"}
+
+==== entrance_door is open ====
+The {name search_key} reveals nothing new about the door.
 
 
 = parlor =
@@ -103,3 +139,23 @@ Yes?
 <go handler>
 
 
+> search_key >
+<name Divining Key>
+<ref jq divining key>
+
+== "nothing" ==
+Your divining key hangs lifelessly. There is nothing hidden here.
+
+{pull "wasted action"}
+
+
+> lockpicks >
+<name Lockpicks>
+<ref k3 lockpicks picks>
+
+
+= "wasted action" =
+<i>(Because this action did nothing and taught your group no new information, it will not use up your turn.)</i>
+
+= "door already open" =
+The door is already open – there's no need to mess with it any further.
