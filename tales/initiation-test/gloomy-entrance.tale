@@ -21,7 +21,7 @@ Whenever you see something written like this <piece>{ref}</piece>, it means to p
 
 Playing Taelmoor involves choosing an action and then scanning a QR code for a target. When you are trying to think of what to do, imagine that you want to "use an <i>action</i> on a <i>target</i>."
 
-To begin playing, try searching the room you're in to learn more about it. To do this, <b>tap the <piece>{name examine}</piece> action button, and then scan the entrance's <piece>{ref}</piece> QR code</b> as your target.
+To begin playing, try searching the room you're in to learn more about it. To do this, <b>tap the <piece>{ref examine}</piece> action button, and then scan the entrance's <piece>{ref}</piece> QR code</b> as your target.
 
 As you do actions, the scenario updates will appear in messages like this – once you're done reading them, you can close them with the button below.
 
@@ -37,13 +37,13 @@ You've returned to the entrance for your test. It's as dank and tattered as ever
 <title>The Trial Begins</title>
 <i>In Taelmoor, it's <b>highly</b> encouraged for the player performing the action to read the results out loud! Silly voices and epic oration are encouraged. {name player} should start reading now.</i>
 
-The inside of the building is just as rundown as the outside – it looks like it has long since been abandoned. You stand in the entryway with <piece>{name handler}</piece> waiting a few feet ahead of you.
+The inside of the building is just as rundown as the outside – it looks like it has long since been abandoned. You stand in the entryway with {name handler} <piece>{ref handler}</piece> waiting a few feet ahead of you.
 
 "Welcome to the trial. Somewhere in this building are your membership medallions for The Shattered Band. Your task is simple: find and claim them. Do so, and you will become a lifelong member of our guild. I will be following along with you to observe, test, and potentially provide help. Feel free to ask me questions at any time, although I may not always provide answers. Good luck."
 
-Other than <piece>{name handler}</piece>, the room also contains a closed <piece>{name barrel}</piece> in the SOUTHEAST corner and an <piece>{name entrance_door}</piece> to the NORTH.
+Other than {name handler} <piece>{ref handler}</piece>, the room also contains a closed {name barrel} <piece>{ref barrel}</piece> in the SOUTHEAST corner and an {name entrance_door} <piece>{ref entrance_door}</piece> to the NORTH.
 
-Unless otherwise instructed, remember to always place highlighted tokens in the current room by putting items and standees on top of the current room's tile, and putting doors and hallways next to it in the indicated direction. In other words, place <piece>{ref handler}</piece> and <piece>{name barrel}</piece> on top of <piece>{ref entrance}</piece>, and <piece>{ref entrance_door}</piece> to the north in the little matching notch. Which way is north? It doesn't matter as long as you are consistent across the entire scenario, but we recommend orienting things so that "up" corresponds to north.
+Unless otherwise instructed, remember to always place highlighted tokens in the current room by putting items and standees on top of the current room's tile, and putting doors and hallways next to it in the indicated direction. In other words, place <piece>{ref handler}</piece> and {name barrel} <piece>{ref barrel}</piece> on top of <piece>{ref entrance}</piece>, and <piece>{ref entrance_door}</piece> to the north in the little matching notch. Which way is north? It doesn't matter as long as you are consistent across the entire scenario, but we recommend orienting things so that "up" corresponds to north.
 
 === repeat ===
 There isn't much to this rather small entryway. You suspect that it contained coat racks and shelves for boots or some such when the building was in use. {pull entrance barrel examine} {pull entrance handler examine} {pull entrance entrance_door examine}
@@ -62,7 +62,7 @@ Broken bits of what used to be an old barrel lay strewn on the floor, too damage
 
 >>> examine >>>
 
-<piece>{name handler}</piece> stands a few feet away, watching you.
+{name handler} <piece>{ref handler}</piece> stands a few feet away, watching you.
 
 ==== not here ====
 You are alone in the room.
