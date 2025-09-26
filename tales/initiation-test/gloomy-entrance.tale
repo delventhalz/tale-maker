@@ -26,6 +26,7 @@
 <place barrel>
 <place entrance_door entrance parlor> <! This needs work, where is the door?>
 
+>> go >>
 <title>Starting the Scenario</title>
 Now that you have selected classes, each player should take their character and combat cards (basic cards only) and place them in front of themselves. Each scenario in Taelmoor starts by placing a room and any starting pieces in the center of the table as instructed.
 
@@ -43,7 +44,7 @@ As you do actions, the scenario updates will appear in messages like this – on
 
 "After you," he says, waving the way through the now-open doorway. With a gulp, you step past the threshold of the trial..."
 
-== repeat ==
+=== repeat ===
 <title>{name}</title>
 You've returned to the entrance for your test. It's as dank and tattered as ever. {pull entrance barrel "details"} {pull entrance handler examine}
 
@@ -102,13 +103,13 @@ You pull out your divining key and dangle it from its chain. Sure enough, you fe
 = handler =
 <name Alder Mink>
 <ref ec alder mink handler guide>
-<place entrance>
 
+>> go >>
 <i>{name} nods as you step closer to him.</i>
 
 This is the first part of your trial. Feel free to ask me questions about anything you see, and I may or may not provide advice.
 
-== repeat ==
+=== repeat ===
 <i>{name} leans forward slightly as you return to him.</i>
 
 Yes?
@@ -117,8 +118,12 @@ Yes?
 > handler >
 
 >> interact >>
-
 <go handler>
+
+
+= entrance_door =
+<name Old Iron Door>
+<ref d1 iron door> <! Two doors, ref should work for both depending on location>
 
 
 > entrance_door >
@@ -222,7 +227,7 @@ Move <piece>{ref handler}</piece to the next room <piece>{ref parlor}</piece> no
 <b>Because you've added a second room, you can move there whenever you like using the <piece>{ref move}</piece> action.</b> Simply scan the room you want to move to as the target – this is how you will move throughout all of the scenarios in Taelmoor. Note that the <piece>{ref move}</piece> action <i>only</i> works on rooms.",
 
 
-> search_key >
+= search_key =
 <name Divining Key>
 <ref jq divining key>
 
@@ -232,28 +237,29 @@ Your divining key hangs lifelessly. There is nothing hidden here.
 {pull "wasted action"}
 
 
-> lockpicks >
+= lockpicks =
 <name Lockpicks>
 <ref k3 lockpicks picks>
 
 
-> tool_bag >
+= tool_bag =
 <name Tool Bag>
 <ref j7 tool bag tools>
 
 
-> holy_symbol >
+= holy_symbol =
 <name Holy Symbol>
 <ref js holy symbol>
 
 
-> elf_song >
+= elf_song =
 <name Fruit of Taelmoor>
 <ref kc elf song sing singing apple fruit>
 
 
 = "wasted action" =
 <i>(Because this action did nothing and taught your group no new information, it will not use up your turn.)</i>
+
 
 = "door already open" =
 <retain-turn yes>
