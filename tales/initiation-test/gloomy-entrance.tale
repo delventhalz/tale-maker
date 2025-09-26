@@ -10,6 +10,12 @@
 <place lockpicks>
 <set lockpicker>
 <set strong>
+<place tool_bag>
+<set clever>
+<place holy_symbol>
+<set holy>
+<place elf_song>
+<set singer>
 
 
 = entrance =
@@ -161,6 +167,45 @@ You start to reach for your companion's {name lockpicks} <piece>{ref lockpicks}<
 
 <i>The {name lockpicks} <piece>{ref lockpicks}</piece> belong to just a single player - you should not be using them!</i>
 
+>> tool_bag >>
+<set entrance_door to open>
+With {name handler} <piece>{ref handler}</piece> watching, you pull out our bag of tools and prepare to show him exactly how an "intricate understanding of how things are built" can be applied.
+
+This door is old and poorly constructed. You tsk to yourself and then, using a small crowbar, easily pry it from its hinges. The door falls to the ground in front of you, revealing another room <piece>{ref parlor}</piece> to the NORTH.
+
+{pull "success"}
+
+=== open ===
+{pull "door already open"}
+
+=== player is not clever ===
+You start to reach for your companion's {name tool_bag} <piece>{ref tool_bag}</piece> so you can try to open the door, but you realize you would probably just look like an idiot in front of {name handler} <piece>{ref handler}</piece> if you did. Now's not the time for learning new things – better let the expert do it instead.
+
+<i>The {name tool_bag} <piece>{ref tool_bag}</piece> belong to just a single player - you should not be using them!</i>
+
+>> holy_symbol >>
+A lock. This is what Nahk hates most, and so you're almost certain that they will destroy it if you ask. With {name handler} <piece>{ref handler}</piece> watching, you put one hand on the door lock and the other on the {name} that hangs around your neck. Then, you pray to Nahk to destroy this unholy blockade.
+
+Nahk's response is immediate – the lock simply dissolves and then disappears as if it never existed. The door creaks open in front of you, revealing another room <piece>{ref parlor}</piece> to the NORTH.
+
+{pull "success"}
+
+=== open ===
+{pull "door already open"}
+
+=== player is not holy ===
+You start to reach for your companion's {name holy_symbol} <piece>{ref holy_symbol}</piece> so you can try to open the door, but you realize you would probably just look like an idiot in front of {name handler} <piece>{ref handler}</piece> if you did. Now's not the time to try to talk to a god that will ignore you – better let the expert do it instead.
+
+<i>The {name holy_symbol} <piece>{ref holy_symbol}</piece> belongs to just a single player - you should not be using it!</i>
+
+>> elf_song >>
+Unfortunately, this door is made from refined metals and so will not respond to Elven Song. It will only work on objects that are made from natural materials, especially those that are freshly harvested.
+
+{pull "wasted action"}
+
+=== open ===
+{pull "door already open"}
+
 >> search_key >>
 You pull out the {name search_key} and hold it near the door. Unfortunately, it doesn't give even the slightest twitch. Apparently this door must be opened in a more... <i>obvious</i> way.
 
@@ -190,6 +235,21 @@ Your divining key hangs lifelessly. There is nothing hidden here.
 > lockpicks >
 <name Lockpicks>
 <ref k3 lockpicks picks>
+
+
+> tool_bag >
+<name Tool Bag>
+<ref j7 tool bag tools>
+
+
+> holy_symbol >
+<name Holy Symbol>
+<ref js holy symbol>
+
+
+> elf_song >
+<name Fruit of Taelmoor>
+<ref kc elf song sing singing apple fruit>
 
 
 = "wasted action" =
