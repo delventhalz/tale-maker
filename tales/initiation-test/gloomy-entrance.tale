@@ -1,10 +1,12 @@
 <name "Initiation Test">
+
 <name examine Examine>
 <ref examine cx examine inspect look search>
+
+<name move Move>
 <ref move cz move go travel>
 
-
-= player =
+<as player>
 <name The Player>
 <place search_key>
 <place lockpicks>
@@ -16,6 +18,28 @@
 <set holy>
 <place elf_song>
 <set singer>
+</as>
+
+<name entrance_door Old Iron Door>
+<ref entrance_door d1 iron door> <! Two doors, ref should work for both depending on location>
+
+<name barrel Barrel>
+<ref barrel j8 wood barrel>
+
+<name search_key Divining Key>
+<ref search_key jq divining key>
+
+<name lockpicks Lockpicks>
+<ref lockpicks k3 lockpicks picks>
+
+<name tool_bag Tool Bag>
+<ref tool_bag j7 tool bag tools>
+
+<name holy_symbol Holy Symbol>
+<ref holy_symbol js holy symbol>
+
+<name elf_song Fruit of Taelmoor>
+<ref elf_song kc elf song sing singing apple fruit>
 
 
 = entrance =
@@ -121,11 +145,6 @@ Yes?
 <go handler>
 
 
-= entrance_door =
-<name Old Iron Door>
-<ref d1 iron door> <! Two doors, ref should work for both depending on location>
-
-
 > entrance_door >
 
 >> examine >>
@@ -227,34 +246,12 @@ Move <piece>{ref handler}</piece to the next room <piece>{ref parlor}</piece> no
 <b>Because you've added a second room, you can move there whenever you like using the <piece>{ref move}</piece> action.</b> Simply scan the room you want to move to as the target – this is how you will move throughout all of the scenarios in Taelmoor. Note that the <piece>{ref move}</piece> action <i>only</i> works on rooms.",
 
 
-= search_key =
-<name Divining Key>
-<ref jq divining key>
+> search_key >
 
 == "nothing" ==
 Your divining key hangs lifelessly. There is nothing hidden here.
 
 {pull "wasted action"}
-
-
-= lockpicks =
-<name Lockpicks>
-<ref k3 lockpicks picks>
-
-
-= tool_bag =
-<name Tool Bag>
-<ref j7 tool bag tools>
-
-
-= holy_symbol =
-<name Holy Symbol>
-<ref js holy symbol>
-
-
-= elf_song =
-<name Fruit of Taelmoor>
-<ref kc elf song sing singing apple fruit>
 
 
 = "wasted action" =
