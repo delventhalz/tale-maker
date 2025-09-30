@@ -3,6 +3,12 @@
 <name examine Examine>
 <ref examine cx examine inspect look search>
 
+<name interact Interact>
+<ref interact cy interact touch handle>
+
+<name use_item Use Item>
+<ref use_item "use item" use>
+
 <name move Move>
 <ref move cz move go travel>
 
@@ -13,7 +19,7 @@
 <set lockpicker>
 <set strong>
 <place tool_bag>
-<set clever>
+<set tinker>
 <place holy_symbol>
 <set holy>
 <place elf_song>
@@ -25,6 +31,9 @@
 
 <name barrel Barrel>
 <ref barrel j8 wood barrel>
+
+<name rope Rope>
+<ref rope ju rope>
 
 <name search_key Divining Key>
 <ref search_key jq divining key>
@@ -202,7 +211,7 @@ This door is old and poorly constructed. You tsk to yourself and then, using a s
 === open ===
 {pull "door already open"}
 
-=== player is not clever ===
+=== player is not tinker ===
 You start to reach for your companion's {name tool_bag} <piece>{ref tool_bag}</piece> so you can try to open the door, but you realize you would probably just look like an idiot in front of {name handler} <piece>{ref handler}</piece> if you did. Now's not the time for learning new things – better let the expert do it instead.
 
 <i>The {name tool_bag} <piece>{ref tool_bag}</piece> belong to just a single player - you should not be using them!</i>
@@ -246,6 +255,120 @@ Move <piece>{ref handler}</piece to the next room <piece>{ref parlor}</piece> no
 <b>Because you've added a second room, you can move there whenever you like using the <piece>{ref move}</piece> action.</b> Simply scan the room you want to move to as the target – this is how you will move throughout all of the scenarios in Taelmoor. Note that the <piece>{ref move}</piece> action <i>only</i> works on rooms.",
 
 
+> barrel >
+
+>> examine >>
+The barrel appears to be as old as the building itself – beyond dusty and partially rotted. Still, it seems like it was well-made, once upon a time, so its structure remains sound. The lid is closed and nailed down and cannot be simply opened. You rock the barrel slightly and think you can feel something solid rustling inside.
+
+{pull "pass explanation"}
+
+=== broken ===
+The barrel is now nothing but a pile of useless splinters. <if player not has rope>But, some {name rope} <piece>{ref rope}</piece> was hidden inside and still lays among the debris.</if>
+
+>> interact >>
+<set broken>
+<place player rope>
+The barrel doesn't want to open? No problem! You'll <i>force</i> it open.
+
+You pick it up and smash it against the wall repeatedly, enjoying the satisfying <i>crunch</i> it makes each time it strikes the stone. Finally, it shatters into a great shower of wooden debris that scatter to the floor below.
+
+Interestingly enough, some {name rope} <piece>{ref rope}</piece> tumbles out from it and lands on top of the heap. You reach down and pick up the bundle, feeling it in your hands. It's clearly new – no doubt planted here to be part of your trial.
+
+{pull rope "in hand"}
+
+<b>Add the rope <piece>{ref rope}</piece> to the party inventory now. From now on, you can scan it as an action by selecting the <piece>{ref use_item}</piece> option and scanning the rope before scanning your target.</b>
+
+=== player is not strong ===
+You're sure there's something to this barrel – why would it be here otherwise? You kick it as hard as you can, but are disappointed when it maintains its shape. You notice a jagged bit of wall you could perhaps smash it against, so you try to pick it up, but are disappointed to discover that it's too heavy for you to pick up. Perhaps someone stronger could do so.
+
+<i>(in Taelmoor, some actions must be done by certain characters – exactly one of you is strong enough to do this action. You can tap on their character portrait to pass the turn to them so that they can try immediately. And, because this action did nothing useful and taught your group no new information, it will not use up your turn.)</i>
+
+=== broken ===
+The barrel is already in tatters, there's no reason to try to break it further.
+
+{pull "wasted action"}
+
+>> search_key >>
+<retain-turn no>
+As you get closer to the barrel, the <piece>{ref search_key}</piece> begins pulling forcefully on its chain like an excited child. There's definitely something hidden inside the barrel, but it appears to be sealed shut – you'll need to figure out some way to get inside.
+
+=== broken ===
+{pull search_key "nothing"}
+
+>> lockpicks >>
+You look all around the barrel to see if perhaps there's something you can pick to get inside it, but are disappointed to discover that this is not the case. It's fully sealed, so your lockpicks can't do much good.
+
+{pull "wasted action"}
+
+=== broken ===
+You're going to try lockpicking a pile of busted wood?
+
+{pull "wasted action"}
+
+>> holy_symbol >>
+You consider the barrel in front of you. Indeed, it is closed and keeping something inside. But, it is not necessarily <i>locked</i>, so it's possible Nahk might not care about it. You can never be sure exactly what fits their sometimes narrow definition of something being "closed".
+
+You place a palm on the barrel and another on the {name holy_symbol}, and ask Nahk to open this barrel. After a moment, nothing happens... it appears you've been ignored.
+
+{pull "wasted action"}
+
+=== broken ===
+Why bother Nahk about something she obviously won't care about?
+
+>> tool_bag >>
+<set broken>
+<place player rope>
+This is a well-made barrel, with a high number of symmetrical staves bound with steel hoops and nails. If you were to create one yourself, you'd probably choose a similar style of construction. But, since you want to get <i>inside it</i> instead, knowing how it's built is the first step.
+
+You grab a crowbar, wedge it between a hoop and stave, and gently tap with a hammer. The lid comes loose slightly. You continue this process around each stave and loop, quickly and efficiently dismantling the entire barrel into its base materials. An <i>amateur</i> might have just removed the lid, but not you! Now you're staring at a pile of wood, nails, and iron hoops, likely useless.
+
+But, what was once inside is now on top of the pile: a pristine {name rope} <piece>{ref rope}</piece>. You reach down and pick up the bundle, feeling it in your hands. It's clearly new – no doubt planted here to be part of your trial.
+
+{pull rope "in hand"}
+
+<b>Add the rope <piece>{ref rope}</piece> to the party inventory now. From now on, you can scan it as an action by selecting the <piece>{ref use_item}</piece> option and scanning the rope before scanning your target.</b>
+
+=== broken ===
+The barrel is already in tatters... are you going to try to put it back together now or something? There is no need to waste your time, especially not when doing so could possibly be the reason you fail this trial.
+
+{pull "wasted action"}
+
+=== player is not tinker ===
+You start to reach for your companion's {name tool_bag} <piece>{ref tool_bag}</piece> so you can try to open the barrel, but you get your hand slapped away for your trouble.
+
+<i>The {name tool_bag} <piece>{ref tool_bag}</piece> belong to just a single player - you should not be using them!</i>
+
+>> elf_song >>
+<set broken>
+<place player rope>
+This barrel is made from wood, and it is even <i>fresh</i> wood! You can feel the subtle hum of life pouring from it, calling to you, confused as to why it is no longer part of the tree it was milled from.
+
+You begin to sing, channeling the power of Taelmoor itself through the wild apple in your pocket. It is an old song, about the importance of nature and returning to it. The wood in the barrel hears you, and listens. It begins to hum in time with your song, then, all at once, it rots and dissolves into a heap of old wood.
+
+Interestingly enough, some {name rope} <piece>{ref rope}</piece> tumbles out from it and lands on top of the pile. You reach down and pick up the bundle, feeling it in your hands. It's clearly new – no doubt planted here to be part of your trial.
+
+{pull rope "in hand"}
+
+<b>Add the rope {{rope.cardName()}} to the party inventory now. From now on, you can scan it as an action by selecting the <piece>{ref use_item}</piece> option and scanning the rope before scanning your target.</b>
+
+=== broken ===
+The barrel is already in tatters... are you going to try to sing it back together now or something? There is no need to waste your time, especially not when doing so could possibly be the reason you fail this trial.
+
+=== player is not singer ===
+You are hungry and so decide to eat The Elf's apple. You are punched solidly in your face for your efforts.
+
+<i>The {name elf_song} <piece>{ref elf_song}</piece> belongs to just a single player - you should not be using it!</i>
+
+
+> rope >
+
+== "description" ==
+The rope is of the utmost quality – around 30 feet of braided silk cord. Aside from elven materials, this is the best that money can buy. Extremely light and just as strong as hemp.
+
+== "in hand" ==
+{pull rope "description"} There is a loop on the end that looks like it's meant to combine with something.
+
+
 > search_key >
 
 == "nothing" ==
@@ -256,6 +379,10 @@ Your divining key hangs lifelessly. There is nothing hidden here.
 
 = "wasted action" =
 <i>(Because this action did nothing and taught your group no new information, it will not use up your turn.)</i>
+
+
+= "pass explanation" =
+<i>Only certain players will have abilities that will allow them to get inside the barrel. Everyone's unique abilities were revealed at the start of the scenario but can be reviewed on the party screen. You can pass to a player who you think has a relevant ability by tapping on their portrait.</i>
 
 
 = "door already open" =
