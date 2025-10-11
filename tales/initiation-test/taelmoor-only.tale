@@ -1,0 +1,15 @@
+<ref examine cx>
+<ref interact cy>
+<ref use_item "use item">
+<ref move cz>
+
+<ref entrance_door d1> <! Two doors, ref should work for both depending on location>
+<ref barrel j8>
+<ref rope ju>
+<ref search_key jq>
+<ref lockpicks k3>
+<ref tool_bag j7>
+<ref holy_symbol js>
+<ref elf_song kc>
+
+<ref entrance ac>

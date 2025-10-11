@@ -1,0 +1,15 @@
+<ref examine examine inspect look search>
+<ref interact interact touch handle>
+<ref use_item "use item" use>
+<ref move move go travel>
+
+<ref entrance_door iron door> <! Two doors, ref should work for both depending on location>
+<ref barrel wood barrel>
+<ref rope rope>
+<ref search_key divining key>
+<ref lockpicks lockpicks picks>
+<ref tool_bag tool bag tools>
+<ref holy_symbol holy symbol>
+<ref elf_song elf song sing singing apple fruit>
+
+<ref entrance entrance "entry way" "gloomy entrance">

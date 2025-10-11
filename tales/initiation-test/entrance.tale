@@ -1,59 +1,9 @@
-<name "Initiation Test">
-
-<name examine Examine>
-<ref examine cx examine inspect look search>
-
-<name interact Interact>
-<ref interact cy interact touch handle>
-
-<name use_item Use Item>
-<ref use_item "use item" use>
-
-<name move Move>
-<ref move cz move go travel>
-
-<as player>
-<name The Player>
-<place search_key>
-<place lockpicks>
-<set lockpicker>
-<set strong>
-<place tool_bag>
-<set tinker>
-<place holy_symbol>
-<set holy>
-<place elf_song>
-<set singer>
-</as>
-
 <name entrance_door Old Iron Door>
-<ref entrance_door d1 iron door> <! Two doors, ref should work for both depending on location>
-
 <name barrel Barrel>
-<ref barrel j8 wood barrel>
-
 <name rope Rope>
-<ref rope ju rope>
-
-<name search_key Divining Key>
-<ref search_key jq divining key>
-
-<name lockpicks Lockpicks>
-<ref lockpicks k3 lockpicks picks>
-
-<name tool_bag Tool Bag>
-<ref tool_bag j7 tool bag tools>
-
-<name holy_symbol Holy Symbol>
-<ref holy_symbol js holy symbol>
-
-<name elf_song Fruit of Taelmoor>
-<ref elf_song kc elf song sing singing apple fruit>
-
 
 = entrance =
 <name Gloomy Entrance>
-<ref ac entrance "entry way">
 <place player>
 <place handler>
 <place barrel>
@@ -126,32 +76,6 @@ You pull out your divining key and dangle it from its chain. Sure enough, you fe
 
 === barrel is broken ===
 {pull search_key "nothing"}
-
-
-= parlor =
-<name Darkened Parlor>
-<ref a6 parlor>
-
-
-= handler =
-<name Alder Mink>
-<ref ec alder mink handler guide>
-
->> go >>
-<i>{name} nods as you step closer to him.</i>
-
-This is the first part of your trial. Feel free to ask me questions about anything you see, and I may or may not provide advice.
-
-=== repeat ===
-<i>{name} leans forward slightly as you return to him.</i>
-
-Yes?
-
-
-> handler >
-
->> interact >>
-<go handler>
 
 
 > entrance_door >
@@ -367,24 +291,3 @@ The rope is of the utmost quality – around 30 feet of braided silk cord. Aside
 
 == "in hand" ==
 {pull rope "description"} There is a loop on the end that looks like it's meant to combine with something.
-
-
-> search_key >
-
-== "nothing" ==
-Your divining key hangs lifelessly. There is nothing hidden here.
-
-{pull "wasted action"}
-
-
-= "wasted action" =
-<i>(Because this action did nothing and taught your group no new information, it will not use up your turn.)</i>
-
-
-= "pass explanation" =
-<i>Only certain players will have abilities that will allow them to get inside the barrel. Everyone's unique abilities were revealed at the start of the scenario but can be reviewed on the party screen. You can pass to a player who you think has a relevant ability by tapping on their portrait.</i>
-
-
-= "door already open" =
-<retain-turn yes>
-The door is already open – there's no need to mess with it any further.

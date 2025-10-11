@@ -1,0 +1,47 @@
+<name "Initiation Test">
+
+<as player>
+<name The Player>
+<place search_key>
+<place lockpicks>
+<set lockpicker>
+<set strong>
+<place tool_bag>
+<set tinker>
+<place holy_symbol>
+<set holy>
+<place elf_song>
+<set singer>
+</as>
+
+<name examine Examine>
+<name interact Interact>
+<name use_item Use Item>
+<name move Move>
+
+<name search_key Divining Key>
+<name lockpicks Lockpicks>
+<name tool_bag Tool Bag>
+<name holy_symbol Holy Symbol>
+<name elf_song Fruit of Taelmoor>
+
+
+> search_key >
+
+== "nothing" ==
+Your divining key hangs lifelessly. There is nothing hidden here.
+
+{pull "wasted action"}
+
+
+= "wasted action" =
+<i>(Because this action did nothing and taught your group no new information, it will not use up your turn.)</i>
+
+
+= "pass explanation" =
+<i>Only certain players will have abilities that will allow them to get inside the barrel. Everyone's unique abilities were revealed at the start of the scenario but can be reviewed on the party screen. You can pass to a player who you think has a relevant ability by tapping on their portrait.</i>
+
+
+= "door already open" =
+<retain-turn yes>
+The door is already open – there's no need to mess with it any further.
