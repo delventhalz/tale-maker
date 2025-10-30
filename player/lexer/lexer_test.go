@@ -42,3 +42,60 @@ func TestTrim(t *testing.T) {
         {tokens.EOF, ""},
     })
 }
+
+func TestBlocks(t *testing.T) {
+    input := `
+> greet >
+Hello!
+
+= world =
+
+>> greet >>
+Hello, world!
+
+>>> dramatically
+
+Hello...
+
+
+    ...world.
+
+
+
+== 世界
+>>> greet
+Hello, 世界!
+    `
+
+    expectTokens(t, input, []tokens.Token{
+        {tokens.INPUT_HEADER, ">"},
+        {tokens.ARG, "greet"},
+        {tokens.HEADER_END, ">"},
+        {tokens.TEXT, "Hello!"},
+
+        {tokens.STATE_HEADER, "="},
+        {tokens.ARG, "world"},
+        {tokens.HEADER_END, "="},
+
+        {tokens.INPUT_HEADER, ">>"},
+        {tokens.ARG, "greet"},
+        {tokens.HEADER_END, ">>"},
+        {tokens.TEXT, "Hello, world!"},
+
+        {tokens.INPUT_HEADER, ">>>"},
+        {tokens.ARG, "dramatically"},
+        {tokens.HEADER_END, "\n"},
+        {tokens.TEXT, "Hello...\n\n\n    ...world."},
+
+        {tokens.STATE_HEADER, "=="},
+        {tokens.ARG, "世界"},
+        {tokens.HEADER_END, "\n"},
+
+        {tokens.INPUT_HEADER, ">>>"},
+        {tokens.ARG, "greet"},
+        {tokens.HEADER_END, "\n"},
+        {tokens.TEXT, "Hello, 世界!"},
+
+        {tokens.EOF, ""},
+    })
+}

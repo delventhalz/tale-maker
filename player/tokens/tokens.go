@@ -8,7 +8,7 @@ type Token struct {
 }
 
 const (
-	ILLEGAL TokenType = iota
+	INVALID TokenType = iota
 	EOF
 
 	// Identifiers and values
@@ -16,15 +16,16 @@ const (
 	TEXT
 	NUMBER
 	FLAG
-	ARG
+	ARG // Either NAME or TEXT depending on parser context, may end up removing
 
 	// Delimiters
 	INPUT_HEADER
 	STATE_HEADER
-	ACTION_START
+	HEADER_END
+	ACTION
+	ENCLOSING_ACTION
 	ACTION_END
-	ENCLOSING_ACTION_START
-	INSERT_START
+	INSERT
 	INSERT_END
 	QUOTE
 
@@ -39,7 +40,7 @@ const (
 
 func (tt TokenType) String() string {
 	switch tt {
-	case ILLEGAL: return "Illegal Token"
+	case INVALID: return "Invalid Token"
 	case EOF: return "End of File"
 
 	// Identifiers and values
@@ -52,11 +53,12 @@ func (tt TokenType) String() string {
 	// Delimiters
 	case INPUT_HEADER: return "Input Header"
 	case STATE_HEADER: return "State Header"
-	case ACTION_START: return "Action Start"
-	case ACTION_END: return "Action End"
-	case ENCLOSING_ACTION_START: return "Enclosing Action Start"
-	case INSERT_START: return "Insert Start"
-	case INSERT_END: return "Insert End"
+	case HEADER_END: return "End of Header"
+	case ACTION: return "Action"
+	case ENCLOSING_ACTION: return "Enclosing Action"
+	case ACTION_END: return "End of Action"
+	case INSERT: return "Insert"
+	case INSERT_END: return "End of Insert"
 	case QUOTE: return "Quote"
 
 	// Keywords
