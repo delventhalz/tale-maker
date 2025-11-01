@@ -1,7 +1,6 @@
 package lexer
 
 import (
-	"strings"
 	"tale/tokens"
 	"unicode/utf8"
 )
@@ -44,13 +43,77 @@ func (l *Lexer) read() {
 	l.nextPos = l.pos + w
 }
 
-func (l *Lexer) advanceTo(loc int) {
-	l.pos = loc
+func (l *Lexer) advance() {
+	l.pos = l.nextPos
 	l.read()
 }
 
-func (l *Lexer) advance() {
-	l.advanceTo(l.nextPos)
+func (l *Lexer) atEndOfFile() bool {
+	return l.pos >= len(l.input)
+}
+
+func (l *Lexer) atEndOfLine() bool {
+	return l.atEndOfFile() || isLineBreak(l.current)
+}
+
+func (l *Lexer) scanNext() string {
+	if l.atEndOfFile() {
+		return ""
+	}
+
+	prev := l.current
+	l.advance()
+	return string(prev)
+}
+
+func (l *Lexer) scanWhile(test func (rune) bool) string {
+	scanned := ""
+
+	// End when first rune fails test
+	for !l.atEndOfFile() && test(l.current) {
+		scanned += l.scanNext()
+	}
+
+	return scanned
+}
+
+func (l *Lexer) scanUntil(test func (rune) bool) string {
+	// End when first rune passes test
+	return l.scanWhile(func (r rune) bool {
+		return !test(r)
+	})
+}
+
+func (l *Lexer) scanWhileText() string {
+	text := ""
+	padding := ""
+
+	for l.pos < len(l.input) {
+		lineStart := l.scanWhile(isNonBreakingSpace)
+
+		switch {
+		// Line is a block header, capture up to end of last line
+		case isHeader(l.current):
+			return text
+
+		// Line is empty, only capture if non-empty lines are before and after
+		case l.atEndOfLine():
+			if text == "" {
+				l.scanNext() // skip line break
+			} else {
+				padding += lineStart
+				padding += l.scanNext() // include line break
+			}
+
+		default:
+			text += padding
+			text += lineStart
+			text += l.scanUntil(isLineBreak)
+			padding += l.scanNext() // include line break
+		}
+	}
+
+	return text
 }
 
 func (l *Lexer) startCaptureOf(t tokens.TokenType) {
@@ -58,7 +121,7 @@ func (l *Lexer) startCaptureOf(t tokens.TokenType) {
 }
 
 func (l *Lexer) endCurrentCapture() {
-	if (len(l.captureStack) > 0) {
+	if len(l.captureStack) > 0 {
 		l.captureStack = l.captureStack[:len(l.captureStack) - 1]
 	}
 }
@@ -84,94 +147,6 @@ func (l *Lexer) isCapturingAny(ts ...tokens.TokenType) bool {
 	return false
 }
 
-func (l *Lexer) getRawHeaderAt(loc int) string {
-	// Block headers must always be on a new line
-	if r, _ := utf8.DecodeLastRuneInString(l.input[:loc]); loc > 0 && !isLineBreak(r) {
-		return ""
-	}
-
-	header := ""
-	hasHeaderToken := false
-
-	for _, r := range l.input[loc:] {
-		if !hasHeaderToken && isNonBreakingSpace(r) {
-			header += string(r)
-		} else if isHeader(r) {
-			hasHeaderToken = true
-			header += string(r)
-		} else {
-			break
-		}
-	}
-
-	if (hasHeaderToken) {
-		return header
-	}
-
-	return ""
-}
-
-func (l *Lexer) getRawHeaderEnd() string {
-	headerEnd := ""
-
-	for _, r := range l.input[l.pos:] {
-		switch {
-		case isNonBreakingSpace(r):
-			headerEnd += string(r)
-		case isHeader(r):
-			headerEnd += string(r)
-		case isLineBreak(r):
-			headerEnd += string(r)
-			return headerEnd
-		default:
-			return ""
-		}
-	}
-
-	return ""
-}
-
-func (l *Lexer) nextWhitespaceAt() int {
-	for i, r := range l.input[l.nextPos:] {
-		if isWhitespace(r) {
-			return l.nextPos + i
-		}
-	}
-
-	return len(l.input)
-}
-
-func (l *Lexer) nextBlockAt() int {
-	for i := range l.input[l.nextPos:] {
-		loc := l.nextPos + i
-		if l.getRawHeaderAt(loc) != "" {
-			return loc
-		}
-	}
-
-	return len(l.input)
-}
-
-func (l *Lexer) captureNext() string {
-	next := l.current
-	l.advance()
-	return string(next)
-}
-
-func (l *Lexer) captureArg() string {
-	end := l.nextWhitespaceAt()
-	rawArg := l.input[l.pos:end]
-	l.advanceTo(end)
-	return strings.TrimSpace(rawArg)
-}
-
-func (l *Lexer) captureText() string {
-	end := l.nextBlockAt()
-	rawText := l.input[l.pos:end]
-	l.advanceTo(end)
-	return strings.TrimSpace(rawText)
-}
-
 func New(input string) *Lexer {
 	l := &Lexer{input: input}
 	l.read()
@@ -179,49 +154,63 @@ func New(input string) *Lexer {
 }
 
 func (l *Lexer) Next() tokens.Token {
-	// EOF
-	if (l.pos >= len(l.input)) {
-		return tokens.Token{tokens.EOF, ""}
+	if isNonBreakingSpace(l.current) {
+		l.scanWhile(isNonBreakingSpace)
 	}
 
-	// Block Headers
+	// In a Block Header
 	if l.isCapturingAny(tokens.INPUT_HEADER, tokens.STATE_HEADER) {
-		if h := l.getRawHeaderEnd(); h != "" {
-			l.advanceTo(l.pos + len(h))
-			l.endCurrentCapture()
+		arg := ""
 
-			// Retain whitespace if end is a single line break character
-			headerEnd := h
-			if (len(headerEnd) > 1) {
-				headerEnd = strings.TrimSpace(headerEnd)
-			}
-
-			return tokens.Token{tokens.HEADER_END, headerEnd}
+		if l.isCapturing(tokens.INPUT_HEADER) && isInputHeader(l.current) {
+			arg += l.scanWhile(isInputHeader)
 		}
 
-		arg := l.captureArg()
+		if l.isCapturing(tokens.STATE_HEADER) && isStateHeader(l.current) {
+			arg += l.scanWhile(isStateHeader)
+		}
+
+		// Empty to end of line (with or without header chars) and header ends
+		l.scanWhile(isNonBreakingSpace)
+		if l.atEndOfLine() {
+			l.endCurrentCapture()
+			lineBreak := l.scanNext()
+
+			if (arg == "") {
+				return tokens.Token{tokens.HEADER_END, lineBreak}
+			}
+
+			return tokens.Token{tokens.HEADER_END, arg}
+		}
+
+		arg += l.scanUntil(isWhitespace)
 		return tokens.Token{tokens.ARG, arg}
 	}
 
-	if h := l.getRawHeaderAt(l.pos); h != "" {
-		l.advanceTo(l.pos + len(h))
-		header := strings.TrimSpace(h)
+	// Not in a block header, safe to advance past line breaks
+	if isWhitespace(l.current) {
+		l.scanWhile(isWhitespace)
+	}
 
-		if r, _ := utf8.DecodeRuneInString(header); isStateHeader(r) {
-			l.startCaptureOf(tokens.STATE_HEADER)
-			return tokens.Token{tokens.STATE_HEADER, header}
-		}
+	// EOF
+	if l.atEndOfFile() {
+		return tokens.Token{tokens.EOF, ""}
+	}
 
+	// Starting a Block Header
+	if isInputHeader(l.current) {
+		header := l.scanWhile(isInputHeader)
 		l.startCaptureOf(tokens.INPUT_HEADER)
 		return tokens.Token{tokens.INPUT_HEADER, header}
 	}
 
-	// Text
-	text := l.captureText()
-
-	if (text == "") {
-		return l.Next()
+	if isStateHeader(l.current) {
+		header := l.scanWhile(isStateHeader)
+		l.startCaptureOf(tokens.STATE_HEADER)
+		return tokens.Token{tokens.STATE_HEADER, header}
 	}
 
+	// Text
+	text := l.scanWhileText()
 	return tokens.Token{tokens.TEXT, text}
 }
