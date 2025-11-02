@@ -9,6 +9,8 @@ type Lexer struct {
 	input string
 	pos int
 	nextPos int
+	line int
+	col int
 	current rune
 	captureStack []tokens.TokenType
 }
@@ -44,8 +46,17 @@ func (l *Lexer) read() {
 }
 
 func (l *Lexer) advance() {
+	prev := l.current
+
 	l.pos = l.nextPos
 	l.read()
+
+	if isLineBreak(prev) {
+		l.line++
+		l.col = 1
+	} else {
+		l.col++
+	}
 }
 
 func (l *Lexer) atEndOfFile() bool {
@@ -56,28 +67,31 @@ func (l *Lexer) atEndOfLine() bool {
 	return l.atEndOfFile() || isLineBreak(l.current)
 }
 
-func (l *Lexer) scanNext() string {
+func (l *Lexer) scanNext() (string, int, int) {
 	if l.atEndOfFile() {
-		return ""
+		return "", l.line, l.col
 	}
 
-	prev := l.current
+	prev, line, col := l.current, l.line, l.col
 	l.advance()
-	return string(prev)
+
+	return string(prev), line, col
 }
 
-func (l *Lexer) scanWhile(test func (rune) bool) string {
+func (l *Lexer) scanWhile(test func (rune) bool) (string, int, int) {
+	line, col := l.line, l.col
 	scanned := ""
 
 	// End when first rune fails test
 	for !l.atEndOfFile() && test(l.current) {
-		scanned += l.scanNext()
+		scanned += string(l.current)
+		l.advance()
 	}
 
-	return scanned
+	return scanned, line, col
 }
 
-func (l *Lexer) scanUntil(test func (rune) bool) string {
+func (l *Lexer) scanUntil(test func (rune) bool) (string, int, int) {
 	// End when first rune passes test
 	return l.scanWhile(func (r rune) bool {
 		return !test(r)
@@ -86,37 +100,41 @@ func (l *Lexer) scanUntil(test func (rune) bool) string {
 
 // Entirety of each contentful line is captured (including enclosed empty lines)
 // but empty lines before and after text content is dropped
-func (l *Lexer) scanWhileText(initialPadding string) string {
-	padding := initialPadding
+func (l *Lexer) scanWhileText(startPadding string, startLine, startCol int) (string, int, int) {
+	padding := startPadding
+	line := startLine
+	col := startCol
 	text := ""
 
 	for l.pos < len(l.input) {
-		lineStart := l.scanWhile(isNonBreakingSpace)
+		lineStart, _, _ := l.scanWhile(isNonBreakingSpace)
 
 		switch {
 		// Line is a block header, capture up to end of last line
 		case isHeader(l.current):
-			return text
+			return text, line, col
 
 		// Line is empty, only capture if non-empty lines are before and after
 		case l.atEndOfLine():
 			if text == "" {
-				padding = ""
 				l.scanNext() // skip line break
+				padding = ""
+				line = l.line
+				col = l.col
 			} else {
-				padding += lineStart
-				padding += l.scanNext() // include line break
+				lineBreak, _, _ := l.scanNext()
+				padding += lineStart + lineBreak
 			}
 
 		default:
-			text += padding
-			text += lineStart
-			text += l.scanUntil(isLineBreak)
-			padding += l.scanNext() // include line break
+			lineEnd, _, _ := l.scanUntil(isLineBreak)
+			lineBreak, _, _ := l.scanNext()
+			text += padding + lineStart + lineEnd
+			padding += lineBreak
 		}
 	}
 
-	return text
+	return text, line, col
 }
 
 func (l *Lexer) startCaptureOf(t tokens.TokenType) {
@@ -151,67 +169,67 @@ func (l *Lexer) isCapturingAny(ts ...tokens.TokenType) bool {
 }
 
 func New(input string) *Lexer {
-	l := &Lexer{input: input}
+	l := &Lexer{input: input, line: 1, col: 1}
 	l.read()
 	return l
 }
 
 func (l *Lexer) Next() tokens.Token {
-	lineStart := l.scanWhile(isNonBreakingSpace)
+	startPadding, startLine, startCol := l.scanWhile(isNonBreakingSpace)
 
 	// In a Block Header
 	if l.isCapturingAny(tokens.INPUT_HEADER, tokens.STATE_HEADER) {
-		arg := ""
+		var headerEnd string
+		var endLine, endCol int
 
 		if l.isCapturing(tokens.INPUT_HEADER) && isInputHeader(l.current) {
-			arg += l.scanWhile(isInputHeader)
+			headerEnd, endLine, endCol = l.scanWhile(isInputHeader)
 		}
-
 		if l.isCapturing(tokens.STATE_HEADER) && isStateHeader(l.current) {
-			arg += l.scanWhile(isStateHeader)
+			headerEnd, endLine, endCol = l.scanWhile(isStateHeader)
 		}
 
 		// Empty to end of line (with or without header chars) and header ends
 		l.scanWhile(isNonBreakingSpace)
 		if l.atEndOfLine() {
 			l.endCurrentCapture()
-			lineBreak := l.scanNext()
+			lineBreak, breakLine, breakCol := l.scanNext()
 
-			if (arg == "") {
-				return tokens.Token{tokens.HEADER_END, lineBreak}
+			if (headerEnd == "") {
+				return tokens.Token{tokens.HEADER_END, lineBreak, breakLine, breakCol}
 			}
 
-			return tokens.Token{tokens.HEADER_END, arg}
+			return tokens.Token{tokens.HEADER_END, headerEnd, endLine, endCol}
 		}
 
-		arg += l.scanUntil(isWhitespace)
-		return tokens.Token{tokens.ARG, arg}
+		arg, argLine, argCol := l.scanUntil(isWhitespace)
+		return tokens.Token{tokens.ARG, arg, argLine, argCol}
 	}
 
 	// Test for EOF after handling possible implicit header end
 	if l.atEndOfFile() {
-		return tokens.Token{tokens.EOF, ""}
+		return tokens.Token{tokens.EOF, "", l.line, l.col}
 	}
 
 	// Starting a Block Header
 	if isInputHeader(l.current) {
-		header := l.scanWhile(isInputHeader)
+		header, line, col := l.scanWhile(isInputHeader)
 		l.startCaptureOf(tokens.INPUT_HEADER)
-		return tokens.Token{tokens.INPUT_HEADER, header}
+		return tokens.Token{tokens.INPUT_HEADER, header, line, col}
 	}
 
 	if isStateHeader(l.current) {
-		header := l.scanWhile(isStateHeader)
+		header, line, col := l.scanWhile(isStateHeader)
 		l.startCaptureOf(tokens.STATE_HEADER)
-		return tokens.Token{tokens.STATE_HEADER, header}
+		return tokens.Token{tokens.STATE_HEADER, header, line, col}
 	}
 
 	// Text
-	text := l.scanWhileText(lineStart)
+	text, textLine, textCol := l.scanWhileText(startPadding, startLine, startCol)
 
 	if text == "" {
 		return l.Next() // empty text is a no-op
 	}
 
-	return tokens.Token{tokens.TEXT, text}
+	return tokens.Token{tokens.TEXT, text, textLine, textCol}
 }

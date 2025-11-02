@@ -11,28 +11,33 @@ func expectTokens(t *testing.T, input string, expected []tokens.Token) {
     for i, exp := range expected {
         act := lex.Next()
         if act != exp {
-            t.Fatalf("[%d] expected=%q, got=%q", i, exp, act)
+            t.Fatalf(
+            	"[%d] expected={%v %q %d %d}, got={%v %q %d %d}",
+            	i,
+            	exp.Type, exp.Literal, exp.Line, exp.Column,
+            	act.Type, act.Literal, act.Line, act.Column,
+            )
         }
     }
 }
 
 func TestEof(t *testing.T) {
     expectTokens(t, "", []tokens.Token{
-        {tokens.EOF, ""},
+        {tokens.EOF, "", 1, 1},
     })
 }
 
 func TestText(t *testing.T) {
     expectTokens(t, "Hello, world!", []tokens.Token{
-        {tokens.TEXT, "Hello, world!"},
-        {tokens.EOF, ""},
+        {tokens.TEXT, "Hello, world!", 1, 1},
+        {tokens.EOF, "", 1, 14},
     })
 }
 
 func TestUnicode(t *testing.T) {
     expectTokens(t, "Hello, 世界!", []tokens.Token{
-        {tokens.TEXT, "Hello, 世界!"},
-        {tokens.EOF, ""},
+        {tokens.TEXT, "Hello, 世界!", 1, 1},
+        {tokens.EOF, "", 1, 11},
     })
 }
 
@@ -61,54 +66,54 @@ Hello, 世界!
     `
 
     expectTokens(t, input, []tokens.Token{
-        {tokens.INPUT_HEADER, ">"},
-        {tokens.ARG, "greet"},
-        {tokens.HEADER_END, ">"},
-        {tokens.TEXT, "Hello!"},
+        {tokens.INPUT_HEADER, ">", 2, 1},
+        {tokens.ARG, "greet", 2, 3},
+        {tokens.HEADER_END, ">", 2, 9},
+        {tokens.TEXT, "Hello!", 3, 1},
 
-        {tokens.STATE_HEADER, "="},
-        {tokens.ARG, "world"},
-        {tokens.HEADER_END, "="},
+        {tokens.STATE_HEADER, "=", 5, 1},
+        {tokens.ARG, "world", 5, 3},
+        {tokens.HEADER_END, "=", 5, 9},
 
-        {tokens.INPUT_HEADER, ">>"},
-        {tokens.ARG, "greet"},
-        {tokens.HEADER_END, ">>"},
-        {tokens.TEXT, "Hello, world!"},
+        {tokens.INPUT_HEADER, ">>", 7, 1},
+        {tokens.ARG, "greet", 7, 8},
+        {tokens.HEADER_END, ">>", 7, 18},
+        {tokens.TEXT, "Hello, world!", 8, 1},
 
-        {tokens.INPUT_HEADER, ">>>"},
-        {tokens.ARG, "dramatically"},
-        {tokens.HEADER_END, "\n"},
-        {tokens.TEXT, "Hello...\n\n\n    ...world."},
+        {tokens.INPUT_HEADER, ">>>", 10, 5},
+        {tokens.ARG, "dramatically", 10, 8},
+        {tokens.HEADER_END, "\n", 10, 20},
+        {tokens.TEXT, "Hello...\n\n\n    ...world.", 12, 1},
 
-        {tokens.STATE_HEADER, "=="},
-        {tokens.ARG, "世界"},
-        {tokens.HEADER_END, "\n"},
+        {tokens.STATE_HEADER, "==", 19, 1},
+        {tokens.ARG, "世界", 19, 4},
+        {tokens.HEADER_END, "\n", 19, 6},
 
-        {tokens.INPUT_HEADER, ">>>"},
-        {tokens.ARG, "greet"},
-        {tokens.ARG, "unicode"},
-        {tokens.HEADER_END, "\n"},
-        {tokens.TEXT, "Hello, 世界!"},
+        {tokens.INPUT_HEADER, ">>>", 20, 1},
+        {tokens.ARG, "greet", 20, 5},
+        {tokens.ARG, "unicode", 20, 11},
+        {tokens.HEADER_END, "\n", 20, 18},
+        {tokens.TEXT, "Hello, 世界!", 21, 1},
 
-        {tokens.EOF, ""},
+        {tokens.EOF, "", 22, 5},
     })
 }
 
 func TestHeaderAtFileEnd(t *testing.T) {
     expectTokens(t, "Why do this?\n>", []tokens.Token{
-        {tokens.TEXT, "Why do this?"},
-        {tokens.INPUT_HEADER, ">"},
-        {tokens.HEADER_END, ""},
-        {tokens.EOF, ""},
+        {tokens.TEXT, "Why do this?", 1, 1},
+        {tokens.INPUT_HEADER, ">", 2, 1},
+        {tokens.HEADER_END, "", 2, 2},
+        {tokens.EOF, "", 2, 2},
     })
 }
 
 func TestHeaderEndAtFileEnd(t *testing.T) {
     expectTokens(t, "== eof", []tokens.Token{
-        {tokens.STATE_HEADER, "=="},
-        {tokens.ARG, "eof"},
-        {tokens.HEADER_END, ""},
-        {tokens.EOF, ""},
+        {tokens.STATE_HEADER, "==", 1, 1},
+        {tokens.ARG, "eof", 1, 4},
+        {tokens.HEADER_END, "", 1, 7},
+        {tokens.EOF, "", 1, 7},
     })
 }
 
@@ -116,11 +121,11 @@ func TestPaddedHeaderEnd(t *testing.T) {
 	input := "\t> padded >   \t \nYou should trim your whitespace!"
 
     expectTokens(t, input, []tokens.Token{
-        {tokens.INPUT_HEADER, ">"},
-        {tokens.ARG, "padded"},
-        {tokens.HEADER_END, ">"},
-        {tokens.TEXT, "You should trim your whitespace!"},
-        {tokens.EOF, ""},
+        {tokens.INPUT_HEADER, ">", 1, 2},
+        {tokens.ARG, "padded", 1, 4},
+        {tokens.HEADER_END, ">", 1, 11},
+        {tokens.TEXT, "You should trim your whitespace!", 2, 1},
+        {tokens.EOF, "", 2, 33},
     })
 }
 
@@ -129,11 +134,11 @@ func TestPaddedText(t *testing.T) {
 
     expectTokens(t, input, []tokens.Token{
         // Keep non-breaking whitespace on leading/trailing contentful lines
-        {tokens.TEXT, "\t I love\t\n\n whitespace!!!\t\t "},
-        {tokens.INPUT_HEADER, ">"},
-        {tokens.ARG, "respond"},
-        {tokens.HEADER_END, "\n"},
-        {tokens.TEXT, "Okay"},
-        {tokens.EOF, ""},
+        {tokens.TEXT, "\t I love\t\n\n whitespace!!!\t\t ", 3, 1},
+        {tokens.INPUT_HEADER, ">", 8, 1},
+        {tokens.ARG, "respond", 8, 3},
+        {tokens.HEADER_END, "\n", 8, 10},
+        {tokens.TEXT, "Okay", 9, 1},
+        {tokens.EOF, "", 9, 5},
     })
 }

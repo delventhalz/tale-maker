@@ -5,6 +5,8 @@ type TokenType uint8
 type Token struct {
 	Type TokenType
 	Literal string
+	Line int
+	Column int
 }
 
 const (
