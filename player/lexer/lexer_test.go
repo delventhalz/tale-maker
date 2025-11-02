@@ -63,6 +63,8 @@ Hello...
 == 世界
 >>> greet unicode
 Hello, 世界!
+>>> greet mathematically
+If 世界 > world, then greet = hello
     `
 
     expectTokens(t, input, []tokens.Token{
@@ -95,7 +97,13 @@ Hello, 世界!
         {tokens.HEADER_END, "\n", 20, 18},
         {tokens.TEXT, "Hello, 世界!", 21, 1},
 
-        {tokens.EOF, "", 22, 5},
+        {tokens.INPUT_HEADER, ">>>", 22, 1},
+        {tokens.ARG, "greet", 22, 5},
+        {tokens.ARG, "mathematically", 22, 11},
+        {tokens.HEADER_END, "\n", 22, 25},
+        {tokens.TEXT, "If 世界 > world, then greet = hello", 23, 1},
+
+        {tokens.EOF, "", 24, 5},
     })
 }
 
