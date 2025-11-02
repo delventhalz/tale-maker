@@ -19,6 +19,10 @@ func isLineBreak(r rune) bool {
 	return r == '\n' || r == '\r'
 }
 
+func isWindowsLineBreak(first rune, second rune) bool {
+	return first == '\r' && second == '\n'
+}
+
 func isNonBreakingSpace(r rune) bool {
 	return r == ' ' || r == '\t'
 }
@@ -51,10 +55,12 @@ func (l *Lexer) advance() {
 	l.pos = l.nextPos
 	l.read()
 
-	if isLineBreak(prev) {
+	switch {
+	case isWindowsLineBreak(prev, l.current): // no increment for first char
+	case isLineBreak(prev):
 		l.line++
 		l.col = 1
-	} else {
+	default:
 		l.col++
 	}
 }
@@ -67,15 +73,23 @@ func (l *Lexer) atEndOfLine() bool {
 	return l.atEndOfFile() || isLineBreak(l.current)
 }
 
-func (l *Lexer) scanNext() (string, int, int) {
-	if l.atEndOfFile() {
-		return "", l.line, l.col
+func (l *Lexer) scanLineBreak() (string, int, int) {
+	line, col := l.line, l.col
+
+	if !isLineBreak(l.current) || l.atEndOfFile() {
+		return "", line, col
 	}
 
-	prev, line, col := l.current, l.line, l.col
+	breakStart := l.current
 	l.advance()
 
-	return string(prev), line, col
+	if isWindowsLineBreak(breakStart, l.current) {
+		lineBreak := string(breakStart) + string(l.current)
+		l.advance()
+		return lineBreak, line, col
+	}
+
+	return string(breakStart), line, col
 }
 
 func (l *Lexer) scanWhile(test func (rune) bool) (string, int, int) {
@@ -117,18 +131,18 @@ func (l *Lexer) scanWhileText(startPadding string, startLine, startCol int) (str
 		// Line is empty, only capture if non-empty lines are before and after
 		case l.atEndOfLine():
 			if text == "" {
-				l.scanNext() // skip line break
+				l.scanLineBreak() // skip line break
 				padding = ""
 				line = l.line
 				col = l.col
 			} else {
-				lineBreak, _, _ := l.scanNext()
+				lineBreak, _, _ := l.scanLineBreak()
 				padding += lineStart + lineBreak
 			}
 
 		default:
 			lineEnd, _, _ := l.scanUntil(isLineBreak)
-			lineBreak, _, _ := l.scanNext()
+			lineBreak, _, _ := l.scanLineBreak()
 			text += padding + lineStart + lineEnd
 			padding += lineBreak
 		}
@@ -193,7 +207,7 @@ func (l *Lexer) Next() tokens.Token {
 		l.scanWhile(isNonBreakingSpace)
 		if l.atEndOfLine() {
 			l.endCurrentCapture()
-			lineBreak, breakLine, breakCol := l.scanNext()
+			lineBreak, breakLine, breakCol := l.scanLineBreak()
 
 			if (headerEnd == "") {
 				return tokens.Token{tokens.HEADER_END, lineBreak, breakLine, breakCol}

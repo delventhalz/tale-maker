@@ -142,3 +142,36 @@ func TestPaddedText(t *testing.T) {
         {tokens.EOF, "", 9, 5},
     })
 }
+
+func TestCarriageReturns(t *testing.T) {
+    expectTokens(t, "\rLet's...\rgo!\r\r> cheer\rRa", []tokens.Token{
+        {tokens.TEXT, "Let's...\rgo!", 2, 1},
+        {tokens.INPUT_HEADER, ">", 5, 1},
+        {tokens.ARG, "cheer", 5, 3},
+        {tokens.HEADER_END, "\r", 5, 8},
+        {tokens.TEXT, "Ra", 6, 1},
+        {tokens.EOF, "", 6, 3},
+    })
+}
+
+func TestWindowsLineBreaks(t *testing.T) {
+    expectTokens(t, "\r\nU wut...\r\nm8?\r\n\r\n> hit\r\nnvm", []tokens.Token{
+        {tokens.TEXT, "U wut...\r\nm8?", 2, 1},
+        {tokens.INPUT_HEADER, ">", 5, 1},
+        {tokens.ARG, "hit", 5, 3},
+        {tokens.HEADER_END, "\r\n", 5, 6},
+        {tokens.TEXT, "nvm", 6, 1},
+        {tokens.EOF, "", 6, 4},
+    })
+}
+
+func TestWeirdLineBreaks(t *testing.T) {
+    expectTokens(t, "\n\rWhere did you get...\n\rthis file?\r\r\n\n> reply\n\rshhh", []tokens.Token{
+        {tokens.TEXT, "Where did you get...\n\rthis file?", 3, 1},
+        {tokens.INPUT_HEADER, ">", 8, 1},
+        {tokens.ARG, "reply", 8, 3},
+        {tokens.HEADER_END, "\n", 8, 8},
+        {tokens.TEXT, "shhh", 10, 1},
+        {tokens.EOF, "", 10, 5},
+    })
+}
