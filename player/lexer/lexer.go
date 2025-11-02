@@ -211,7 +211,7 @@ func (l *Lexer) Next() tokens.Token {
 				l.endCurrentCapture()
 				lineBreak, breakLine, breakCol := l.scanLineBreak()
 
-				if (headerEnd == "") {
+				if headerEnd == "" {
 					return tokens.Token{tokens.HEADER_END, lineBreak, breakLine, breakCol}
 				}
 
