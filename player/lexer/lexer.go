@@ -43,6 +43,17 @@ func isHeader(r rune) bool {
 	return isInputHeader(r) || isStateHeader(r)
 }
 
+func isAnyOf[T any](tests ...func(T) bool) func(T) bool {
+	return func(val T) bool {
+		for _, test := range tests {
+			if test(val) {
+				return true
+			}
+		}
+		return false
+	}
+}
+
 func (l *Lexer) read() {
 	r, w := utf8.DecodeRuneInString(l.input[l.pos:])
 	l.current = r
@@ -96,7 +107,7 @@ func (l *Lexer) scanWhile(test func (rune) bool) (string, int, int) {
 	line, col := l.line, l.col
 	scanned := ""
 
-	// End when first rune fails test
+	// End when current rune fails test
 	for !l.atEndOfFile() && test(l.current) {
 		scanned += string(l.current)
 		l.advance()
@@ -106,7 +117,7 @@ func (l *Lexer) scanWhile(test func (rune) bool) (string, int, int) {
 }
 
 func (l *Lexer) scanUntil(test func (rune) bool) (string, int, int) {
-	// End when first rune passes test
+	// End when current rune passes test
 	return l.scanWhile(func (r rune) bool {
 		return !test(r)
 	})
@@ -218,11 +229,19 @@ func (l *Lexer) Next() tokens.Token {
 				return tokens.Token{tokens.HEADER_END, headerEnd, endLine, endCol}
 			}
 
-			arg, argLine, argCol := l.scanUntil(isWhitespace)
+			var arg string
+			var argLine, argCol int
+
+			if l.isCapturing(tokens.STATE_HEADER) {
+				arg, argLine, argCol = l.scanUntil(isAnyOf(isWhitespace, isStateHeader))
+			} else {
+				arg, argLine, argCol = l.scanUntil(isAnyOf(isWhitespace, isInputHeader))
+			}
+
 			return tokens.Token{tokens.ARG, arg, argLine, argCol}
 		}
 
-		// Test for EOF after handling possible implicit header end
+		// Test for EOF only after handling possible implicit header end
 		if l.atEndOfFile() {
 			return tokens.Token{tokens.EOF, "", l.line, l.col}
 		}

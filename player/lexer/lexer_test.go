@@ -46,7 +46,7 @@ func TestBlocks(t *testing.T) {
 > greet >
 Hello!
 
-= world =
+=world=
 
 >>     greet     >>
 Hello, world!
@@ -74,8 +74,8 @@ If 世界 > world, then greet = hello
 		{tokens.TEXT, "Hello!", 3, 1},
 
 		{tokens.STATE_HEADER, "=", 5, 1},
-		{tokens.ARG, "world", 5, 3},
-		{tokens.HEADER_END, "=", 5, 9},
+		{tokens.ARG, "world", 5, 2},
+		{tokens.HEADER_END, "=", 5, 7},
 
 		{tokens.INPUT_HEADER, ">>", 7, 1},
 		{tokens.ARG, "greet", 7, 8},
