@@ -1,6 +1,7 @@
 package lexer
 
 import (
+	"fmt"
 	"tale/tokens"
 	"unicode/utf8"
 )
@@ -241,8 +242,13 @@ func New(input string) *Lexer {
 }
 
 func (l *Lexer) Next() tokens.Token {
-	// Either returns a token or loops if position is a no-op
-	for {
+	// Either returns a token or loops if position is a no-op.
+	// Stops looping if it repeats a position (likely dev error)
+	prevPos := -1
+
+	for prevPos != l.pos {
+		prevPos = l.pos
+
 		// In a Block Header
 		if l.isCapturingAny(tokens.INPUT_HEADER, tokens.STATE_HEADER) {
 			l.scanWhile(isNonBreakingSpace)
@@ -346,4 +352,6 @@ func (l *Lexer) Next() tokens.Token {
 		l.capturedBlockStart = true
 		return tokens.Token{tokens.TEXT, text, textLine, textCol}
 	}
+
+	panic(fmt.Sprintf("Repeat position [%d]! %q (%d:%d)", l.pos, l.current, l.line, l.col))
 }
