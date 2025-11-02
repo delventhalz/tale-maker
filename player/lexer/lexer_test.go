@@ -11,7 +11,7 @@ func expectTokens(t *testing.T, input string, expected []tokens.Token) {
     for i, exp := range expected {
         act := lex.Next()
         if act != exp {
-            t.Fatalf("[%d] expected=%v, got=%v", i, exp, act)
+            t.Fatalf("[%d] expected=%q, got=%q", i, exp, act)
         }
     }
 }
@@ -36,13 +36,6 @@ func TestUnicode(t *testing.T) {
     })
 }
 
-func TestTrim(t *testing.T) {
-    expectTokens(t, "\n\n    Hello, \nworld!\n\t", []tokens.Token{
-        {tokens.TEXT, "Hello, \nworld!"},
-        {tokens.EOF, ""},
-    })
-}
-
 func TestBlocks(t *testing.T) {
     input := `
 > greet >
@@ -50,10 +43,10 @@ Hello!
 
 = world =
 
->> greet >>
+>>     greet     >>
 Hello, world!
 
->>> dramatically
+    >>>dramatically
 
 Hello...
 
@@ -63,7 +56,7 @@ Hello...
 
 
 == 世界
->>> greet
+>>> greet unicode
 Hello, 世界!
     `
 
@@ -93,9 +86,54 @@ Hello, 世界!
 
         {tokens.INPUT_HEADER, ">>>"},
         {tokens.ARG, "greet"},
+        {tokens.ARG, "unicode"},
         {tokens.HEADER_END, "\n"},
         {tokens.TEXT, "Hello, 世界!"},
 
+        {tokens.EOF, ""},
+    })
+}
+
+func TestHeaderAtFileEnd(t *testing.T) {
+    expectTokens(t, "Why do this?\n>", []tokens.Token{
+        {tokens.TEXT, "Why do this?"},
+        {tokens.INPUT_HEADER, ">"},
+        {tokens.HEADER_END, ""},
+        {tokens.EOF, ""},
+    })
+}
+
+func TestHeaderEndAtFileEnd(t *testing.T) {
+    expectTokens(t, "== eof", []tokens.Token{
+        {tokens.STATE_HEADER, "=="},
+        {tokens.ARG, "eof"},
+        {tokens.HEADER_END, ""},
+        {tokens.EOF, ""},
+    })
+}
+
+func TestPaddedHeaderEnd(t *testing.T) {
+	input := "\t> padded >   \t \nYou should trim your whitespace!"
+
+    expectTokens(t, input, []tokens.Token{
+        {tokens.INPUT_HEADER, ">"},
+        {tokens.ARG, "padded"},
+        {tokens.HEADER_END, ">"},
+        {tokens.TEXT, "You should trim your whitespace!"},
+        {tokens.EOF, ""},
+    })
+}
+
+func TestPaddedText(t *testing.T) {
+	input := " \t\n\n\t I love\t\n\n whitespace!!!\t\t \n\n\t \n> respond\nOkay"
+
+    expectTokens(t, input, []tokens.Token{
+        // Keep non-breaking whitespace on leading/trailing contentful lines
+        {tokens.TEXT, "\t I love\t\n\n whitespace!!!\t\t "},
+        {tokens.INPUT_HEADER, ">"},
+        {tokens.ARG, "respond"},
+        {tokens.HEADER_END, "\n"},
+        {tokens.TEXT, "Okay"},
         {tokens.EOF, ""},
     })
 }

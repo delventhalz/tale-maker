@@ -84,9 +84,11 @@ func (l *Lexer) scanUntil(test func (rune) bool) string {
 	})
 }
 
-func (l *Lexer) scanWhileText() string {
+// Entirety of each contentful line is captured (including enclosed empty lines)
+// but empty lines before and after text content is dropped
+func (l *Lexer) scanWhileText(initialPadding string) string {
+	padding := initialPadding
 	text := ""
-	padding := ""
 
 	for l.pos < len(l.input) {
 		lineStart := l.scanWhile(isNonBreakingSpace)
@@ -99,6 +101,7 @@ func (l *Lexer) scanWhileText() string {
 		// Line is empty, only capture if non-empty lines are before and after
 		case l.atEndOfLine():
 			if text == "" {
+				padding = ""
 				l.scanNext() // skip line break
 			} else {
 				padding += lineStart
@@ -154,9 +157,7 @@ func New(input string) *Lexer {
 }
 
 func (l *Lexer) Next() tokens.Token {
-	if isNonBreakingSpace(l.current) {
-		l.scanWhile(isNonBreakingSpace)
-	}
+	lineStart := l.scanWhile(isNonBreakingSpace)
 
 	// In a Block Header
 	if l.isCapturingAny(tokens.INPUT_HEADER, tokens.STATE_HEADER) {
@@ -187,12 +188,7 @@ func (l *Lexer) Next() tokens.Token {
 		return tokens.Token{tokens.ARG, arg}
 	}
 
-	// Not in a block header, safe to advance past line breaks
-	if isWhitespace(l.current) {
-		l.scanWhile(isWhitespace)
-	}
-
-	// EOF
+	// Test for EOF after handling possible implicit header end
 	if l.atEndOfFile() {
 		return tokens.Token{tokens.EOF, ""}
 	}
@@ -211,6 +207,11 @@ func (l *Lexer) Next() tokens.Token {
 	}
 
 	// Text
-	text := l.scanWhileText()
+	text := l.scanWhileText(lineStart)
+
+	if text == "" {
+		return l.Next() // empty text is a no-op
+	}
+
 	return tokens.Token{tokens.TEXT, text}
 }
