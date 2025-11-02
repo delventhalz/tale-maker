@@ -183,3 +183,94 @@ func TestWeirdLineBreaks(t *testing.T) {
 		{tokens.EOF, "", 10, 5},
 	})
 }
+
+func TestActions(t *testing.T) {
+	input := `<name Test>
+<name player Tester><place player test>
+
+> run >
+<set test_passed>
+The test passes!<win-game>
+
+> abort >
+The test... <set test_failed> 😞 failed.
+<
+
+  lose
+
+       >
+
+Sorry.
+
+`
+
+	expectTokens(t, input, []tokens.Token{
+		{tokens.ACTION, "<", 1, 1},
+		{tokens.NAME, "name", 1, 2},
+		{tokens.ARG, "Test", 1, 7},
+		{tokens.ACTION_END, ">", 1, 11},
+
+		{tokens.ACTION, "<", 2, 1},
+		{tokens.NAME, "name", 2, 2},
+		{tokens.ARG, "player", 2, 7},
+		{tokens.ARG, "Tester", 2, 14},
+		{tokens.ACTION_END, ">", 2, 20},
+
+		{tokens.ACTION, "<", 2, 21},
+		{tokens.NAME, "place", 2, 22},
+		{tokens.ARG, "player", 2, 28},
+		{tokens.ARG, "test", 2, 35},
+		{tokens.ACTION_END, ">", 2, 39},
+
+		{tokens.INPUT_HEADER, ">", 4, 1},
+		{tokens.ARG, "run", 4, 3},
+		{tokens.HEADER_END, ">", 4, 7},
+
+		{tokens.ACTION, "<", 5, 1},
+		{tokens.NAME, "set", 5, 2},
+		{tokens.ARG, "test_passed", 5, 6},
+		{tokens.ACTION_END, ">", 5, 17},
+
+		{tokens.TEXT, "The test passes!", 6, 1},
+		{tokens.ACTION, "<", 6, 17},
+		{tokens.NAME, "win-game", 6, 18},
+		{tokens.ACTION_END, ">", 6, 26},
+
+		{tokens.INPUT_HEADER, ">", 8, 1},
+		{tokens.ARG, "abort", 8, 3},
+		{tokens.HEADER_END, ">", 8, 9},
+
+		{tokens.TEXT, "The test... ", 9, 1},
+		{tokens.ACTION, "<", 9, 13},
+		{tokens.NAME, "set", 9, 14},
+		{tokens.ARG, "test_failed", 9, 18},
+		{tokens.ACTION_END, ">", 9, 29},
+		{tokens.TEXT, " 😞 failed.\n", 9, 30},
+
+		{tokens.ACTION, "<", 10, 1},
+		{tokens.NAME, "lose", 12, 3},
+		{tokens.ACTION_END, ">", 14, 8},
+		{tokens.TEXT, "\n\nSorry.", 14, 9},
+
+		{tokens.EOF, "", 18, 1},
+	})
+}
+
+func TestFileEndInAction(t *testing.T) {
+	expectTokens(t, "<_>", []tokens.Token{
+		{tokens.ACTION, "<", 1, 1},
+		{tokens.NAME, "_", 1, 2},
+		{tokens.ACTION_END, ">", 1, 3},
+		{tokens.EOF, "", 1, 4},
+	})
+	expectTokens(t, "<set", []tokens.Token{
+		{tokens.ACTION, "<", 1, 1},
+		{tokens.NAME, "set", 1, 2},
+		{tokens.EOF, "", 1, 5},
+	})
+	expectTokens(t, "<set\n\n\n", []tokens.Token{
+		{tokens.ACTION, "<", 1, 1},
+		{tokens.NAME, "set", 1, 2},
+		{tokens.EOF, "", 4, 1},
+	})
+}
