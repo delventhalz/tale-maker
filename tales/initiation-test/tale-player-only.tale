@@ -1,15 +1,26 @@
-<ref examine examine inspect look search>
-<ref interact interact touch handle>
-<ref use_item "use item" use>
-<ref move move go travel>
+<alias examine>examine inspect look search</alias>
+<alias interact>interact touch handle</alias>
+<alias use_item>"use item" use</alias>
+<alias move>move go travel</alias>
 
-<ref entrance_door iron door> <! Two doors, ref should work for both depending on location>
-<ref barrel wood barrel>
-<ref rope rope>
-<ref search_key divining key>
-<ref lockpicks lockpicks picks>
-<ref tool_bag tool bag tools>
-<ref holy_symbol holy symbol>
-<ref elf_song elf song sing singing apple fruit>
+<alias entrance_door>"iron door"</alias>
+<alias barrel>wood barrel</alias>
+<alias rope>rope</alias>
+<alias search_key>divining key</alias>
+<alias lockpicks>lockpicks picks</alias>
+<alias tool_bag>tool bag tools</alias>
+<alias holy_symbol>holy symbol</alias>
+<alias elf_song>elf song sing singing apple fruit</alias>
 
-<ref entrance entrance "entry way" "gloomy entrance">
+<alias entrance>entrance "entry way" "gloomy entrance"</alias>
+<alias parlor>parlor "darkened parlor"</alias>
+
+<alias handler>alder mink handler guide</alias>
+
+= entrance =
+<alias _>room</alias>
+<alias entrance_door>door</alias>
+
+= parlor =
+<alias _>room</alias>
+<alias entrance_door>door</alias>

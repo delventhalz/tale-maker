@@ -1,15 +1,18 @@
-<ref examine cx>
-<ref interact cy>
-<ref use_item "use item">
-<ref move cz>
+<alias examine "cx">
+<alias interact "cy">
+<alias use_item "use item">
+<alias move "cz">
 
-<ref entrance_door d1> <! Two doors, ref should work for both depending on location>
-<ref barrel j8>
-<ref rope ju>
-<ref search_key jq>
-<ref lockpicks k3>
-<ref tool_bag j7>
-<ref holy_symbol js>
-<ref elf_song kc>
+<alias entrance_door "d1">
+<alias barrel "j8">
+<alias rope "ju">
+<alias search_key "jq">
+<alias lockpicks "k3">
+<alias tool_bag "j7">
+<alias holy_symbol "js">
+<alias elf_song "kc">
 
-<ref entrance ac>
+<alias entrance "ac">
+<alias parlor "a6">
+
+<alias handler "ec">

@@ -1,25 +1,26 @@
-<name entrance_door Old Iron Door>
-<name barrel Barrel>
-<name rope Rope>
+<name entrance_door>Old Iron Door</name>
+<name barrel "Barrel">
+<name rope "Rope">
+
+<place entrance_door entrance parlor> <! This needs work, where is the door?>
 
 = entrance =
-<name Gloomy Entrance>
-<place player>
-<place handler>
-<place barrel>
-<place entrance_door entrance parlor> <! This needs work, where is the door?>
+<name _ "Gloomy Entrance">
+<place player _>
+<place handler _>
+<place barrel _>
 
 >> go >>
 <title>Starting the Scenario</title>
 Now that you have selected classes, each player should take their character and combat cards (basic cards only) and place them in front of themselves. Each scenario in Taelmoor starts by placing a room and any starting pieces in the center of the table as instructed.
 
-For {name tale}, your first room is <piece>{ref}</piece>. Place the Party marker within it – this piece marks your current location on the map, so move it around as you go.
+For {name tale}, your first room is <piece>{alias _}</piece>. Place the Party marker within it – this piece marks your current location on the map, so move it around as you go.
 
-Whenever you see something written like this <piece>{ref}</piece>, it means to place that token or standee within your current room or where otherwise instructed to place it.
+Whenever you see something written like this <piece>{alias _}</piece>, it means to place that token or standee within your current room or where otherwise instructed to place it.
 
 Playing Taelmoor involves choosing an action and then scanning a QR code for a target. When you are trying to think of what to do, imagine that you want to "use an <i>action</i> on a <i>target</i>."
 
-To begin playing, try searching the room you're in to learn more about it. To do this, <b>tap the <piece>{ref examine}</piece> action button, and then scan the entrance's <piece>{ref}</piece> QR code</b> as your target.
+To begin playing, try searching the room you're in to learn more about it. To do this, <b>tap the <piece>{alias examine}</piece> action button, and then scan the entrance's <piece>{alias}</piece> QR code</b> as your target.
 
 As you do actions, the scenario updates will appear in messages like this – once you're done reading them, you can close them with the button below.
 
@@ -35,13 +36,13 @@ You've returned to the entrance for your test. It's as dank and tattered as ever
 <title>The Trial Begins</title>
 <i>In Taelmoor, it's <b>highly</b> encouraged for the player performing the action to read the results out loud! Silly voices and epic oration are encouraged. {name player} should start reading now.</i>
 
-The inside of the building is just as rundown as the outside – it looks like it has long since been abandoned. You stand in the entryway with {name handler} <piece>{ref handler}</piece> waiting a few feet ahead of you.
+The inside of the building is just as rundown as the outside – it looks like it has long since been abandoned. You stand in the entryway with {name handler} <piece>{alias handler}</piece> waiting a few feet ahead of you.
 
 "Welcome to the trial. Somewhere in this building are your membership medallions for The Shattered Band. Your task is simple: find and claim them. Do so, and you will become a lifelong member of our guild. I will be following along with you to observe, test, and potentially provide help. Feel free to ask me questions at any time, although I may not always provide answers. Good luck."
 
-Other than {name handler} <piece>{ref handler}</piece>, the room also contains a closed {name barrel} <piece>{ref barrel}</piece> in the SOUTHEAST corner and an {name entrance_door} <piece>{ref entrance_door}</piece> to the NORTH.
+Other than {name handler} <piece>{alias handler}</piece>, the room also contains a closed {name barrel} <piece>{alias barrel}</piece> in the SOUTHEAST corner and an {name entrance_door} <piece>{alias entrance_door}</piece> to the NORTH.
 
-Unless otherwise instructed, remember to always place highlighted tokens in the current room by putting items and standees on top of the current room's tile, and putting doors and hallways next to it in the indicated direction. In other words, place <piece>{ref handler}</piece> and {name barrel} <piece>{ref barrel}</piece> on top of <piece>{ref entrance}</piece>, and <piece>{ref entrance_door}</piece> to the north in the little matching notch. Which way is north? It doesn't matter as long as you are consistent across the entire scenario, but we recommend orienting things so that "up" corresponds to north.
+Unless otherwise instructed, remember to always place highlighted tokens in the current room by putting items and standees on top of the current room's tile, and putting doors and hallways next to it in the indicated direction. In other words, place <piece>{alias handler}</piece> and {name barrel} <piece>{alias barrel}</piece> on top of <piece>{alias entrance}</piece>, and <piece>{alias entrance_door}</piece> to the north in the little matching notch. Which way is north? It doesn't matter as long as you are consistent across the entire scenario, but we recommend orienting things so that "up" corresponds to north.
 
 === repeat ===
 There isn't much to this rather small entryway. You suspect that it contained coat racks and shelves for boots or some such when the building was in use. {pull entrance barrel "details"} {pull entrance handler "details"} {pull entrance entrance_door "details"}
@@ -49,7 +50,7 @@ There isn't much to this rather small entryway. You suspect that it contained co
 >> handler >>
 
 === "details" ===
-{name handler} <piece>{ref handler}</piece> stands a few feet away, watching you.
+{name handler} <piece>{alias handler}</piece> stands a few feet away, watching you.
 
 ==== not here ====
 You are alone in the room.
@@ -57,21 +58,21 @@ You are alone in the room.
 >> entrance_door >>
 
 === "details" ===
-The {name entrance_door} <piece>{ref entrance_door}</piece> is closed and locked.
+The {name entrance_door} <piece>{alias entrance_door}</piece> is closed and locked.
 
 ==== open ====
-The {name entrance_door} <piece>{ref entrance_door}</piece> is open, revealing the {name parlor} <piece>{ref parlor}</piece> beyond.
+The {name entrance_door} <piece>{alias entrance_door}</piece> is open, revealing the {name parlor} <piece>{alias parlor}</piece> beyond.
 
 >> barrel >>
 
 === "details" ===
-The barrel <piece>{ref barrel}</piece> sits in the southeast corner.
+The barrel <piece>{alias barrel}</piece> sits in the southeast corner.
 
 ==== broken ====
-Broken bits of what used to be an old barrel lay strewn on the floor, too damaged to be useful for anything. <if not player has rope>A long bundle of rope <piece>{ref rope}</piece> is found within the debris.</if>
+Broken bits of what used to be an old barrel lay strewn on the floor, too damaged to be useful for anything. <if not player has rope>A long bundle of rope <piece>{alias rope}</piece> is found within the debris.</if>
 
 >> search_key >>
-<retain-turn no>
+<retain_turn no>
 You pull out your divining key and dangle it from its chain. Sure enough, you feel a slight tug towards the SOUTHEAST. There is something hidden there.
 
 === barrel is broken ===
@@ -84,24 +85,24 @@ You pull out your divining key and dangle it from its chain. Sure enough, you fe
 <title>A Rusty Door</title>
 The only door to the room is a rusting iron thing with a prominent metal lock on it. You try the handle – it's <split>
 <if>locked. Well, that's hardly a surprise, given that this is a test of your skills.</if>
-<else>open. The {name parlor} <piece>{ref parlor}</piece> waits to the NORTH.</else>
+<else>open. The {name parlor} <piece>{alias parlor}</piece> waits to the NORTH.</else>
 </split>
 
 === repeat ===
 It's the door to the entryway, and it's <split>
-<if open>unlocked since you picked it earlier. The {name parlor} <piece>{ref parlor}</piece> is through it to the NORTH.</if>
+<if open>unlocked since you picked it earlier. The {name parlor} <piece>{alias parlor}</piece> is through it to the NORTH.</if>
 <else>still locked.</else>
 </split>
 
 >> interact >>
-With {name handler} <piece>{ref handler}</piece> watching, you crack your knuckles and prepare to show him your skills. Hopefully this door isn't too strong for you. Without any more preamble, you charge at the door, sending all of your considerable weight into it.
+With {name handler} <piece>{alias handler}</piece> watching, you crack your knuckles and prepare to show him your skills. Hopefully this door isn't too strong for you. Without any more preamble, you charge at the door, sending all of your considerable weight into it.
 
-The jamb on the door explodes into wooden splinters as it gives way, flying open – it was no match for you. Another room <piece>{ref parlor}</piece> is revealed to the NORTH.
+The jamb on the door explodes into wooden splinters as it gives way, flying open – it was no match for you. Another room <piece>{alias parlor}</piece> is revealed to the NORTH.
 
 {pull "success"}
 
 === player is not strong ===
-You've seen people break down doors, how hard could it be? You take a deep breath and step back from the door as if to charge it, but then you remember that {name handler} <piece>{ref handler}</piece> is watching you. Now's probably not the time for trying risky things that might make you look like a fool – better let someone stronger try instead.
+You've seen people break down doors, how hard could it be? You take a deep breath and step back from the door as if to charge it, but then you remember that {name handler} <piece>{alias handler}</piece> is watching you. Now's probably not the time for trying risky things that might make you look like a fool – better let someone stronger try instead.
 
 {pull "wasted action"}
 
@@ -109,10 +110,10 @@ You've seen people break down doors, how hard could it be? You take a deep breat
 {pull "door already open"}
 
 >> lockpicks >>
-<set entrance_door to open>
-With {name handler} <piece>{ref handler}</piece> watching, you wiggle your fingers and prepare to show him your skills. Hopefully this door isn't some unpickable trick.
+<set entrance_door is open>
+With {name handler} <piece>{alias handler}</piece> watching, you wiggle your fingers and prepare to show him your skills. Hopefully this door isn't some unpickable trick.
 
-Your worries turn out to be unfounded, as it takes you only seconds to trip the latch and open the door. It swings wide, revealing another room <piece>{ref parlor}</piece> to the NORTH.
+Your worries turn out to be unfounded, as it takes you only seconds to trip the latch and open the door. It swings wide, revealing another room <piece>{alias parlor}</piece> to the NORTH.
 
 {pull "success"}
 
@@ -120,15 +121,15 @@ Your worries turn out to be unfounded, as it takes you only seconds to trip the 
 {pull "door already open"}
 
 === player is not lockpicker ===
-You start to reach for your companion's {name lockpicks} <piece>{ref lockpicks}</piece> so you can try to open the door, but you realize you would probably just look like an idiot in front of {name handler} <piece>{ref handler}</piece> if you did. Now's not the time for learning new things – better let the expert do it instead.
+You start to reach for your companion's {name lockpicks} <piece>{alias lockpicks}</piece> so you can try to open the door, but you realize you would probably just look like an idiot in front of {name handler} <piece>{alias handler}</piece> if you did. Now's not the time for learning new things – better let the expert do it instead.
 
-<i>The {name lockpicks} <piece>{ref lockpicks}</piece> belong to just a single player - you should not be using them!</i>
+<i>The {name lockpicks} <piece>{alias lockpicks}</piece> belong to just a single player - you should not be using them!</i>
 
 >> tool_bag >>
-<set entrance_door to open>
-With {name handler} <piece>{ref handler}</piece> watching, you pull out our bag of tools and prepare to show him exactly how an "intricate understanding of how things are built" can be applied.
+<set entrance_door is open>
+With {name handler} <piece>{alias handler}</piece> watching, you pull out our bag of tools and prepare to show him exactly how an "intricate understanding of how things are built" can be applied.
 
-This door is old and poorly constructed. You tsk to yourself and then, using a small crowbar, easily pry it from its hinges. The door falls to the ground in front of you, revealing another room <piece>{ref parlor}</piece> to the NORTH.
+This door is old and poorly constructed. You tsk to yourself and then, using a small crowbar, easily pry it from its hinges. The door falls to the ground in front of you, revealing another room <piece>{alias parlor}</piece> to the NORTH.
 
 {pull "success"}
 
@@ -136,14 +137,14 @@ This door is old and poorly constructed. You tsk to yourself and then, using a s
 {pull "door already open"}
 
 === player is not tinker ===
-You start to reach for your companion's {name tool_bag} <piece>{ref tool_bag}</piece> so you can try to open the door, but you realize you would probably just look like an idiot in front of {name handler} <piece>{ref handler}</piece> if you did. Now's not the time for learning new things – better let the expert do it instead.
+You start to reach for your companion's {name tool_bag} <piece>{alias tool_bag}</piece> so you can try to open the door, but you realize you would probably just look like an idiot in front of {name handler} <piece>{alias handler}</piece> if you did. Now's not the time for learning new things – better let the expert do it instead.
 
-<i>The {name tool_bag} <piece>{ref tool_bag}</piece> belong to just a single player - you should not be using them!</i>
+<i>The {name tool_bag} <piece>{alias tool_bag}</piece> belong to just a single player - you should not be using them!</i>
 
 >> holy_symbol >>
-A lock. This is what Nahk hates most, and so you're almost certain that they will destroy it if you ask. With {name handler} <piece>{ref handler}</piece> watching, you put one hand on the door lock and the other on the {name} that hangs around your neck. Then, you pray to Nahk to destroy this unholy blockade.
+A lock. This is what Nahk hates most, and so you're almost certain that they will destroy it if you ask. With {name handler} <piece>{alias handler}</piece> watching, you put one hand on the door lock and the other on the {name} that hangs around your neck. Then, you pray to Nahk to destroy this unholy blockade.
 
-Nahk's response is immediate – the lock simply dissolves and then disappears as if it never existed. The door creaks open in front of you, revealing another room <piece>{ref parlor}</piece> to the NORTH.
+Nahk's response is immediate – the lock simply dissolves and then disappears as if it never existed. The door creaks open in front of you, revealing another room <piece>{alias parlor}</piece> to the NORTH.
 
 {pull "success"}
 
@@ -151,9 +152,9 @@ Nahk's response is immediate – the lock simply dissolves and then disappears a
 {pull "door already open"}
 
 === player is not holy ===
-You start to reach for your companion's {name holy_symbol} <piece>{ref holy_symbol}</piece> so you can try to open the door, but you realize you would probably just look like an idiot in front of {name handler} <piece>{ref handler}</piece> if you did. Now's not the time to try to talk to a god that will ignore you – better let the expert do it instead.
+You start to reach for your companion's {name holy_symbol} <piece>{alias holy_symbol}</piece> so you can try to open the door, but you realize you would probably just look like an idiot in front of {name handler} <piece>{alias handler}</piece> if you did. Now's not the time to try to talk to a god that will ignore you – better let the expert do it instead.
 
-<i>The {name holy_symbol} <piece>{ref holy_symbol}</piece> belongs to just a single player - you should not be using it!</i>
+<i>The {name holy_symbol} <piece>{alias holy_symbol}</piece> belongs to just a single player - you should not be using it!</i>
 
 >> elf_song >>
 Unfortunately, this door is made from refined metals and so will not respond to Elven Song. It will only work on objects that are made from natural materials, especially those that are freshly harvested.
@@ -174,9 +175,9 @@ The {name search_key} reveals nothing new about the door.
 == "success" ==
 "Nicely done," {name handler} says. "I'll see you in there." He passes through the entryway and disappears beyond.
 
-Move <piece>{ref handler}</piece to the next room <piece>{ref parlor}</piece> now.
+Move <piece>{alias handler}</piece to the next room <piece>{alias parlor}</piece> now.
 
-<b>Because you've added a second room, you can move there whenever you like using the <piece>{ref move}</piece> action.</b> Simply scan the room you want to move to as the target – this is how you will move throughout all of the scenarios in Taelmoor. Note that the <piece>{ref move}</piece> action <i>only</i> works on rooms.",
+<b>Because you've added a second room, you can move there whenever you like using the <piece>{alias move}</piece> action.</b> Simply scan the room you want to move to as the target – this is how you will move throughout all of the scenarios in Taelmoor. Note that the <piece>{alias move}</piece> action <i>only</i> works on rooms.",
 
 
 > barrel >
@@ -187,20 +188,20 @@ The barrel appears to be as old as the building itself – beyond dusty and part
 {pull "pass explanation"}
 
 === broken ===
-The barrel is now nothing but a pile of useless splinters. <if player not has rope>But, some {name rope} <piece>{ref rope}</piece> was hidden inside and still lays among the debris.</if>
+The barrel is now nothing but a pile of useless splinters. <if player not has rope>But, some {name rope} <piece>{alias rope}</piece> was hidden inside and still lays among the debris.</if>
 
 >> interact >>
-<set broken>
-<place player rope>
+<set _ broken>
+<place rope player>
 The barrel doesn't want to open? No problem! You'll <i>force</i> it open.
 
 You pick it up and smash it against the wall repeatedly, enjoying the satisfying <i>crunch</i> it makes each time it strikes the stone. Finally, it shatters into a great shower of wooden debris that scatter to the floor below.
 
-Interestingly enough, some {name rope} <piece>{ref rope}</piece> tumbles out from it and lands on top of the heap. You reach down and pick up the bundle, feeling it in your hands. It's clearly new – no doubt planted here to be part of your trial.
+Interestingly enough, some {name rope} <piece>{alias rope}</piece> tumbles out from it and lands on top of the heap. You reach down and pick up the bundle, feeling it in your hands. It's clearly new – no doubt planted here to be part of your trial.
 
 {pull rope "in hand"}
 
-<b>Add the rope <piece>{ref rope}</piece> to the party inventory now. From now on, you can scan it as an action by selecting the <piece>{ref use_item}</piece> option and scanning the rope before scanning your target.</b>
+<b>Add the rope <piece>{alias rope}</piece> to the party inventory now. From now on, you can scan it as an action by selecting the <piece>{alias use_item}</piece> option and scanning the rope before scanning your target.</b>
 
 === player is not strong ===
 You're sure there's something to this barrel – why would it be here otherwise? You kick it as hard as you can, but are disappointed when it maintains its shape. You notice a jagged bit of wall you could perhaps smash it against, so you try to pick it up, but are disappointed to discover that it's too heavy for you to pick up. Perhaps someone stronger could do so.
@@ -213,8 +214,8 @@ The barrel is already in tatters, there's no reason to try to break it further.
 {pull "wasted action"}
 
 >> search_key >>
-<retain-turn no>
-As you get closer to the barrel, the <piece>{ref search_key}</piece> begins pulling forcefully on its chain like an excited child. There's definitely something hidden inside the barrel, but it appears to be sealed shut – you'll need to figure out some way to get inside.
+<retain_turn no>
+As you get closer to the barrel, the <piece>{alias search_key}</piece> begins pulling forcefully on its chain like an excited child. There's definitely something hidden inside the barrel, but it appears to be sealed shut – you'll need to figure out some way to get inside.
 
 === broken ===
 {pull search_key "nothing"}
@@ -240,17 +241,17 @@ You place a palm on the barrel and another on the {name holy_symbol}, and ask Na
 Why bother Nahk about something she obviously won't care about?
 
 >> tool_bag >>
-<set broken>
-<place player rope>
+<set _ broken>
+<place rope player>
 This is a well-made barrel, with a high number of symmetrical staves bound with steel hoops and nails. If you were to create one yourself, you'd probably choose a similar style of construction. But, since you want to get <i>inside it</i> instead, knowing how it's built is the first step.
 
 You grab a crowbar, wedge it between a hoop and stave, and gently tap with a hammer. The lid comes loose slightly. You continue this process around each stave and loop, quickly and efficiently dismantling the entire barrel into its base materials. An <i>amateur</i> might have just removed the lid, but not you! Now you're staring at a pile of wood, nails, and iron hoops, likely useless.
 
-But, what was once inside is now on top of the pile: a pristine {name rope} <piece>{ref rope}</piece>. You reach down and pick up the bundle, feeling it in your hands. It's clearly new – no doubt planted here to be part of your trial.
+But, what was once inside is now on top of the pile: a pristine {name rope} <piece>{alias rope}</piece>. You reach down and pick up the bundle, feeling it in your hands. It's clearly new – no doubt planted here to be part of your trial.
 
 {pull rope "in hand"}
 
-<b>Add the rope <piece>{ref rope}</piece> to the party inventory now. From now on, you can scan it as an action by selecting the <piece>{ref use_item}</piece> option and scanning the rope before scanning your target.</b>
+<b>Add the rope <piece>{alias rope}</piece> to the party inventory now. From now on, you can scan it as an action by selecting the <piece>{alias use_item}</piece> option and scanning the rope before scanning your target.</b>
 
 === broken ===
 The barrel is already in tatters... are you going to try to put it back together now or something? There is no need to waste your time, especially not when doing so could possibly be the reason you fail this trial.
@@ -258,22 +259,22 @@ The barrel is already in tatters... are you going to try to put it back together
 {pull "wasted action"}
 
 === player is not tinker ===
-You start to reach for your companion's {name tool_bag} <piece>{ref tool_bag}</piece> so you can try to open the barrel, but you get your hand slapped away for your trouble.
+You start to reach for your companion's {name tool_bag} <piece>{alias tool_bag}</piece> so you can try to open the barrel, but you get your hand slapped away for your trouble.
 
-<i>The {name tool_bag} <piece>{ref tool_bag}</piece> belong to just a single player - you should not be using them!</i>
+<i>The {name tool_bag} <piece>{alias tool_bag}</piece> belong to just a single player - you should not be using them!</i>
 
 >> elf_song >>
-<set broken>
-<place player rope>
+<set _ broken>
+<place rope player>
 This barrel is made from wood, and it is even <i>fresh</i> wood! You can feel the subtle hum of life pouring from it, calling to you, confused as to why it is no longer part of the tree it was milled from.
 
 You begin to sing, channeling the power of Taelmoor itself through the wild apple in your pocket. It is an old song, about the importance of nature and returning to it. The wood in the barrel hears you, and listens. It begins to hum in time with your song, then, all at once, it rots and dissolves into a heap of old wood.
 
-Interestingly enough, some {name rope} <piece>{ref rope}</piece> tumbles out from it and lands on top of the pile. You reach down and pick up the bundle, feeling it in your hands. It's clearly new – no doubt planted here to be part of your trial.
+Interestingly enough, some {name rope} <piece>{alias rope}</piece> tumbles out from it and lands on top of the pile. You reach down and pick up the bundle, feeling it in your hands. It's clearly new – no doubt planted here to be part of your trial.
 
 {pull rope "in hand"}
 
-<b>Add the rope {{rope.cardName()}} to the party inventory now. From now on, you can scan it as an action by selecting the <piece>{ref use_item}</piece> option and scanning the rope before scanning your target.</b>
+<b>Add the rope {{rope.cardName()}} to the party inventory now. From now on, you can scan it as an action by selecting the <piece>{alias use_item}</piece> option and scanning the rope before scanning your target.</b>
 
 === broken ===
 The barrel is already in tatters... are you going to try to sing it back together now or something? There is no need to waste your time, especially not when doing so could possibly be the reason you fail this trial.
@@ -281,7 +282,7 @@ The barrel is already in tatters... are you going to try to sing it back togethe
 === player is not singer ===
 You are hungry and so decide to eat The Elf's apple. You are punched solidly in your face for your efforts.
 
-<i>The {name elf_song} <piece>{ref elf_song}</piece> belongs to just a single player - you should not be using it!</i>
+<i>The {name elf_song} <piece>{alias elf_song}</piece> belongs to just a single player - you should not be using it!</i>
 
 
 > rope >

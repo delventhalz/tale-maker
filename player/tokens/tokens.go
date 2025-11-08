@@ -69,7 +69,8 @@ func (tt TokenType) String() string {
 	case AND: return "Keyword: and"
 	case OR: return "Keyword: or"
 	case NOT: return "Keyword: not"
-	case UNKNOWN: return "Keyword: unknown"
+	case ANY: return "Keyword: any"
+	case REPEAT: return "Keyword: repeat"
 
 	default: return "Invalid Token Value!"
 	}

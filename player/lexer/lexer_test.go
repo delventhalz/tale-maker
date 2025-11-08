@@ -190,7 +190,7 @@ func TestActions(t *testing.T) {
 
 > run >
 <set test_passed>
-The test passes!<win-game>
+The test passes!<win_game>
 
 > abort >
 The test... <set test_failed> 😞 failed.
@@ -233,7 +233,7 @@ Sorry.
 
 		{tokens.TEXT, "The test passes!", 6, 1},
 		{tokens.ACTION, "<", 6, 17},
-		{tokens.NAME, "win-game", 6, 18},
+		{tokens.NAME, "win_game", 6, 18},
 		{tokens.ACTION_END, ">", 6, 26},
 
 		{tokens.INPUT_HEADER, ">", 8, 1},

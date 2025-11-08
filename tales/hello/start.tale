@@ -1,10 +1,10 @@
-<name "Hello... world?">
-<name player The Player>
+<name tale "Hello... world?">
+<name player "The Player">
 
-<place player lever_room>
-<place shiny_lever lever_room>
-<place dingy_lever lever_room>
-<place door lever_room>
+<set player in lever_room>
+<set shiny_lever in lever_room>
+<set dingy_lever in lever_room>
+<set door in lever_room>
 
 You find yourself in a foreboding room dimly lit by some unseen light source. The walls appear to be made of a textured stone, but the texture has a weaving pattern to it that is difficult to follow, like many parallel trails of ants or perhaps some massive novel written in braille. The whole place smells vaguely of ozone.
 
@@ -15,6 +15,6 @@ This room is empty save for three things: two levers and a door. The door is to 
 <i>(This game is a text adventure. You interact with it by typing in what action you would like your character to take. The game will then respond with the results of your action. You might start by investigating some of the elements in the room.)</i>
 
 
-> unknown >
+> any >
 
 What is that supposed to mean?
