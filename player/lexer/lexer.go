@@ -108,21 +108,10 @@ func (l *Lexer) Next() tokens.Token {
 
 				return tokens.Token{tokens.HEADER_END, headerEnd, endLine, endCol}
 			}
-
-			var arg string
-			var argLine, argCol int
-
-			if l.isCapturing(tokens.STATE_HEADER) {
-				arg, argLine, argCol = l.scanUntil(isAnyOf(isWhitespace, isStateHeader))
-			} else {
-				arg, argLine, argCol = l.scanUntil(isAnyOf(isWhitespace, isInputHeader))
-			}
-
-			return tokens.Token{tokens.ARG, arg, argLine, argCol}
 		}
 
 		// In an Action
-		if l.isCapturingAny(tokens.ACTION, tokens.NAME) {
+		if l.isCapturing(tokens.ACTION) {
 			l.scanWhile(isWhitespace)
 
 			if l.atEndOfFile() {
@@ -131,20 +120,23 @@ func (l *Lexer) Next() tokens.Token {
 
 			if isActionEnd(l.current) {
 				end, line, col := l.scanNext()
-				l.endAnyCapturesOf(tokens.NAME, tokens.ACTION)
+				l.endCurrentCapture()
 				return tokens.Token{tokens.ACTION_END, end, line, col}
 			}
 		}
 
-		if l.isCapturing(tokens.NAME) {
-			name, line, col := l.scanUntil(isAnyOf(isWhitespace, isActionEnd))
-			l.endCurrentCapture()
-			return tokens.Token{tokens.NAME, name, line, col}
-		}
-
-		if l.isCapturing(tokens.ACTION) {
-			arg, line, col := l.scanUntil(isAnyOf(isWhitespace, isActionEnd))
-			return tokens.Token{tokens.ARG, arg, line, col}
+		// Capturing an expression in a header or action
+		if l.isCapturingAny(tokens.INPUT_HEADER, tokens.STATE_HEADER, tokens.ACTION) {
+			if isNumberStart(l.current) {
+				number, numberline, numberCol := l.scanWhileNumberLiteral()
+				return tokens.Token{tokens.NUMBER, number, numberline, numberCol}
+			}
+			if isAnyQuote(l.current) {
+				text, textLint, textCol := l.scanWhileTextLiteral()
+				return tokens.Token{tokens.TEXT, text, textLint, textCol}
+			}
+			word, wordLine, wordCol := l.scanWhileWord()
+			return tokens.Token{getWordToken(word), word, wordLine, wordCol}
 		}
 
 		// Test for EOF after handling special captures states
@@ -171,12 +163,11 @@ func (l *Lexer) Next() tokens.Token {
 		if isAction(l.current) {
 			action, line, col := l.scanNext()
 			l.startCaptureOf(tokens.ACTION)
-			l.startCaptureOf(tokens.NAME)
 			return tokens.Token{tokens.ACTION, action, line, col}
 		}
 
 		// Text
-		text, textLine, textCol := l.scanWhileText()
+		text, textLine, textCol := l.scanWhileTextBlock()
 
 		if text == "" {
 			continue

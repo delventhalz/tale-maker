@@ -18,7 +18,6 @@ const (
 	TEXT
 	NUMBER
 	FLAG
-	ARG // Either NAME or TEXT depending on parser context, may end up removing
 
 	// Delimiters
 	INPUT_HEADER
@@ -29,15 +28,16 @@ const (
 	ACTION_END
 	INSERT
 	INSERT_END
-	QUOTE
 
 	// Keywords
 	IS
 	HAS
+	IN
+	OF
+	WITH
 	AND
 	OR
 	NOT
-	UNKNOWN
 )
 
 func (tt TokenType) String() string {
@@ -50,7 +50,6 @@ func (tt TokenType) String() string {
 	case TEXT: return "Text"
 	case NUMBER: return "Number"
 	case FLAG: return "Flag"
-	case ARG: return "Argument"
 
 	// Delimiters
 	case INPUT_HEADER: return "Input Header"
@@ -61,16 +60,16 @@ func (tt TokenType) String() string {
 	case ACTION_END: return "End of Action"
 	case INSERT: return "Insert"
 	case INSERT_END: return "End of Insert"
-	case QUOTE: return "Quote"
 
 	// Keywords
 	case IS: return "Keyword: is"
 	case HAS: return "Keyword: has"
+	case IN: return "Keyword: in"
+	case OF: return "Keyword: of"
+	case WITH: return "Keyword: with"
 	case AND: return "Keyword: and"
 	case OR: return "Keyword: or"
 	case NOT: return "Keyword: not"
-	case ANY: return "Keyword: any"
-	case REPEAT: return "Keyword: repeat"
 
 	default: return "Invalid Token Value!"
 	}
