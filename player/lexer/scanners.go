@@ -1,3 +1,9 @@
+package lexer
+
+import (
+	"unicode/utf8"
+)
+
 func (l *Lexer) read() {
 	r, w := utf8.DecodeRuneInString(l.input[l.pos:])
 	l.current = r

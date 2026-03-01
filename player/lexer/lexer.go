@@ -3,7 +3,6 @@ package lexer
 import (
 	"fmt"
 	"tale/tokens"
-	"unicode/utf8"
 )
 
 type Lexer struct {
