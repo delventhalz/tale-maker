@@ -34,7 +34,7 @@ It's too dark! You'll need to find a light source.
 
 The header for a state block starts with one or more `=` characters, is followed by a condition, and optionally ends with a matching number of `=` characters.
 
-Multiple `=` characters are used to denote nested blocks. The conditions for both outer and inner blocks must be valid for an inner block to trigger. Text in an outer block is not displayed if all conditions for an inner block are met. Action blocks can be nested inside state blocks and vice versa.
+Multiple `=` characters are used to denote nested blocks. The conditions for both outer and inner blocks must be valid for an inner block to trigger. Text in an outer block is not displayed if all conditions for an inner block are met. Input blocks can be nested inside state blocks and vice versa.
 
 ```
 = room is dark =
@@ -47,7 +47,7 @@ The torch blazes to life. You can see!
 
 ### Start Block
 
-The beginning of a Tale Maker file, before any block headers, is the start block. Any text will be displayed when the game starts. Any actions included will run at game start.
+The beginning of a Tale Maker file, before any block headers, is the start block. Any text will be displayed when the game starts. Any [actions](#actions) included will run at game start.
 
 ## Actions
 
@@ -74,7 +74,7 @@ In addition to inputs written within the action, display text can be used as an 
 
 ## Inserts
 
-Inserts contain expressions similar to those in actions or state block headers and produce text to be displayed. They start with an opening `{`, are followed by an expression which specifies the text to display, and finish with a closing `}`.
+Inserts contain expressions similar to those in state block headers and produce text to be displayed. They start with an opening `{`, are followed by an expression which specifies the text to display, and finish with a closing `}`.
 
 ```
 > look >
@@ -100,7 +100,7 @@ You won!
 Variables are created automatically whenever they are used. There is no explicit creation or initialization step. However, there are two rules to keep in mind:
 
 1. While the value of a variable may change, the [type](#variable_types) of value may not. A particular variable must always refer to a value of the same type (i.e. always text or always a number).
-2. Each variable must be used at least once and set at least once. Variables which are only referenced and never set, or only set and never referenced, are not allowed.
+2. Each variable must be used at least once and set at least once. Variables which are only referenced but never set, or only set but never referenced, are not allowed.
 
 A variable which is used before it is explicitly assigned a value will be in a default "unset" state. This exact default value depends on the type (for example, 0 for numbers). If a different starting value is required, set it in a start block.
 
@@ -183,7 +183,7 @@ Although straight double quotation marks are recommended, single quotes, curly q
 <set country «United States of America»>
 ```
 
-You can also use an enclosing action to set text without quotation marks.
+You can also use an enclosing action to set text without using quotation marks.
 
 ```
 <set description>A dark foreboding tower</set>
@@ -191,7 +191,7 @@ You can also use an enclosing action to set text without quotation marks.
 
 ## Aliases
 
-Aliases are similar to variables, but rather than holding values, they hold a list of possible player inputs. If any part of the text a player inputs is found in the list, action blocks containing that alias are triggered. Aliases are set using the "alias" action, followed by the name of the alias, followed by a text list of possible inputs separated by spaces.
+Aliases are similar to variables, but rather than holding values, they hold a list of possible player inputs. If any part of the text a player inputs is found in the list, input blocks containing that alias are triggered. Aliases are set using the "alias" action, followed by the name of the alias, followed by a text list of possible inputs separated by spaces.
 
 ```
 <alias greet "greet wave nod hello hi howdy">
@@ -338,7 +338,7 @@ The specifics of how these values are used will depend on the implementation of 
 
 When writing text, there is sometimes ambiguity as to whether a character is meant to be displayed for the player or if it is a part of the Tale Maker syntax. In those cases, a backslash may be used before the character to clarify that it is meant to be displayed.
 
-Useful escapes character within a text block:
+Useful escape characters within a text block:
 
 - `\<` - to display "<"
 - `\>` - to display ">" (only necessary at the start of a line)
@@ -363,7 +363,7 @@ true
 Triumph!
 ```
 
-Within quoted text there are no actions or inserts, but `\"` may still be useful to display a quotation mark.
+Within quoted text there are no actions or block headers, but `\{` and `\\` may still be useful, and `\"` might be necessary to display a quotation mark.
 
 ## Keywords
 
@@ -389,7 +389,7 @@ You cannot see!
 
 ### has
 
-References two objects, specifying that the location of the second object is in the first.
+Specify two objects to determine if the location of the second object is in the first.
 
 ```
 > open >
@@ -400,7 +400,7 @@ You pull out your key, unlock the door, and swing it open!
 
 ### in
 
-References two objects, specifying that the location of the first object is in the second.
+Specify two objects to determine if the location of the first object is in the second.
 
 ```
 > press >
@@ -411,14 +411,14 @@ You press the button and brace yourself for anything...
 
 ### is
 
-This keyword can be used in different ways. If used with non-object variables, it specifies equality.
+This keyword can be used in different ways depending on the context. If used with non-object variables, it determines equality.
 
 ```
 = score is 3 =
 Three points!
 ```
 
-If used with objects, it specifies that a value of an object (usually a flag) is set.
+If used with objects, it determines that a value of an object (usually a flag) is set.
 
 ```
 = door is locked =
@@ -456,7 +456,7 @@ You smash down the door!
 
 ### with
 
-Specifies that two objects have the same location.
+Determines if two objects have the same location.
 
 ```
 > pull >
@@ -518,7 +518,7 @@ Encloses text which may be displayed by a [choose](#choose), [chain](#chain), or
 
 ### choose
 
-Enclose around multiple "choice" actions to display only text from the first one with a valid condition. All later "choice" actions are ignored. May contain a final "choice" without a condition which will display only if no earlier "choice" is displayed.
+Enclose around multiple "choice" actions to display only text from the first with a valid condition. All later "choice" actions are ignored. May contain a final "choice" without a condition which will display only if no earlier "choice" is displayed.
 
 ```
 <choose>
@@ -529,7 +529,7 @@ Enclose around multiple "choice" actions to display only text from the first one
 </choose>
 ```
 
-Unlike "chain" and "chance", "choose" has no memory of which choices have been displayed already and will always select the first valid one. All text within a "choose" must be wrapped in a "choice".
+Unlike [chain](#chain) and [chance](#chance), "choose" has no memory of which choices have already been displayed and will always select the first valid one. All text within a "choose" must be wrapped in a "choice".
 
 ### do
 
