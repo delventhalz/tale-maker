@@ -185,7 +185,7 @@ func TestWeirdLineBreaks(t *testing.T) {
 }
 
 func TestActions(t *testing.T) {
-	input := `<name _ "Test">
+	input := `<name tale "Test">
 <name player "Tester Alice"><place player test>
 
 > run >
@@ -209,9 +209,9 @@ Sorry.
 	expectTokens(t, input, []tokens.Token{
 		{tokens.ACTION, "<", 1, 1},
 		{tokens.NAME, "name", 1, 2},
-		{tokens.NAME, "_", 1, 7},
-		{tokens.TEXT, "Test", 1, 9},
-		{tokens.ACTION_END, ">", 1, 15},
+		{tokens.NAME, "tale", 1, 7},
+		{tokens.TEXT, "Test", 1, 12},
+		{tokens.ACTION_END, ">", 1, 18},
 
 		{tokens.ACTION, "<", 2, 1},
 		{tokens.NAME, "name", 2, 2},

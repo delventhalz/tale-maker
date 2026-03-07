@@ -611,16 +611,6 @@ Reverts a variable or object value back to an unset state. For numbers this mean
 
 ## Built-in Variables
 
-### _
-
-A shorthand specifying whichever non-player object is in the current block header. If there is no non-player object in the current block header or there are multiple, this variable cannot be used and will throw an error.
-
-```
-> leave >
-== player in cell ==
-You look at the door of {_}. You aren't getting out that way.
-```
-
 ### any
 
 An alias which matches every possible player input that does not match another player input in the same wrapping block. Useful for providing fallback text.
@@ -630,13 +620,23 @@ An alias which matches every possible player input that does not match another p
 I don't know what you mean by that.
 ```
 
+### it
+
+A shorthand specifying whichever non-player object is in the current block header. If there is no non-player object in the current block header or there are multiple, this variable cannot be used and will throw an error.
+
+```
+> leave >
+== player in cell ==
+You look at the door of {it}. You aren't getting out that way.
+```
+
 ### player
 
 A special object representing the player. Particularly important for determining game location.
 
 ```
 > lever >
-== _ not with player ==
+== player not with it ==
 You can't throw the lever, it's not here!
 ```
 
