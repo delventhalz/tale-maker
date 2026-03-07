@@ -74,12 +74,13 @@ func isWord(r rune) bool {
 }
 
 func isFlag(word string) bool {
-	return word == "yes" ||
-		word == "no" ||
-		word == "on" ||
-		word == "off" ||
-		word == "true" ||
-		word == "false"
+	lower := strings.ToLower(word)
+	return lower == "yes" ||
+		lower == "no" ||
+		lower == "on" ||
+		lower == "off" ||
+		lower == "true" ||
+		lower == "false"
 }
 
 func getWordToken(word string) tokens.TokenType {

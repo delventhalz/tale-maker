@@ -496,10 +496,10 @@ func TestNumberLiterals(t *testing.T) {
 func TestFlagLiterals(t *testing.T) {
 	input := `
 <set lights on>
-<set off lights>
-<yes>
+<set Off lights>
+<YES>
 <set lights no>
-<set lights true>
+<set lights trUe>
 <set lights false>
 `
 
@@ -512,12 +512,12 @@ func TestFlagLiterals(t *testing.T) {
 
 		{tokens.ACTION, "<", 3, 1},
 		{tokens.NAME, "set", 3, 2},
-		{tokens.FLAG, "off", 3, 6},
+		{tokens.FLAG, "Off", 3, 6},
 		{tokens.NAME, "lights", 3, 10},
 		{tokens.ACTION_END, ">", 3, 16},
 
 		{tokens.ACTION, "<", 4, 1},
-		{tokens.FLAG, "yes", 4, 2},
+		{tokens.FLAG, "YES", 4, 2},
 		{tokens.ACTION_END, ">", 4, 5},
 
 		{tokens.ACTION, "<", 5, 1},
@@ -529,7 +529,7 @@ func TestFlagLiterals(t *testing.T) {
 		{tokens.ACTION, "<", 6, 1},
 		{tokens.NAME, "set", 6, 2},
 		{tokens.NAME, "lights", 6, 6},
-		{tokens.FLAG, "true", 6, 13},
+		{tokens.FLAG, "trUe", 6, 13},
 		{tokens.ACTION_END, ">", 6, 17},
 
 		{tokens.ACTION, "<", 7, 1},
@@ -544,13 +544,13 @@ func TestFlagLiterals(t *testing.T) {
 
 func TestKeywords(t *testing.T) {
 	input := `
-= room has door and door of room is broken =
+= room has door and DOOR of room Is broken =
 
 >> any >>
-<set player in detention>
+<set player iN detention>
 What did you do to the door!?
 
-=== player with teacher or player is not chastised ===
+=== pLaYeR with teacher OR player is nOt chastised ===
 Think about what you've done!
 
 === repeat ===
@@ -563,10 +563,10 @@ Must we go over this again?
 		{tokens.HAS, "has", 2, 8},
 		{tokens.NAME, "door", 2, 12},
 		{tokens.AND, "and", 2, 17},
-		{tokens.NAME, "door", 2, 21},
+		{tokens.NAME, "DOOR", 2, 21},
 		{tokens.OF, "of", 2, 26},
 		{tokens.NAME, "room", 2, 29},
-		{tokens.IS, "is", 2, 34},
+		{tokens.IS, "Is", 2, 34},
 		{tokens.NAME, "broken", 2, 37},
 		{tokens.HEADER_END, "=", 2, 44},
 
@@ -577,20 +577,20 @@ Must we go over this again?
 		{tokens.ACTION, "<", 5, 1},
 		{tokens.NAME, "set", 5, 2},
 		{tokens.NAME, "player", 5, 6},
-		{tokens.IN, "in", 5, 13},
+		{tokens.IN, "iN", 5, 13},
 		{tokens.NAME, "detention", 5, 16},
 		{tokens.ACTION_END, ">", 5, 25},
 
 		{tokens.TEXT, "What did you do to the door!?", 6, 1},
 
 		{tokens.STATE_HEADER, "===", 8, 1},
-		{tokens.NAME, "player", 8, 5},
+		{tokens.NAME, "pLaYeR", 8, 5},
 		{tokens.WITH, "with", 8, 12},
 		{tokens.NAME, "teacher", 8, 17},
-		{tokens.OR, "or", 8, 25},
+		{tokens.OR, "OR", 8, 25},
 		{tokens.NAME, "player", 8, 28},
 		{tokens.IS, "is", 8, 35},
-		{tokens.NOT, "not", 8, 38},
+		{tokens.NOT, "nOt", 8, 38},
 		{tokens.NAME, "chastised", 8, 42},
 		{tokens.HEADER_END, "===", 8, 52},
 
