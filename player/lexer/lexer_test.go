@@ -291,7 +291,7 @@ func TestFileEndInAction(t *testing.T) {
 	})
 }
 
-func _TestTextLiterals(t *testing.T) {
+func TestTextLiterals(t *testing.T) {
 	input := `
 <set name "Nosferatu">
 <name “Dr. Jekyll and Mr. Hyde” set>
@@ -339,8 +339,8 @@ func _TestTextLiterals(t *testing.T) {
 		{tokens.ACTION, "<", 6, 1},
 		{tokens.NAME, "set", 6, 2},
 		{tokens.NAME, "name", 6, 6},
-		{tokens.TEXT, "Rosemary's Baby", 6, 28},
-		{tokens.ACTION_END, ">", 6, 22},
+		{tokens.TEXT, "Rosemary's Baby", 6, 11},
+		{tokens.ACTION_END, ">", 6, 28},
 
 		{tokens.ACTION, "<", 7, 1},
 		{tokens.NAME, "set", 7, 2},
@@ -423,7 +423,7 @@ func _TestTextLiterals(t *testing.T) {
 	})
 }
 
-func _TestNumberLiterals(t *testing.T) {
+func TestNumberLiterals(t *testing.T) {
 	input := `
 <set score 0>
 <score 0.0 set>
@@ -493,7 +493,7 @@ func _TestNumberLiterals(t *testing.T) {
 	})
 }
 
-func _TestFlagLiterals(t *testing.T) {
+func TestFlagLiterals(t *testing.T) {
 	input := `
 <set lights on>
 <set off lights>
@@ -542,7 +542,7 @@ func _TestFlagLiterals(t *testing.T) {
 	})
 }
 
-func _TestKeywords(t *testing.T) {
+func TestKeywords(t *testing.T) {
 	input := `
 = room has door and door of room is broken =
 
@@ -571,7 +571,7 @@ Must we go over this again?
 		{tokens.HEADER_END, "=", 2, 44},
 
 		{tokens.INPUT_HEADER, ">>", 4, 1},
-		{tokens.HAS, "any", 4, 4},
+		{tokens.NAME, "any", 4, 4},
 		{tokens.HEADER_END, ">>", 4, 8},
 
 		{tokens.ACTION, "<", 5, 1},
