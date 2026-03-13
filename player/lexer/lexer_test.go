@@ -612,3 +612,54 @@ Must we go over this again?
 		{tokens.EOF, "", 13, 1},
 	})
 }
+
+func TestInserts(t *testing.T) {
+	input := `> mirror >
+You look over {name of player}. Nice.
+
+> check >
+>> score >>
+{score} points?
+
+{score} points. Gotta keep going.
+
+...can't stop at {score}
+`
+
+	expectTokens(t, input, []tokens.Token{
+		{tokens.INPUT_HEADER, ">", 1, 1},
+		{tokens.NAME, "mirror", 1, 3},
+		{tokens.HEADER_END, ">", 1, 10},
+
+		{tokens.TEXT, "You look over ", 2, 1},
+		{tokens.INSERT, "{", 2, 15},
+		{tokens.NAME, "name", 2, 16},
+		{tokens.OF, "of", 2, 21},
+		{tokens.NAME, "player", 2, 24},
+		{tokens.INSERT_END, "}", 2, 30},
+		{tokens.TEXT, ". Nice.", 2, 31},
+
+		{tokens.INPUT_HEADER, ">", 4, 1},
+		{tokens.NAME, "check", 4, 3},
+		{tokens.HEADER_END, ">", 4, 9},
+		{tokens.INPUT_HEADER, ">>", 5, 1},
+		{tokens.NAME, "score", 5, 4},
+		{tokens.HEADER_END, ">>", 5, 10},
+
+		{tokens.INSERT, "{", 6, 1},
+		{tokens.NAME, "score", 6, 2},
+		{tokens.INSERT_END, "}", 6, 7},
+		{tokens.TEXT, " points?\n\n", 6, 8},
+
+		{tokens.INSERT, "{", 8, 1},
+		{tokens.NAME, "score", 8, 2},
+		{tokens.INSERT_END, "}", 8, 7},
+		{tokens.TEXT, " points. Gotta keep going.\n\n...can't stop at ", 8, 8},
+
+		{tokens.INSERT, "{", 10, 18},
+		{tokens.NAME, "score", 10, 19},
+		{tokens.INSERT_END, "}", 10, 24},
+
+		{tokens.EOF, "", 11, 1},
+	})
+}

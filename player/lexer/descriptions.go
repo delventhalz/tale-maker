@@ -42,6 +42,14 @@ func isActionEnd(r rune) bool {
 	return r == '>'
 }
 
+func isInsert(r rune) bool {
+	return r == '{'
+}
+
+func isInsertEnd(r rune) bool {
+	return r == '}'
+}
+
 func isDigit(r rune) bool {
 	return r >= '0' && r <= '9'
 }
@@ -66,7 +74,7 @@ func isWordStart(r rune) bool {
 	return r == '_' ||
 		(r >= 'a' && r <= 'z') ||
 		(r >= 'A' && r <= 'Z') ||
-		(r > 'z' && !isAnyQuote(r))
+		(r > 127 && !isAnyQuote(r))
 }
 
 func isWord(r rune) bool {
