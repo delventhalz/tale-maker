@@ -110,14 +110,16 @@ func (l *Lexer) Next() tokens.Token {
 			}
 		}
 
-		// In an Action
-		if l.isCapturing(tokens.ACTION) {
+		// In an Action or Insert
+		if l.isCapturingAny(tokens.ACTION, tokens.INSERT) {
 			l.scanWhile(isWhitespace)
 
 			if l.atEndOfFile() {
 				return tokens.Token{tokens.EOF, "", l.line, l.col}
 			}
+		}
 
+		if l.isCapturing(tokens.ACTION) {
 			if isActionEnd(l.current) {
 				end, line, col := l.scanNext()
 				l.endCurrentCapture()
@@ -125,8 +127,16 @@ func (l *Lexer) Next() tokens.Token {
 			}
 		}
 
-		// Capturing an expression in a header or action
-		if l.isCapturingAny(tokens.INPUT_HEADER, tokens.STATE_HEADER, tokens.ACTION) {
+		if l.isCapturing(tokens.INSERT) {
+			if isInsertEnd(l.current) {
+				end, line, col := l.scanNext()
+				l.endCurrentCapture()
+				return tokens.Token{tokens.INSERT_END, end, line, col}
+			}
+		}
+
+		// Capturing an expression in a header, action, or insert
+		if l.isCapturingAny(tokens.INPUT_HEADER, tokens.STATE_HEADER, tokens.ACTION, tokens.INSERT) {
 			if isNumberStart(l.current) {
 				number, numberline, numberCol := l.scanWhileNumberLiteral()
 				return tokens.Token{tokens.NUMBER, number, numberline, numberCol}
@@ -164,6 +174,13 @@ func (l *Lexer) Next() tokens.Token {
 			action, line, col := l.scanNext()
 			l.startCaptureOf(tokens.ACTION)
 			return tokens.Token{tokens.ACTION, action, line, col}
+		}
+
+		// Starting an Insert
+		if isInsert(l.current) {
+			insert, line, col := l.scanNext()
+			l.startCaptureOf(tokens.INSERT)
+			return tokens.Token{tokens.INSERT, insert, line, col}
 		}
 
 		// Text
