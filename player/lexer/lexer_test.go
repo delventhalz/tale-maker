@@ -302,6 +302,7 @@ func TestTextLiterals(t *testing.T) {
 <set name «Alien»>
 <set name »The Evil Dead«>
 <set name 'The Thing'>
+<set name ` + "`Evil Dead 2: Dead by Dawn`" + `>
 <set name ‘Dead Alive’>
 <set name ’Candyman’>
 <set name ‚28 Days Later’>
@@ -369,57 +370,63 @@ func TestTextLiterals(t *testing.T) {
 		{tokens.ACTION, "<", 11, 1},
 		{tokens.NAME, "set", 11, 2},
 		{tokens.NAME, "name", 11, 6},
-		{tokens.TEXT, "Dead Alive", 11, 11},
-		{tokens.ACTION_END, ">", 11, 23},
+		{tokens.TEXT, "Evil Dead 2: Dead by Dawn", 11, 11},
+		{tokens.ACTION_END, ">", 11, 38},
 
 		{tokens.ACTION, "<", 12, 1},
 		{tokens.NAME, "set", 12, 2},
 		{tokens.NAME, "name", 12, 6},
-		{tokens.TEXT, "Candyman", 12, 11},
-		{tokens.ACTION_END, ">", 12, 21},
+		{tokens.TEXT, "Dead Alive", 12, 11},
+		{tokens.ACTION_END, ">", 12, 23},
 
 		{tokens.ACTION, "<", 13, 1},
 		{tokens.NAME, "set", 13, 2},
 		{tokens.NAME, "name", 13, 6},
-		{tokens.TEXT, "28 Days Later", 13, 11},
-		{tokens.ACTION_END, ">", 13, 26},
+		{tokens.TEXT, "Candyman", 13, 11},
+		{tokens.ACTION_END, ">", 13, 21},
 
 		{tokens.ACTION, "<", 14, 1},
 		{tokens.NAME, "set", 14, 2},
 		{tokens.NAME, "name", 14, 6},
-		{tokens.TEXT, "Ju-on: The Grudge", 14, 11},
-		{tokens.ACTION_END, ">", 14, 30},
+		{tokens.TEXT, "28 Days Later", 14, 11},
+		{tokens.ACTION_END, ">", 14, 26},
 
 		{tokens.ACTION, "<", 15, 1},
 		{tokens.NAME, "set", 15, 2},
 		{tokens.NAME, "name", 15, 6},
-		{tokens.TEXT, "Slither", 15, 11},
-		{tokens.ACTION_END, ">", 15, 20},
+		{tokens.TEXT, "Ju-on: The Grudge", 15, 11},
+		{tokens.ACTION_END, ">", 15, 30},
 
 		{tokens.ACTION, "<", 16, 1},
 		{tokens.NAME, "set", 16, 2},
 		{tokens.NAME, "name", 16, 6},
-		{tokens.TEXT, "Let the Right One In", 16, 11},
-		{tokens.ACTION_END, ">", 16, 35},
+		{tokens.TEXT, "Slither", 16, 11},
+		{tokens.ACTION_END, ">", 16, 20},
 
 		{tokens.ACTION, "<", 17, 1},
 		{tokens.NAME, "set", 17, 2},
 		{tokens.NAME, "name", 17, 6},
-		{tokens.TEXT, "It Follows", 17, 11},
-		{tokens.ACTION_END, ">", 17, 23},
+		{tokens.TEXT, "Let the Right One In", 17, 11},
+		{tokens.ACTION_END, ">", 17, 35},
 
 		{tokens.ACTION, "<", 18, 1},
 		{tokens.NAME, "set", 18, 2},
 		{tokens.NAME, "name", 18, 6},
-		{tokens.TEXT, "1922", 18, 11},
-		{tokens.ACTION_END, ">", 18, 17},
+		{tokens.TEXT, "It Follows", 18, 11},
+		{tokens.ACTION_END, ">", 18, 23},
 
 		{tokens.ACTION, "<", 19, 1},
-		{tokens.NAME, "get_out", 19, 2},
-		{tokens.TEXT, "", 19, 10},
-		{tokens.ACTION_END, ">", 19, 12},
+		{tokens.NAME, "set", 19, 2},
+		{tokens.NAME, "name", 19, 6},
+		{tokens.TEXT, "1922", 19, 11},
+		{tokens.ACTION_END, ">", 19, 17},
 
-		{tokens.EOF, "", 20, 1},
+		{tokens.ACTION, "<", 20, 1},
+		{tokens.NAME, "get_out", 20, 2},
+		{tokens.TEXT, "", 20, 10},
+		{tokens.ACTION_END, ">", 20, 12},
+
+		{tokens.EOF, "", 21, 1},
 	})
 }
 

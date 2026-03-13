@@ -113,6 +113,7 @@ func getWordToken(word string) tokens.TokenType {
 func isAnyQuote(r rune) bool {
 	return r == '"' ||
 		r == '\'' ||
+		r == '`' ||
 		r == '“' ||
 		r == '‘' ||
 		r == '„' ||
@@ -135,6 +136,10 @@ func isQuote(r rune) bool {
 
 func isSingleQuote(r rune) bool {
 	return r == '\''
+}
+
+func isBacktick(r rune) bool {
+	return r == '`'
 }
 
 func isRightQuote(r rune) bool {
@@ -179,6 +184,8 @@ func getEndQuoteTest(startQuote string) func(rune) bool {
 		return isQuote
 	case "'":
 		return isSingleQuote
+	case "`":
+		return isBacktick
 	case "“", "”":
 		return isRightQuote
 	case "‘", "’":
