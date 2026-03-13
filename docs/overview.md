@@ -175,12 +175,13 @@ Variables can also hold text. When written within an action or header, text valu
 <set name "Alice">
 ```
 
-Although straight double quotation marks are recommended, single quotes, curly quotes, smart quotes, and non-English quotes are all supported as long as the ending quotation mark matches the starting quotation mark.
+Although straight double quotation marks are recommended, single quotes, backticks, curly quotes, smart quotes, and non-English quotes are all supported as long as the ending quotation mark matches the starting quotation mark.
 
 ```
 <set city 'Pittsburgh'>
-<set state “Pennsylvania”>
-<set country «United States of America»>
+<set state `Pennsylvania`>
+<set country “United States of America”>
+<set planet «Earth»>
 ```
 
 You can also use an enclosing action to set text without using quotation marks.
@@ -336,15 +337,15 @@ The specifics of how these values are used will depend on the implementation of 
 
 ## Escape Characters
 
-When writing text, there is sometimes ambiguity as to whether a character is meant to be displayed for the player or if it is a part of the Tale Maker syntax. In those cases, a backslash may be used before the character to clarify that it is meant to be displayed.
+When writing text blocks, there is sometimes ambiguity as to whether a character is meant to be displayed for the player or if it is a part of the Tale Maker syntax. In those cases, a backslash can be used before a character to clarify that it is meant to be displayed.
 
-Useful escape characters within a text block:
+Useful escape characters include:
 
 - `\<` - to display "<"
 - `\>` - to display ">" (only necessary at the start of a line)
 - `\{` - to display "{"
 - `\=` - to display "=" (only necessary at the start of a line)
-- `\n` - to display a newline/linebreak (only necessary at the start/end of a block)
+- `\n` - to display a newline or line break (only necessary at the start or end of a block)
 - `\\` - to display a backslash
 
 ```
@@ -363,7 +364,12 @@ true
 Triumph!
 ```
 
-Within quoted text there are no actions or block headers, but `\{` and `\\` may still be useful, and `\"` might be necessary to display a quotation mark.
+By contrast, within _quoted_ text there are no escape characters. Every character is included exactly as it is typed, including backslashes and line breaks. Importantly, this means if you want to include a quotation mark in text, you must use a different kind of quotation mark to start and end the quoted text, or else use an enclosing action instead.
+
+```
+<set sarcastic_message 'What a "good" job...'>
+<set sarcastic_retort>...what a "witty" insult</set>
+```
 
 ## Keywords
 
