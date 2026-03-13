@@ -1,30 +1,29 @@
 # Tale Maker
 
 The goal of this project is to create a language for non-technical writers to
-describe a complete interactive text adventure game. It is an outgrowth of the
-board game [Taelmoor](https://taelmoor.com) and may one day be used to write
-Taelmoor scenarios. This repo will also eventually host a minimal text adventure
-engine which can be used to play written tales without the Taelmoor board game.
+describe an interactive text adventure game. It is an outgrowth of the board
+game [Taelmoor](https://taelmoor.com), and may one day be used to write Taelmoor
+scenarios. This repo will eventually host a command line tool which can play
+Tale Maker games directly, export a JSON format suitable for browser-based game
+engines to play, as well as export the original Taelmoor scenario format.
 
 ## How it works
 
-Text will be organized into locations and nested actions such as "examine" or
-"press". Actions can be nested within each other and game objects can be treated
-as actions. This "examine" and "barrel" nested within the location "entrance",
-would include the text for examining the barrel located in the entrance.
+Text is organized into blocks and each block is linked to particular inputs from
+the player and a particular game state. These conditions allow Tale Maker to pick
+a single block of text to display after each player input.
 
-Text will also be able to include commands, which can do things like set
-variables, change text style, or trigger an effect in the engine. There will be
-both engine-specific and basic Tale Maker commands. If an engine running a tale
-does not recognize a command, it is ignored.
+In order to manipulate game state, tale authors can insert actions into text
+blocks, changing variables, moving the player, or styling text. In this way, an
+interactive narrative can unfold, one player input at a time.
 
-Tales can be written over multiple files and combined arbitrarily. Order of
-location blocks and any config/setup does not matter. Config steps can executed
-only once and will cause an error if run twice.
+For more, checkout the high level [overview](./docs/overview.md) of the Tale
+Maker syntax.
 
 ## Whats next
 
-I will begin by reproducing Taelmoor's tutorial scenario "Initiation Test" as a
-tale, and running it in a CLI based text adventure engine. As I dogfood my own
-syntax and work out the kinks, I will begin documenting it more officially, and
-eventually arrive at some alpha/beta versions of the language.
+The first step is building out a complete Tale Maker parser to run tale files
+and play games in the CLI. With that working, I will shift focus to writing and
+playing tales, including reproducing some existing Taelmoor scenarios. Once I am
+happy with the syntax, JSON formats to move Tale Maker out of the CLI and into
+the browser (and perhaps the Taelmoor app) will be my next focus.
