@@ -47,7 +47,7 @@ The torch blazes to life. You can see!
 
 ### Start Block
 
-The beginning of a Tale Maker file, before any block headers, is the start block. Any text will be displayed when the game starts. Any [actions](#actions) included will run at game start.
+The beginning of a Tale Maker file, before any block headers, is the start block. Any text will be displayed when the game starts. Any [actions](#actions) will run at immediately.
 
 ## Actions
 
@@ -97,12 +97,12 @@ You won!
 
 ### Creating Variables
 
-Variables are created automatically whenever they are used. There is no explicit creation or initialization step. However, there are two rules to keep in mind:
+Variables are created automatically when they are used. There is no explicit creation or initialization step. However, there are two rules to keep in mind:
 
 1. While the value of a variable may change, the [type](#variable_types) of value may not. A particular variable must always refer to a value of the same type (i.e. always text or always a number).
-2. Each variable must be used at least once and set at least once. Variables which are only referenced but never set, or only set but never referenced, are not allowed.
+2. Each variable must be consumed at least once and set at least once. Variables which are only referenced but never set, or only set but never referenced, are not allowed.
 
-A variable which is used before it is explicitly assigned a value will be in a default "unset" state. This exact default value depends on the type (for example, 0 for numbers). If a different starting value is required, set it in a start block.
+A variable which is referenced before it is explicitly assigned a value will be in a default "unset" state. This exact default value depends on the type (for example, 0 for numbers). If a different starting value is required, set it in a [start block](#start_block).
 
 ### Variable Names
 
@@ -206,7 +206,7 @@ Multi-word inputs can be grouped using quotation marks.
 <alias insult>insult yell spurn disparage "cast aspersions"</alias>
 ```
 
-Alias declarations respect the conditions of the block they are set in. Inputs added to an alias in the start block will always apply. Inputs added in a state block or input block will only apply when the conditions of that block are met.
+Alias declarations respect the conditions of the block they are set in. Inputs added to an alias in a start block will always apply. Inputs added in a state block will only apply when the conditions of that block are met.
 
 ```
 <alias bounce>bounce jump spring</alias>
@@ -267,7 +267,7 @@ All objects have a special "location" value which can be set to any other object
 You open the door
 ```
 
-An object's "location" can be set with the "place" action.
+The "place" action can be used as a shorthand for setting an object's location value.
 
 ```
 <place player entrance>
@@ -313,7 +313,7 @@ Each object has a special "name" value, which contains the text that is displaye
 Meekly, you wrap your knuckles on {door}... no answer.
 ```
 
-The "name" action can be used as a shorthand for setting an object's name property.
+The "name" action can be used as a shorthand for setting an object's name value.
 
 ```
 <name door>The Ancient Iron Door</name>
@@ -321,7 +321,7 @@ The "name" action can be used as a shorthand for setting an object's name proper
 
 ### Display Attributes for Objects
 
-Objects have a list special properties which may be used to generate labels, tooltips, and other representations of the object during the game.
+Objects have a list of special values which may be used to generate labels, tooltips, and other representations of the object during the game.
 
 - "description"
 - "link"
@@ -333,11 +333,11 @@ Objects have a list special properties which may be used to generate labels, too
 - "sound"
 - "sound_background"
 
-The specifics of how these values are used will depend on the implementation of the game engine, but they can also be referenced like any other object value.
+The specifics of how these values change the appearance of the object will depend on the specific game engine, but the text they store can be referenced like any other text value.
 
 ## Escape Characters
 
-When writing text blocks, there is sometimes ambiguity as to whether a character is meant to be displayed for the player or if it is a part of the Tale Maker syntax. In those cases, a backslash can be used before a character to clarify that it is meant to be displayed.
+When writing text blocks, it is sometimes ambiguous whether a character is meant to be displayed for the player or if it is a part of the Tale Maker syntax. In those cases, a backslash can be used before a character to specify that it is meant to be displayed.
 
 Useful escape characters include:
 
@@ -364,7 +364,7 @@ true
 Triumph!
 ```
 
-By contrast, within _quoted_ text there are no escape characters. Every character is included exactly as it is typed, including backslashes and line breaks. Importantly, this means if you want to include a quotation mark in text, you must use a different kind of quotation mark to start and end the quoted text, or else use an enclosing action instead.
+By contrast, within _quoted_ text there are no escape characters. Every character in quoted text is included exactly as it is typed, including backslashes and line breaks. This means if you want to include a quotation mark in quoted text, you must use a different kind of quotation mark at the start start and end, or else use an enclosing action instead.
 
 ```
 <set sarcastic_message 'What a "good" job...'>
@@ -395,7 +395,7 @@ You cannot see!
 
 ### has
 
-Specify two objects to determine if the location of the second object is in the first.
+Determines if the object on the left is the location for the object on the right.
 
 ```
 > open >
@@ -406,7 +406,7 @@ You pull out your key, unlock the door, and swing it open!
 
 ### in
 
-Specify two objects to determine if the location of the first object is in the second.
+Determines if the object on the right is the location for the object on the left.
 
 ```
 > press >
@@ -417,7 +417,7 @@ You press the button and brace yourself for anything...
 
 ### is
 
-This keyword can be used in different ways depending on the context. If used with non-object variables, it determines equality.
+This keyword can be used in different ways depending on the context. If used with non-object variables and values, it determines equality.
 
 ```
 = score is 3 =
@@ -512,7 +512,7 @@ Enclose around multiple "choice" actions to display text from each in series. Th
 </chain>
 ```
 
-If all valid choices have already been displayed, the chain will begin to repeat. All text within a "chain" must be wrapped in a "choice".
+If all valid choices have already been displayed, the chain will repeat. All text within a "chain" must be wrapped in a "choice".
 
 ### chance
 
@@ -524,13 +524,13 @@ Encloses text which may be displayed by a [choose](#choose), [chain](#chain), or
 
 ### choose
 
-Enclose around multiple "choice" actions to display only text from the first with a valid condition. All later "choice" actions are ignored. May contain a final "choice" without a condition which will display only if no earlier "choice" is displayed.
+Enclose around multiple "choice" actions to display only text from the first with a valid condition. All later "choice" actions are ignored. May contain a final "choice" without a condition which will act as a default if no earlier "choice" is valid.
 
 ```
 <choose>
 <choice player is strong>You bust through!</choice>
 <choice player is clever>You solve the puzzle!</choice>
-<choice player is fast>You run, no one can you!</choice>
+<choice player is fast>You run, no one can catch you!</choice>
 <choice>You're screwed</choice>
 </choose>
 ```
@@ -547,10 +547,10 @@ You set off running as fast as you can, the sounds of pursuit fresh on your heel
 
 == player is fast ==
 <set escaped>
-You set of running as fast as you can, the sounds of pursuit fading into the distance.
+You set off running as fast as you can, the sounds of pursuit fading into the distance.
 
 > jump >
-You burst through the window, the sounds of tinkling glass mixing with shouts of confusion from your captors.
+You burst through the window, the tinkling of glass mixing with shouts of confusion from your captors.
 <set player is fast>
 <do run>
 ```
@@ -628,7 +628,7 @@ I don't know what you mean by that.
 
 ### it
 
-A shorthand specifying whichever non-player object is in the current block header. If there is no non-player object in the current block header or there are multiple, this variable cannot be used and will throw an error.
+A shorthand specifying whichever non-player object is in the current block header. If there is no non-player object in the current block header or there are multiple, this variable cannot be used.
 
 ```
 > leave >
@@ -660,7 +660,7 @@ You give a quick wave.
 
 ### tale
 
-A special variable representing the overall game itself. Used mostly to specify information about the game, like a name that can be displayed on a list for the player to choose from.
+A special object representing the overall game itself. Used mostly to specify information about the game, like a name that can be displayed on a list for the player to choose from.
 
 ```
 <name tale>My Awesome Adventure</name>
