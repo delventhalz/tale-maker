@@ -42,6 +42,21 @@ func isActionEnd(r rune) bool {
 	return r == '>'
 }
 
+func isEnclosingMarker(r rune) bool {
+	return r == '/'
+}
+
+func getActionToken(action string) tokens.TokenType {
+	switch action {
+	case "</":
+		return tokens.ENCLOSING_ACTION
+	case "<":
+		return tokens.ACTION
+	default:
+		panic(fmt.Sprintf("Unknown action %q!", action))
+	}
+}
+
 func isInsert(r rune) bool {
 	return r == '{'
 }

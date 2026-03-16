@@ -664,3 +664,83 @@ You look over {name of player}. Nice.
 		{tokens.EOF, "", 11, 1},
 	})
 }
+
+func TestEnclosingActions(t *testing.T) {
+	input := `> greet >
+You give a timid wave. They respond.
+<i>
+<chain>
+<choice player is strong>Wow, you're <b>BIG</b> ain't ya?</choice>
+<choice>Hey</choice>
+<choice><title>Howdy</title></choice>
+</chain>
+</i>
+`
+
+	expectTokens(t, input, []tokens.Token{
+		{tokens.INPUT_HEADER, ">", 1, 1},
+		{tokens.NAME, "greet", 1, 3},
+		{tokens.HEADER_END, ">", 1, 9},
+
+		{tokens.TEXT, "You give a timid wave. They respond.\n", 2, 1},
+
+		{tokens.ACTION, "<", 3, 1},
+		{tokens.NAME, "i", 3, 2},
+		{tokens.ACTION_END, ">", 3, 3},
+
+		{tokens.ACTION, "<", 4, 1},
+		{tokens.NAME, "chain", 4, 2},
+		{tokens.ACTION_END, ">", 4, 7},
+
+		{tokens.ACTION, "<", 5, 1},
+		{tokens.NAME, "choice", 5, 2},
+		{tokens.NAME, "player", 5, 9},
+		{tokens.IS, "is", 5, 16},
+		{tokens.NAME, "strong", 5, 19},
+		{tokens.ACTION_END, ">", 5, 25},
+		{tokens.TEXT, "Wow, you're ", 5, 26},
+		{tokens.ACTION, "<", 5, 38},
+		{tokens.NAME, "b", 5, 39},
+		{tokens.ACTION_END, ">", 5, 40},
+		{tokens.TEXT, "BIG", 5, 41},
+		{tokens.ENCLOSING_ACTION, "</", 5, 44},
+		{tokens.NAME, "b", 5, 46},
+		{tokens.ACTION_END, ">", 5, 47},
+		{tokens.TEXT, " ain't ya?", 5, 48},
+		{tokens.ENCLOSING_ACTION, "</", 5, 58},
+		{tokens.NAME, "choice", 5, 60},
+		{tokens.ACTION_END, ">", 5, 66},
+
+		{tokens.ACTION, "<", 6, 1},
+		{tokens.NAME, "choice", 6, 2},
+		{tokens.ACTION_END, ">", 6, 8},
+		{tokens.TEXT, "Hey", 6, 9},
+		{tokens.ENCLOSING_ACTION, "</", 6, 12},
+		{tokens.NAME, "choice", 6, 14},
+		{tokens.ACTION_END, ">", 6, 20},
+
+		{tokens.ACTION, "<", 7, 1},
+		{tokens.NAME, "choice", 7, 2},
+		{tokens.ACTION_END, ">", 7, 8},
+		{tokens.ACTION, "<", 7, 9},
+		{tokens.NAME, "title", 7, 10},
+		{tokens.ACTION_END, ">", 7, 15},
+		{tokens.TEXT, "Howdy", 7, 16},
+		{tokens.ENCLOSING_ACTION, "</", 7, 21},
+		{tokens.NAME, "title", 7, 23},
+		{tokens.ACTION_END, ">", 7, 28},
+		{tokens.ENCLOSING_ACTION, "</", 7, 29},
+		{tokens.NAME, "choice", 7, 31},
+		{tokens.ACTION_END, ">", 7, 37},
+
+		{tokens.ENCLOSING_ACTION, "</", 8, 1},
+		{tokens.NAME, "chain", 8, 3},
+		{tokens.ACTION_END, ">", 8, 8},
+
+		{tokens.ENCLOSING_ACTION, "</", 9, 1},
+		{tokens.NAME, "i", 9, 3},
+		{tokens.ACTION_END, ">", 9, 4},
+
+		{tokens.EOF, "", 10, 1},
+	})
+}

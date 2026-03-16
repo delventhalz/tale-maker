@@ -65,6 +65,24 @@ func (l *Lexer) scanLineBreak() (string, int, int) {
 	return string(breakStart), line, col
 }
 
+func (l *Lexer) scanStartAction() (string, int, int) {
+	line, col := l.line, l.col
+
+	if !isAction(l.current) {
+		return "", line, col
+	}
+
+	action, _, _ := l.scanNext();
+
+	if !isEnclosingMarker(l.current) {
+		return action, line, col
+	}
+
+	marker, _, _ := l.scanNext()
+
+	return action + marker, line, col;
+}
+
 func (l *Lexer) scanStartQuote() (string, int, int) {
 	line, col := l.line, l.col
 

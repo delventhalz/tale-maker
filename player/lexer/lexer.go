@@ -169,11 +169,11 @@ func (l *Lexer) Next() tokens.Token {
 			return tokens.Token{tokens.STATE_HEADER, header, line, col}
 		}
 
-		// Starting an Action
+		// Starting an Action or Enclosing Action
 		if isAction(l.current) {
-			action, line, col := l.scanNext()
+			action, line, col := l.scanStartAction()
 			l.startCaptureOf(tokens.ACTION)
-			return tokens.Token{tokens.ACTION, action, line, col}
+			return tokens.Token{getActionToken(action), action, line, col}
 		}
 
 		// Starting an Insert
