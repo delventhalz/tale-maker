@@ -431,6 +431,19 @@ If used with objects, it determines that a value of an object (usually a flag) i
 Drat! Have to find another way in.
 ```
 
+### it
+
+A shorthand specifying a non-player object that is in the block header. Can only be used if there is exactly one non-player object in the immediately wrapping block header.
+
+```
+> leave >
+== player in cell ==
+You look at the door of {it}. You aren't getting out that way.
+
+=== it is open ===
+You peak out the cracked door of {it}. The coast is clear!
+```
+
 ### not
 
 Negates another condition.
@@ -619,21 +632,11 @@ Reverts a variable or object value back to an unset state. For numbers this mean
 
 ### any
 
-An alias which matches every possible player input that does not match another player input in the same wrapping block. Useful for providing fallback text.
+A special alias which matches every possible player input that does not match another player input in the same wrapping block. Useful for providing fallback text.
 
 ```
 > any >
 I don't know what you mean by that.
-```
-
-### it
-
-A shorthand specifying whichever non-player object is in the current block header. If there is no non-player object in the current block header or there are multiple, this variable cannot be used.
-
-```
-> leave >
-== player in cell ==
-You look at the door of {it}. You aren't getting out that way.
 ```
 
 ### player
@@ -648,7 +651,7 @@ You can't throw the lever, it's not here!
 
 ### repeat
 
-A special condition that is triggered if the wrapping block has been triggered at least once already.
+A special variable that is set if the immediately wrapping block has been triggered at least once already.
 
 ```
 > greet >

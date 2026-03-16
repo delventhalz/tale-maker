@@ -124,6 +124,8 @@ func getWordToken(word string) tokens.TokenType {
 		return tokens.OR
 	case "not":
 		return tokens.NOT
+	case "it":
+		return tokens.IT
 	default:
 		if (isFlag(word)) {
 			return tokens.FLAG

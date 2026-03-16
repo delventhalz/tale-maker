@@ -38,6 +38,7 @@ const (
 	AND
 	OR
 	NOT
+	IT
 )
 
 func (tt TokenType) String() string {
@@ -70,6 +71,7 @@ func (tt TokenType) String() string {
 	case AND: return "Keyword: and"
 	case OR: return "Keyword: or"
 	case NOT: return "Keyword: not"
+	case IT: return "Keyword: it"
 
 	default: return "Invalid Token Value!"
 	}

@@ -560,6 +560,7 @@ What did you do to the door!?
 
 === pLaYeR with teacher OR player is nOt chastised ===
 Think about what you've done!
+<set it IS satisfied>
 
 === repeat ===
 Must we go over this again?
@@ -602,15 +603,21 @@ Must we go over this again?
 		{tokens.NAME, "chastised", 8, 42},
 		{tokens.HEADER_END, "===", 8, 52},
 
-		{tokens.TEXT, "Think about what you've done!", 9, 1},
+		{tokens.TEXT, "Think about what you've done!\n", 9, 1},
+		{tokens.ACTION, "<", 10, 1},
+		{tokens.NAME, "set", 10, 2},
+		{tokens.IT, "it", 10, 6},
+		{tokens.IS, "IS", 10, 9},
+		{tokens.NAME, "satisfied", 10, 12},
+		{tokens.ACTION_END, ">", 10, 21},
 
-		{tokens.STATE_HEADER, "===", 11, 1},
-		{tokens.NAME, "repeat", 11, 5},
-		{tokens.HEADER_END, "===", 11, 12},
+		{tokens.STATE_HEADER, "===", 12, 1},
+		{tokens.NAME, "repeat", 12, 5},
+		{tokens.HEADER_END, "===", 12, 12},
 
-		{tokens.TEXT, "Must we go over this again?", 12, 1},
+		{tokens.TEXT, "Must we go over this again?", 13, 1},
 
-		{tokens.EOF, "", 13, 1},
+		{tokens.EOF, "", 14, 1},
 	})
 }
 
