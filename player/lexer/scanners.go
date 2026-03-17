@@ -163,7 +163,7 @@ func (l *Lexer) scanWhileNumberLiteral() (string, int, int) {
 	return number, line, col
 }
 
-func (l *Lexer) scanWhileTextLiteral() (string, int, int) {
+func (l *Lexer) scanWhileQuotedText() (string, int, int) {
 	startQuote, line, col := l.scanStartQuote()
 
 	if startQuote == "" {
@@ -173,8 +173,8 @@ func (l *Lexer) scanWhileTextLiteral() (string, int, int) {
 	if (!isPaddedQuoteStart(startQuote)) {
 		isEndQuote := getEndQuoteTest(startQuote)
 		text, _, _ := l.scanUntil(isEndQuote)
-		l.advance()
-		return text, line, col
+		endQuote, _, _ := l.scanNext();
+		return startQuote + text + endQuote, line, col
 	}
 
 	isPadding, isEndQuote := getPaddedEndQuoteTests(startQuote);
@@ -185,19 +185,19 @@ func (l *Lexer) scanWhileTextLiteral() (string, int, int) {
 		text += next
 
 		padding, _, _ := l.scanNext()
+		text += padding
 
 		if (isEndQuote(l.current)) {
-			l.advance();
-			return text, line, col
+			endQuote, _, _ := l.scanNext();
+			return startQuote + text + endQuote, line, col
 		}
 
-		text += padding
 	}
 }
 
 // Entirety of each contentful line is captured (including enclosed empty lines)
 // but empty lines before and after text content is dropped
-func (l *Lexer) scanWhileTextBlock() (string, int, int) {
+func (l *Lexer) scanWhileBlockText() (string, int, int) {
 	line, col := l.line, l.col
 	padding := ""
 	text := ""

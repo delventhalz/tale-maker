@@ -29,14 +29,14 @@ func TestEof(t *testing.T) {
 
 func TestText(t *testing.T) {
 	expectTokens(t, "Hello, world!", []tokens.Token{
-		{tokens.TEXT, "Hello, world!", 1, 1},
+		{tokens.BLOCK_TEXT, "Hello, world!", 1, 1},
 		{tokens.EOF, "", 1, 14},
 	})
 }
 
 func TestUnicode(t *testing.T) {
 	expectTokens(t, "Hello, 世界!", []tokens.Token{
-		{tokens.TEXT, "Hello, 世界!", 1, 1},
+		{tokens.BLOCK_TEXT, "Hello, 世界!", 1, 1},
 		{tokens.EOF, "", 1, 11},
 	})
 }
@@ -71,7 +71,7 @@ If 世界 > world, then greet = hello
 		{tokens.INPUT_HEADER, ">", 2, 1},
 		{tokens.NAME, "greet", 2, 3},
 		{tokens.HEADER_END, ">", 2, 9},
-		{tokens.TEXT, "Hello!", 3, 1},
+		{tokens.BLOCK_TEXT, "Hello!", 3, 1},
 
 		{tokens.STATE_HEADER, "=", 5, 1},
 		{tokens.NAME, "world", 5, 2},
@@ -80,12 +80,12 @@ If 世界 > world, then greet = hello
 		{tokens.INPUT_HEADER, ">>", 7, 1},
 		{tokens.NAME, "greet", 7, 8},
 		{tokens.HEADER_END, ">>", 7, 18},
-		{tokens.TEXT, "Hello, world!", 8, 1},
+		{tokens.BLOCK_TEXT, "Hello, world!", 8, 1},
 
 		{tokens.INPUT_HEADER, ">>>", 10, 5},
 		{tokens.NAME, "dramatically", 10, 8},
 		{tokens.HEADER_END, "\n", 10, 20},
-		{tokens.TEXT, "Hello...\n\n\n    ...world.", 12, 1},
+		{tokens.BLOCK_TEXT, "Hello...\n\n\n    ...world.", 12, 1},
 
 		{tokens.STATE_HEADER, "==", 19, 1},
 		{tokens.NAME, "世界", 19, 4},
@@ -95,13 +95,13 @@ If 世界 > world, then greet = hello
 		{tokens.NAME, "greet", 20, 5},
 		{tokens.NAME, "unicode", 20, 11},
 		{tokens.HEADER_END, "\n", 20, 18},
-		{tokens.TEXT, "Hello, 世界!", 21, 1},
+		{tokens.BLOCK_TEXT, "Hello, 世界!", 21, 1},
 
 		{tokens.INPUT_HEADER, ">>>", 22, 1},
 		{tokens.NAME, "greet", 22, 5},
 		{tokens.NAME, "mathematically", 22, 11},
 		{tokens.HEADER_END, "\n", 22, 25},
-		{tokens.TEXT, "If 世界 > world, then greet = hello", 23, 1},
+		{tokens.BLOCK_TEXT, "If 世界 > world, then greet = hello", 23, 1},
 
 		{tokens.EOF, "", 24, 5},
 	})
@@ -109,7 +109,7 @@ If 世界 > world, then greet = hello
 
 func TestHeaderAtFileEnd(t *testing.T) {
 	expectTokens(t, "Why do this?\n>", []tokens.Token{
-		{tokens.TEXT, "Why do this?", 1, 1},
+		{tokens.BLOCK_TEXT, "Why do this?", 1, 1},
 		{tokens.INPUT_HEADER, ">", 2, 1},
 		{tokens.HEADER_END, "", 2, 2},
 		{tokens.EOF, "", 2, 2},
@@ -132,7 +132,7 @@ func TestPaddedHeaderEnd(t *testing.T) {
 		{tokens.INPUT_HEADER, ">", 1, 2},
 		{tokens.NAME, "padded", 1, 4},
 		{tokens.HEADER_END, ">", 1, 11},
-		{tokens.TEXT, "You should trim your whitespace!", 2, 1},
+		{tokens.BLOCK_TEXT, "You should trim your whitespace!", 2, 1},
 		{tokens.EOF, "", 2, 33},
 	})
 }
@@ -142,44 +142,44 @@ func TestPaddedText(t *testing.T) {
 
 	expectTokens(t, input, []tokens.Token{
 		// Keep non-breaking whitespace on leading/trailing contentful lines
-		{tokens.TEXT, "\t I love\t\n\n whitespace!!!\t\t ", 3, 1},
+		{tokens.BLOCK_TEXT, "\t I love\t\n\n whitespace!!!\t\t ", 3, 1},
 		{tokens.INPUT_HEADER, ">", 8, 1},
 		{tokens.NAME, "respond", 8, 3},
 		{tokens.HEADER_END, "\n", 8, 10},
-		{tokens.TEXT, "Okay", 9, 1},
+		{tokens.BLOCK_TEXT, "Okay", 9, 1},
 		{tokens.EOF, "", 9, 5},
 	})
 }
 
 func TestCarriageReturns(t *testing.T) {
 	expectTokens(t, "\rLet's...\rgo!\r\r> cheer\rRa", []tokens.Token{
-		{tokens.TEXT, "Let's...\rgo!", 2, 1},
+		{tokens.BLOCK_TEXT, "Let's...\rgo!", 2, 1},
 		{tokens.INPUT_HEADER, ">", 5, 1},
 		{tokens.NAME, "cheer", 5, 3},
 		{tokens.HEADER_END, "\r", 5, 8},
-		{tokens.TEXT, "Ra", 6, 1},
+		{tokens.BLOCK_TEXT, "Ra", 6, 1},
 		{tokens.EOF, "", 6, 3},
 	})
 }
 
 func TestWindowsLineBreaks(t *testing.T) {
 	expectTokens(t, "\r\nU wut...\r\nm8?\r\n\r\n> hit\r\nnvm", []tokens.Token{
-		{tokens.TEXT, "U wut...\r\nm8?", 2, 1},
+		{tokens.BLOCK_TEXT, "U wut...\r\nm8?", 2, 1},
 		{tokens.INPUT_HEADER, ">", 5, 1},
 		{tokens.NAME, "hit", 5, 3},
 		{tokens.HEADER_END, "\r\n", 5, 6},
-		{tokens.TEXT, "nvm", 6, 1},
+		{tokens.BLOCK_TEXT, "nvm", 6, 1},
 		{tokens.EOF, "", 6, 4},
 	})
 }
 
 func TestWeirdLineBreaks(t *testing.T) {
 	expectTokens(t, "\n\rWhere did you get...\n\rthis file?\r\r\n\n> reply\n\rshhh", []tokens.Token{
-		{tokens.TEXT, "Where did you get...\n\rthis file?", 3, 1},
+		{tokens.BLOCK_TEXT, "Where did you get...\n\rthis file?", 3, 1},
 		{tokens.INPUT_HEADER, ">", 8, 1},
 		{tokens.NAME, "reply", 8, 3},
 		{tokens.HEADER_END, "\n", 8, 8},
-		{tokens.TEXT, "shhh", 10, 1},
+		{tokens.BLOCK_TEXT, "shhh", 10, 1},
 		{tokens.EOF, "", 10, 5},
 	})
 }
@@ -210,13 +210,13 @@ Sorry.
 		{tokens.ACTION, "<", 1, 1},
 		{tokens.NAME, "name", 1, 2},
 		{tokens.NAME, "tale", 1, 7},
-		{tokens.TEXT, "Test", 1, 12},
+		{tokens.QUOTED_TEXT, "\"Test\"", 1, 12},
 		{tokens.ACTION_END, ">", 1, 18},
 
 		{tokens.ACTION, "<", 2, 1},
 		{tokens.NAME, "name", 2, 2},
 		{tokens.NAME, "player", 2, 7},
-		{tokens.TEXT, "Tester Alice", 2, 14},
+		{tokens.QUOTED_TEXT, "\"Tester Alice\"", 2, 14},
 		{tokens.ACTION_END, ">", 2, 28},
 
 		{tokens.ACTION, "<", 2, 29},
@@ -234,7 +234,7 @@ Sorry.
 		{tokens.NAME, "test_passed", 5, 6},
 		{tokens.ACTION_END, ">", 5, 17},
 
-		{tokens.TEXT, "The test passes!", 6, 1},
+		{tokens.BLOCK_TEXT, "The test passes!", 6, 1},
 		{tokens.ACTION, "<", 6, 17},
 		{tokens.NAME, "win_game", 6, 18},
 		{tokens.ACTION_END, ">", 6, 26},
@@ -249,18 +249,18 @@ Sorry.
 		{tokens.NAME, "abort", 9, 3},
 		{tokens.HEADER_END, ">", 9, 9},
 
-		{tokens.TEXT, "The test... ", 10, 1},
+		{tokens.BLOCK_TEXT, "The test... ", 10, 1},
 		{tokens.ACTION, "<", 10, 13},
 		{tokens.NAME, "set", 10, 14},
 		{tokens.NAME, "test_passed", 10, 18},
 		{tokens.FLAG, "no", 10, 30},
 		{tokens.ACTION_END, ">", 10, 32},
-		{tokens.TEXT, " 😞 failed.\n", 10, 33},
+		{tokens.BLOCK_TEXT, " 😞 failed.\n", 10, 33},
 
 		{tokens.ACTION, "<", 11, 1},
 		{tokens.NAME, "lose", 13, 3},
 		{tokens.ACTION_END, ">", 15, 8},
-		{tokens.TEXT, "\n\nSorry.\n", 15, 9},
+		{tokens.BLOCK_TEXT, "\n\nSorry.\n", 15, 9},
 
 		{tokens.ACTION, "<", 18, 1},
 		{tokens.NAME, "set", 18, 2},
@@ -291,7 +291,7 @@ func TestFileEndInAction(t *testing.T) {
 	})
 }
 
-func TestTextLiterals(t *testing.T) {
+func TestQuotedText(t *testing.T) {
 	input := `
 <set name "Nosferatu">
 <name “Dr. Jekyll and Mr. Hyde” set>
@@ -319,112 +319,112 @@ The Grudge‘>
 		{tokens.ACTION, "<", 2, 1},
 		{tokens.NAME, "set", 2, 2},
 		{tokens.NAME, "name", 2, 6},
-		{tokens.TEXT, "Nosferatu", 2, 11},
+		{tokens.QUOTED_TEXT, "\"Nosferatu\"", 2, 11},
 		{tokens.ACTION_END, ">", 2, 22},
 
 		{tokens.ACTION, "<", 3, 1},
 		{tokens.NAME, "name", 3, 2},
-		{tokens.TEXT, "Dr. Jekyll and Mr. Hyde", 3, 7},
+		{tokens.QUOTED_TEXT, "“Dr. Jekyll and Mr. Hyde”", 3, 7},
 		{tokens.NAME, "set", 3, 33},
 		{tokens.ACTION_END, ">", 3, 36},
 
 		{tokens.ACTION, "<", 4, 1},
-		{tokens.TEXT, "House of Wax", 4, 2},
+		{tokens.QUOTED_TEXT, "„House of Wax“", 4, 2},
 		{tokens.ACTION_END, ">", 4, 16},
 
 		{tokens.ACTION, "<", 5, 1},
 		{tokens.NAME, "set", 5, 2},
 		{tokens.NAME, "name", 5, 6},
-		{tokens.TEXT, "Invasion of the Body Snatchers", 5, 11},
+		{tokens.QUOTED_TEXT, "„Invasion of the Body Snatchers”", 5, 11},
 		{tokens.ACTION_END, ">", 5, 43},
 
 		{tokens.ACTION, "<", 6, 1},
 		{tokens.NAME, "set", 6, 2},
 		{tokens.NAME, "name", 6, 6},
-		{tokens.TEXT, "Rosemary's Baby", 6, 11},
+		{tokens.QUOTED_TEXT, "”Rosemary's Baby”", 6, 11},
 		{tokens.ACTION_END, ">", 6, 28},
 
 		{tokens.ACTION, "<", 7, 1},
 		{tokens.NAME, "set", 7, 2},
 		{tokens.NAME, "name", 7, 6},
-		{tokens.TEXT, "The Wicker Man", 7, 11},
+		{tokens.QUOTED_TEXT, "« The Wicker Man »", 7, 11},
 		{tokens.ACTION_END, ">", 7, 29},
 
 		{tokens.ACTION, "<", 8, 1},
 		{tokens.NAME, "set", 8, 2},
 		{tokens.NAME, "name", 8, 6},
-		{tokens.TEXT, "Alien", 8, 11},
+		{tokens.QUOTED_TEXT, "«Alien»", 8, 11},
 		{tokens.ACTION_END, ">", 8, 18},
 
 		{tokens.ACTION, "<", 9, 1},
 		{tokens.NAME, "set", 9, 2},
 		{tokens.NAME, "name", 9, 6},
-		{tokens.TEXT, "The Evil Dead", 9, 11},
+		{tokens.QUOTED_TEXT, "»The Evil Dead«", 9, 11},
 		{tokens.ACTION_END, ">", 9, 26},
 
 		{tokens.ACTION, "<", 10, 1},
 		{tokens.NAME, "set", 10, 2},
 		{tokens.NAME, "name", 10, 6},
-		{tokens.TEXT, "The Thing", 10, 11},
+		{tokens.QUOTED_TEXT, "'The Thing'", 10, 11},
 		{tokens.ACTION_END, ">", 10, 22},
 
 		{tokens.ACTION, "<", 11, 1},
 		{tokens.NAME, "set", 11, 2},
 		{tokens.NAME, "name", 11, 6},
-		{tokens.TEXT, "Evil Dead 2: Dead by Dawn", 11, 11},
+		{tokens.QUOTED_TEXT, "`Evil Dead 2: Dead by Dawn`", 11, 11},
 		{tokens.ACTION_END, ">", 11, 38},
 
 		{tokens.ACTION, "<", 12, 1},
 		{tokens.NAME, "set", 12, 2},
 		{tokens.NAME, "name", 12, 6},
-		{tokens.TEXT, "Dead Alive", 12, 11},
+		{tokens.QUOTED_TEXT, "‘Dead Alive’", 12, 11},
 		{tokens.ACTION_END, ">", 12, 23},
 
 		{tokens.ACTION, "<", 13, 1},
 		{tokens.NAME, "set", 13, 2},
 		{tokens.NAME, "name", 13, 6},
-		{tokens.TEXT, "Candyman", 13, 11},
+		{tokens.QUOTED_TEXT, "’Candyman’", 13, 11},
 		{tokens.ACTION_END, ">", 13, 21},
 
 		{tokens.ACTION, "<", 14, 1},
 		{tokens.NAME, "set", 14, 2},
 		{tokens.NAME, "name", 14, 6},
-		{tokens.TEXT, "28 Days Later", 14, 11},
+		{tokens.QUOTED_TEXT, "‚28 Days Later’", 14, 11},
 		{tokens.ACTION_END, ">", 14, 26},
 
 		{tokens.ACTION, "<", 15, 1},
 		{tokens.NAME, "set", 15, 2},
 		{tokens.NAME, "name", 15, 6},
-		{tokens.TEXT, "Ju-on:\nThe Grudge", 15, 11},
+		{tokens.QUOTED_TEXT, "‚Ju-on:\nThe Grudge‘", 15, 11},
 		{tokens.ACTION_END, ">", 16, 12},
 
 		{tokens.ACTION, "<", 17, 1},
 		{tokens.NAME, "set", 17, 2},
 		{tokens.NAME, "name", 17, 6},
-		{tokens.TEXT, "Slither", 17, 11},
+		{tokens.QUOTED_TEXT, "’Slither’", 17, 11},
 		{tokens.ACTION_END, ">", 17, 20},
 
 		{tokens.ACTION, "<", 18, 1},
 		{tokens.NAME, "set", 18, 2},
 		{tokens.NAME, "name", 18, 6},
-		{tokens.TEXT, "Let the Right One In", 18, 11},
+		{tokens.QUOTED_TEXT, "‹ Let the Right One In ›", 18, 11},
 		{tokens.ACTION_END, ">", 18, 35},
 
 		{tokens.ACTION, "<", 19, 1},
 		{tokens.NAME, "set", 19, 2},
 		{tokens.NAME, "name", 19, 6},
-		{tokens.TEXT, "It Follows", 19, 11},
+		{tokens.QUOTED_TEXT, "‹It Follows›", 19, 11},
 		{tokens.ACTION_END, ">", 19, 23},
 
 		{tokens.ACTION, "<", 20, 1},
 		{tokens.NAME, "set", 20, 2},
 		{tokens.NAME, "name", 20, 6},
-		{tokens.TEXT, "1922", 20, 11},
+		{tokens.QUOTED_TEXT, "›1922‹", 20, 11},
 		{tokens.ACTION_END, ">", 20, 17},
 
 		{tokens.ACTION, "<", 21, 1},
 		{tokens.NAME, "get_out", 21, 2},
-		{tokens.TEXT, "", 21, 10},
+		{tokens.QUOTED_TEXT, "\"\"", 21, 10},
 		{tokens.ACTION_END, ">", 21, 12},
 
 		{tokens.EOF, "", 22, 1},
@@ -590,7 +590,7 @@ Must we go over this again?
 		{tokens.NAME, "detention", 5, 16},
 		{tokens.ACTION_END, ">", 5, 25},
 
-		{tokens.TEXT, "What did you do to the door!?", 6, 1},
+		{tokens.BLOCK_TEXT, "What did you do to the door!?", 6, 1},
 
 		{tokens.STATE_HEADER, "===", 8, 1},
 		{tokens.NAME, "pLaYeR", 8, 5},
@@ -603,7 +603,7 @@ Must we go over this again?
 		{tokens.NAME, "chastised", 8, 42},
 		{tokens.HEADER_END, "===", 8, 52},
 
-		{tokens.TEXT, "Think about what you've done!\n", 9, 1},
+		{tokens.BLOCK_TEXT, "Think about what you've done!\n", 9, 1},
 		{tokens.ACTION, "<", 10, 1},
 		{tokens.NAME, "set", 10, 2},
 		{tokens.IT, "it", 10, 6},
@@ -615,7 +615,7 @@ Must we go over this again?
 		{tokens.NAME, "repeat", 12, 5},
 		{tokens.HEADER_END, "===", 12, 12},
 
-		{tokens.TEXT, "Must we go over this again?", 13, 1},
+		{tokens.BLOCK_TEXT, "Must we go over this again?", 13, 1},
 
 		{tokens.EOF, "", 14, 1},
 	})
@@ -639,13 +639,13 @@ You look over {name of player}. Nice.
 		{tokens.NAME, "mirror", 1, 3},
 		{tokens.HEADER_END, ">", 1, 10},
 
-		{tokens.TEXT, "You look over ", 2, 1},
+		{tokens.BLOCK_TEXT, "You look over ", 2, 1},
 		{tokens.INSERT, "{", 2, 15},
 		{tokens.NAME, "name", 2, 16},
 		{tokens.OF, "of", 2, 21},
 		{tokens.NAME, "player", 2, 24},
 		{tokens.INSERT_END, "}", 2, 30},
-		{tokens.TEXT, ". Nice.", 2, 31},
+		{tokens.BLOCK_TEXT, ". Nice.", 2, 31},
 
 		{tokens.INPUT_HEADER, ">", 4, 1},
 		{tokens.NAME, "check", 4, 3},
@@ -657,12 +657,12 @@ You look over {name of player}. Nice.
 		{tokens.INSERT, "{", 6, 1},
 		{tokens.NAME, "score", 6, 2},
 		{tokens.INSERT_END, "}", 6, 7},
-		{tokens.TEXT, " points?\n\n", 6, 8},
+		{tokens.BLOCK_TEXT, " points?\n\n", 6, 8},
 
 		{tokens.INSERT, "{", 8, 1},
 		{tokens.NAME, "score", 8, 2},
 		{tokens.INSERT_END, "}", 8, 7},
-		{tokens.TEXT, " points. Gotta keep going.\n\n...can't stop at ", 8, 8},
+		{tokens.BLOCK_TEXT, " points. Gotta keep going.\n\n...can't stop at ", 8, 8},
 
 		{tokens.INSERT, "{", 10, 18},
 		{tokens.NAME, "score", 10, 19},
@@ -689,7 +689,7 @@ You give a timid wave. They respond.
 		{tokens.NAME, "greet", 1, 3},
 		{tokens.HEADER_END, ">", 1, 9},
 
-		{tokens.TEXT, "You give a timid wave. They respond.\n", 2, 1},
+		{tokens.BLOCK_TEXT, "You give a timid wave. They respond.\n", 2, 1},
 
 		{tokens.ACTION, "<", 3, 1},
 		{tokens.NAME, "i", 3, 2},
@@ -705,15 +705,15 @@ You give a timid wave. They respond.
 		{tokens.IS, "is", 5, 16},
 		{tokens.NAME, "strong", 5, 19},
 		{tokens.ACTION_END, ">", 5, 25},
-		{tokens.TEXT, "Wow, you're ", 5, 26},
+		{tokens.BLOCK_TEXT, "Wow, you're ", 5, 26},
 		{tokens.ACTION, "<", 5, 38},
 		{tokens.NAME, "b", 5, 39},
 		{tokens.ACTION_END, ">", 5, 40},
-		{tokens.TEXT, "BIG", 5, 41},
+		{tokens.BLOCK_TEXT, "BIG", 5, 41},
 		{tokens.ENCLOSING_ACTION, "</", 5, 44},
 		{tokens.NAME, "b", 5, 46},
 		{tokens.ACTION_END, ">", 5, 47},
-		{tokens.TEXT, " ain't ya?", 5, 48},
+		{tokens.BLOCK_TEXT, " ain't ya?", 5, 48},
 		{tokens.ENCLOSING_ACTION, "</", 5, 58},
 		{tokens.NAME, "choice", 5, 60},
 		{tokens.ACTION_END, ">", 5, 66},
@@ -721,7 +721,7 @@ You give a timid wave. They respond.
 		{tokens.ACTION, "<", 6, 1},
 		{tokens.NAME, "choice", 6, 2},
 		{tokens.ACTION_END, ">", 6, 8},
-		{tokens.TEXT, "Hey", 6, 9},
+		{tokens.BLOCK_TEXT, "Hey", 6, 9},
 		{tokens.ENCLOSING_ACTION, "</", 6, 12},
 		{tokens.NAME, "choice", 6, 14},
 		{tokens.ACTION_END, ">", 6, 20},
@@ -732,7 +732,7 @@ You give a timid wave. They respond.
 		{tokens.ACTION, "<", 7, 9},
 		{tokens.NAME, "title", 7, 10},
 		{tokens.ACTION_END, ">", 7, 15},
-		{tokens.TEXT, "Howdy", 7, 16},
+		{tokens.BLOCK_TEXT, "Howdy", 7, 16},
 		{tokens.ENCLOSING_ACTION, "</", 7, 21},
 		{tokens.NAME, "title", 7, 23},
 		{tokens.ACTION_END, ">", 7, 28},

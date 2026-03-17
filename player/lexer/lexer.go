@@ -142,8 +142,8 @@ func (l *Lexer) Next() tokens.Token {
 				return tokens.Token{tokens.NUMBER, number, numberline, numberCol}
 			}
 			if isAnyQuote(l.current) {
-				text, textLint, textCol := l.scanWhileTextLiteral()
-				return tokens.Token{tokens.TEXT, text, textLint, textCol}
+				quote, quoteLine, quoteCol := l.scanWhileQuotedText()
+				return tokens.Token{tokens.QUOTED_TEXT, quote, quoteLine, quoteCol}
 			}
 			word, wordLine, wordCol := l.scanWhileWord()
 			return tokens.Token{getWordToken(word), word, wordLine, wordCol}
@@ -184,14 +184,14 @@ func (l *Lexer) Next() tokens.Token {
 		}
 
 		// Text
-		text, textLine, textCol := l.scanWhileTextBlock()
+		text, textLine, textCol := l.scanWhileBlockText()
 
 		if text == "" {
 			continue
 		}
 
 		l.capturedBlockStart = true
-		return tokens.Token{tokens.TEXT, text, textLine, textCol}
+		return tokens.Token{tokens.BLOCK_TEXT, text, textLine, textCol}
 	}
 
 	panic(fmt.Sprintf("Repeat position [%d]! %q (%d:%d)", l.pos, l.current, l.line, l.col))
