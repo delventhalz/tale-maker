@@ -210,9 +210,10 @@ func (l *Lexer) scanWhileBlockText() (string, int, int) {
 		case isHeader(l.current):
 			return text, line, col
 
-		// First non-whitespace is an action or insert, capture padding if preceded by non-empty line
+		// First non-whitespace is an action or insert, capture padding if
+		// not the block start or preceded by non-empty line
 		case isAction(l.current), isInsert(l.current):
-			if text != "" {
+			if text != "" || l.capturedBlockStart {
 				text += padding + linePadding
 			}
 			return text, line, col

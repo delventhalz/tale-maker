@@ -238,6 +238,7 @@ Sorry.
 		{tokens.ACTION, "<", 6, 17},
 		{tokens.NAME, "win_game", 6, 18},
 		{tokens.ACTION_END, ">", 6, 26},
+		{tokens.BLOCK_TEXT, "\n", 6, 27},
 
 		{tokens.ACTION, "<", 7, 1},
 		{tokens.NAME, "set", 7, 2},
@@ -694,10 +695,12 @@ You give a timid wave. They respond.
 		{tokens.ACTION, "<", 3, 1},
 		{tokens.NAME, "i", 3, 2},
 		{tokens.ACTION_END, ">", 3, 3},
+		{tokens.BLOCK_TEXT, "\n", 3, 4},
 
 		{tokens.ACTION, "<", 4, 1},
 		{tokens.NAME, "chain", 4, 2},
 		{tokens.ACTION_END, ">", 4, 7},
+		{tokens.BLOCK_TEXT, "\n", 4, 8},
 
 		{tokens.ACTION, "<", 5, 1},
 		{tokens.NAME, "choice", 5, 2},
@@ -717,6 +720,7 @@ You give a timid wave. They respond.
 		{tokens.ENCLOSING_ACTION, "</", 5, 58},
 		{tokens.NAME, "choice", 5, 60},
 		{tokens.ACTION_END, ">", 5, 66},
+		{tokens.BLOCK_TEXT, "\n", 5, 67},
 
 		{tokens.ACTION, "<", 6, 1},
 		{tokens.NAME, "choice", 6, 2},
@@ -725,6 +729,7 @@ You give a timid wave. They respond.
 		{tokens.ENCLOSING_ACTION, "</", 6, 12},
 		{tokens.NAME, "choice", 6, 14},
 		{tokens.ACTION_END, ">", 6, 20},
+		{tokens.BLOCK_TEXT, "\n", 6, 21},
 
 		{tokens.ACTION, "<", 7, 1},
 		{tokens.NAME, "choice", 7, 2},
@@ -739,10 +744,12 @@ You give a timid wave. They respond.
 		{tokens.ENCLOSING_ACTION, "</", 7, 29},
 		{tokens.NAME, "choice", 7, 31},
 		{tokens.ACTION_END, ">", 7, 37},
+		{tokens.BLOCK_TEXT, "\n", 7, 38},
 
 		{tokens.ENCLOSING_ACTION, "</", 8, 1},
 		{tokens.NAME, "chain", 8, 3},
 		{tokens.ACTION_END, ">", 8, 8},
+		{tokens.BLOCK_TEXT, "\n", 8, 9},
 
 		{tokens.ENCLOSING_ACTION, "</", 9, 1},
 		{tokens.NAME, "i", 9, 3},
