@@ -102,11 +102,13 @@ func (l *Lexer) Next() tokens.Token {
 				l.endCurrentCapture()
 				lineBreak, breakLine, breakCol := l.scanLineBreak()
 
-				if headerEnd == "" {
-					return tokens.Token{tokens.HEADER_END, lineBreak, breakLine, breakCol}
+				if (headerEnd != "") {
+					return tokens.Token{tokens.HEADER_END, headerEnd, endLine, endCol}
 				}
 
-				return tokens.Token{tokens.HEADER_END, headerEnd, endLine, endCol}
+				if lineBreak != "" {
+					return tokens.Token{tokens.HEADER_END, lineBreak, breakLine, breakCol}
+				}
 			}
 		}
 
@@ -138,8 +140,8 @@ func (l *Lexer) Next() tokens.Token {
 		// Capturing an expression in a header, action, or insert
 		if l.isCapturingAny(tokens.INPUT_HEADER, tokens.STATE_HEADER, tokens.ACTION, tokens.INSERT) {
 			if isNumberStart(l.current) {
-				number, numberline, numberCol := l.scanWhileNumberLiteral()
-				return tokens.Token{tokens.NUMBER, number, numberline, numberCol}
+				number, numberLine, numberCol := l.scanWhileNumberLiteral()
+				return tokens.Token{tokens.NUMBER, number, numberLine, numberCol}
 			}
 			if isAnyQuote(l.current) {
 				quote, quoteLine, quoteCol := l.scanWhileQuotedText()

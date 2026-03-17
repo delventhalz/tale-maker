@@ -107,24 +107,6 @@ If 世界 > world, then greet = hello
 	})
 }
 
-func TestHeaderAtFileEnd(t *testing.T) {
-	expectTokens(t, "Why do this?\n>", []tokens.Token{
-		{tokens.BLOCK_TEXT, "Why do this?", 1, 1},
-		{tokens.INPUT_HEADER, ">", 2, 1},
-		{tokens.HEADER_END, "", 2, 2},
-		{tokens.EOF, "", 2, 2},
-	})
-}
-
-func TestHeaderEndAtFileEnd(t *testing.T) {
-	expectTokens(t, "== eof", []tokens.Token{
-		{tokens.STATE_HEADER, "==", 1, 1},
-		{tokens.NAME, "eof", 1, 4},
-		{tokens.HEADER_END, "", 1, 7},
-		{tokens.EOF, "", 1, 7},
-	})
-}
-
 func TestPaddedHeaderEnd(t *testing.T) {
 	input := "\t> padded >   \t \nYou should trim your whitespace!"
 
@@ -805,5 +787,49 @@ Triumph!
 		{tokens.BLOCK_TEXT, "\n\nWhat a \\\nTriumph!", 8, 18},
 
 		{tokens.EOF, "", 12, 1},
+	})
+}
+
+func TestUnexpectedEof(t *testing.T) {
+	expectTokens(t, "> go", []tokens.Token{
+		{tokens.INPUT_HEADER, ">", 1, 1},
+		{tokens.NAME, "go", 1, 3},
+		{tokens.EOF, "", 1, 5},
+	})
+
+	expectTokens(t, "==", []tokens.Token{
+		{tokens.STATE_HEADER, "==", 1, 1},
+		{tokens.EOF, "", 1, 3},
+	})
+
+	expectTokens(t, "<se", []tokens.Token{
+		{tokens.ACTION, "<", 1, 1},
+		{tokens.NAME, "se", 1, 2},
+		{tokens.EOF, "", 1, 4},
+	})
+
+	expectTokens(t, "<set message \"He", []tokens.Token{
+		{tokens.ACTION, "<", 1, 1},
+		{tokens.NAME, "set", 1, 2},
+		{tokens.NAME, "message", 1, 6},
+		{tokens.QUOTED_TEXT, "\"He", 1, 14},
+		{tokens.EOF, "", 1, 17},
+	})
+
+	expectTokens(t, "<set message>Hello</", []tokens.Token{
+		{tokens.ACTION, "<", 1, 1},
+		{tokens.NAME, "set", 1, 2},
+		{tokens.NAME, "message", 1, 6},
+		{tokens.ACTION_END, ">", 1, 13},
+		{tokens.BLOCK_TEXT, "Hello", 1, 14},
+		{tokens.ENCLOSING_ACTION, "</", 1, 19},
+		{tokens.EOF, "", 1, 21},
+	})
+
+	expectTokens(t, "You look at {na", []tokens.Token{
+		{tokens.BLOCK_TEXT, "You look at ", 1, 1},
+		{tokens.INSERT, "{", 1, 13},
+		{tokens.NAME, "na", 1, 14},
+		{tokens.EOF, "", 1, 16},
 	})
 }
