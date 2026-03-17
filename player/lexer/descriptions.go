@@ -135,6 +135,10 @@ func getWordToken(word string) tokens.TokenType {
 	}
 }
 
+func isEscapeStart(r rune) bool {
+	return r == '\\'
+}
+
 func isAnyQuote(r rune) bool {
 	return r == '"' ||
 		r == '\'' ||

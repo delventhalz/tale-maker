@@ -347,20 +347,20 @@ Useful escape characters include:
 - `\=` - to display "=" (only necessary at the start of a line)
 - `\n` - to display a newline or line break (only necessary at the start or end of a block)
 - `\\` - to display a backslash
+- Finally, a `\` followed immediately by a line break will drop the line break from the displayed text
+
 
 ```
 > do_math >
-\n
-\n
-\n
-...finally it comes to you, <b>is 3 \< 2?</b> No! 3 > 2!
+\n\n\n    ...finally it comes to you, <b>is 3 \< 2?</b> No! 3 > 2!
 
 3
 \>
 2
 \=
-true
+<i>\{\{TRUE}}</i>
 
+What a \
 Triumph!
 ```
 

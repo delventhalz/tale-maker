@@ -758,3 +758,52 @@ You give a timid wave. They respond.
 		{tokens.EOF, "", 10, 1},
 	})
 }
+
+func TestEscapes(t *testing.T) {
+	input := `> do_math >
+\n\n\n    ...finally it comes to you, <b>is 3 \< 2?</b> No! 3 > 2!
+
+3
+\>
+2
+\=
+<i>\{\{TRUE}}</i>
+
+What a \
+Triumph!
+`
+
+	expectTokens(t, input, []tokens.Token{
+		{tokens.INPUT_HEADER, ">", 1, 1},
+		{tokens.NAME, "do_math", 1, 3},
+		{tokens.HEADER_END, ">", 1, 11},
+
+		{tokens.BLOCK_TEXT, "\\n\\n\\n    ...finally it comes to you, ", 2, 1},
+
+		{tokens.ACTION, "<", 2, 39},
+		{tokens.NAME, "b", 2, 40},
+		{tokens.ACTION_END, ">", 2, 41},
+
+		{tokens.BLOCK_TEXT, "is 3 \\< 2?", 2, 42},
+
+		{tokens.ENCLOSING_ACTION, "</", 2, 52},
+		{tokens.NAME, "b", 2, 54},
+		{tokens.ACTION_END, ">", 2, 55},
+
+		{tokens.BLOCK_TEXT, " No! 3 > 2!\n\n3\n\\>\n2\n\\=\n", 2, 56},
+
+		{tokens.ACTION, "<", 8, 1},
+		{tokens.NAME, "i", 8, 2},
+		{tokens.ACTION_END, ">", 8, 3},
+
+		{tokens.BLOCK_TEXT, "\\{\\{TRUE}}", 8, 4},
+
+		{tokens.ENCLOSING_ACTION, "</", 8, 14},
+		{tokens.NAME, "i", 8, 16},
+		{tokens.ACTION_END, ">", 8, 17},
+
+		{tokens.BLOCK_TEXT, "\n\nWhat a \\\nTriumph!", 8, 18},
+
+		{tokens.EOF, "", 12, 1},
+	})
+}
