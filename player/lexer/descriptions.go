@@ -14,6 +14,10 @@ func isWindowsLineBreak(first, second rune) bool {
 	return first == '\r' && second == '\n'
 }
 
+func isScanningWindowsLineBreak(scanned string, next rune) bool {
+	return scanned == "\r" && next == '\n'
+}
+
 func isNonBreakingSpace(r rune) bool {
 	return r == ' ' || r == '\t' || r == '\v'
 }
@@ -155,8 +159,8 @@ func isAnyQuote(r rune) bool {
 		r == '›'
 }
 
-func isPaddedStartQuote(first, second rune) bool {
-	return second == ' ' && (first == '«' || first == '‹')
+func isScanningPaddedStartQuote(scanned string, next rune) bool {
+	return next == ' ' && (scanned == "«" || scanned == "‹")
 }
 
 func isQuote(r rune) bool {

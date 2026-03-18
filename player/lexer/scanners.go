@@ -49,20 +49,18 @@ func (l *Lexer) scanNext() (string, int, int) {
 func (l *Lexer) scanLineBreak() (string, int, int) {
 	line, col := l.line, l.col
 
-	if !isLineBreak(l.current) || l.atEndOfFile() {
+	if !isLineBreak(l.current) {
 		return "", line, col
 	}
 
-	breakStart := l.current
-	l.advance()
+	breakStart, _, _ := l.scanNext()
 
-	if isWindowsLineBreak(breakStart, l.current) {
-		lineBreak := string(breakStart) + string(l.current)
-		l.advance()
-		return lineBreak, line, col
+	if isScanningWindowsLineBreak(breakStart, l.current) {
+		breakEnd, _, _ := l.scanNext()
+		return breakStart + breakEnd, line, col
 	}
 
-	return string(breakStart), line, col
+	return breakStart, line, col
 }
 
 func (l *Lexer) scanStartAction() (string, int, int) {
@@ -90,16 +88,14 @@ func (l *Lexer) scanStartQuote() (string, int, int) {
 		return "", line, col
 	}
 
-	quoteStart := l.current
-	l.advance()
+	quoteStart, _, _ := l.scanNext()
 
-	if isPaddedStartQuote(quoteStart, l.current) {
-		quote := string(quoteStart) + string(l.current)
-		l.advance()
-		return quote, line, col
+	if isScanningPaddedStartQuote(quoteStart, l.current) {
+		quoteEnd, _, _ := l.scanNext()
+		return quoteStart + quoteEnd, line, col
 	}
 
-	return string(quoteStart), line, col
+	return quoteStart, line, col
 }
 
 func (l *Lexer) scanEscape() (string, int, int) {
@@ -127,8 +123,8 @@ func (l *Lexer) scanWhile(test func (rune) bool) (string, int, int) {
 
 	// End when current rune fails test
 	for !l.atEndOfFile() && test(l.current) {
-		scanned += string(l.current)
-		l.advance()
+		next, _, _ := l.scanNext()
+		scanned += next
 	}
 
 	return scanned, line, col
