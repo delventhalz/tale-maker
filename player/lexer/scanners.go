@@ -1,37 +1,11 @@
 package lexer
 
-import (
-	"unicode/utf8"
-)
-
-func (l *Lexer) read() {
-	r, w := utf8.DecodeRuneInString(l.input[l.pos:])
-	l.current = r
-	l.nextPos = l.pos + w
-}
-
-func (l *Lexer) advance() {
-	prev := l.current
-
-	l.pos = l.nextPos
-	l.read()
-
-	switch {
-	case isWindowsLineBreak(prev, l.current): // no increment for first char
-	case isLineBreak(prev):
-		l.line++
-		l.col = 1
-	default:
-		l.col++
-	}
-}
-
 func (l *Lexer) atEndOfFile() bool {
 	return l.pos >= len(l.input)
 }
 
 func (l *Lexer) atEndOfLine() bool {
-	return l.atEndOfFile() || isLineBreak(l.current)
+	return l.atEndOfFile() || isLineBreak(l.next)
 }
 
 func (l *Lexer) scanNext() (string, int, int) {
@@ -41,7 +15,7 @@ func (l *Lexer) scanNext() (string, int, int) {
 		return "", line, col
 	}
 
-	next := l.current
+	next := l.next
 	l.advance()
 	return string(next), line, col
 }
@@ -49,13 +23,13 @@ func (l *Lexer) scanNext() (string, int, int) {
 func (l *Lexer) scanLineBreak() (string, int, int) {
 	line, col := l.line, l.col
 
-	if !isLineBreak(l.current) {
+	if !isLineBreak(l.next) {
 		return "", line, col
 	}
 
 	breakStart, _, _ := l.scanNext()
 
-	if isScanningWindowsLineBreak(breakStart, l.current) {
+	if isScanningWindowsLineBreak(breakStart, l.next) {
 		breakEnd, _, _ := l.scanNext()
 		return breakStart + breakEnd, line, col
 	}
@@ -66,13 +40,13 @@ func (l *Lexer) scanLineBreak() (string, int, int) {
 func (l *Lexer) scanStartAction() (string, int, int) {
 	line, col := l.line, l.col
 
-	if !isAction(l.current) {
+	if !isAction(l.next) {
 		return "", line, col
 	}
 
 	action, _, _ := l.scanNext();
 
-	if !isEnclosingMarker(l.current) {
+	if !isEnclosingMarker(l.next) {
 		return action, line, col
 	}
 
@@ -84,13 +58,13 @@ func (l *Lexer) scanStartAction() (string, int, int) {
 func (l *Lexer) scanStartQuote() (string, int, int) {
 	line, col := l.line, l.col
 
-	if !isAnyQuote(l.current) || l.atEndOfFile() {
+	if !isAnyQuote(l.next) || l.atEndOfFile() {
 		return "", line, col
 	}
 
 	quoteStart, _, _ := l.scanNext()
 
-	if isScanningPaddedStartQuote(quoteStart, l.current) {
+	if isScanningPaddedStartQuote(quoteStart, l.next) {
 		quoteEnd, _, _ := l.scanNext()
 		return quoteStart + quoteEnd, line, col
 	}
@@ -101,14 +75,14 @@ func (l *Lexer) scanStartQuote() (string, int, int) {
 func (l *Lexer) scanEscape() (string, int, int) {
 	line, col := l.line, l.col
 
-	if !isEscapeStart(l.current) {
+	if !isEscapeStart(l.next) {
 		return "", line, col
 	}
 
 	escapeStart, _, _ := l.scanNext()
 
 	// Escape full two-character windows line breaks
-	if isLineBreak(l.current) {
+	if isLineBreak(l.next) {
 		lineBreak, _, _ := l.scanLineBreak()
 		return escapeStart + lineBreak, line, col
 	}
@@ -122,7 +96,7 @@ func (l *Lexer) scanWhile(test func (rune) bool) (string, int, int) {
 	scanned := ""
 
 	// End when current rune fails test
-	for !l.atEndOfFile() && test(l.current) {
+	for !l.atEndOfFile() && test(l.next) {
 		next, _, _ := l.scanNext()
 		scanned += next
 	}
@@ -140,7 +114,7 @@ func (l *Lexer) scanUntil(test func (rune) bool) (string, int, int) {
 func (l *Lexer) scanWhileWord() (string, int, int) {
 	line, col := l.line, l.col
 
-	if !isWordStart(l.current) {
+	if !isWordStart(l.next) {
 		return "", line, col
 	}
 
@@ -151,13 +125,13 @@ func (l *Lexer) scanWhileWord() (string, int, int) {
 func (l *Lexer) scanWhileNumberLiteral() (string, int, int) {
 	line, col := l.line, l.col
 
-	if (!isNumberStart(l.current)) {
+	if (!isNumberStart(l.next)) {
 		return "", line, col
 	}
 
 	number := ""
 
-	if (isMinus(l.current)) {
+	if (isMinus(l.next)) {
 		minus, _, _ := l.scanNext()
 		number += minus
 	}
@@ -165,7 +139,7 @@ func (l *Lexer) scanWhileNumberLiteral() (string, int, int) {
 	integer, _, _ := l.scanWhile(isNumber)
 	number += integer
 
-	if (!isDot(l.current)) {
+	if (!isDot(l.next)) {
 		return number, line, col
 	}
 
@@ -202,7 +176,7 @@ func (l *Lexer) scanWhileQuotedText() (string, int, int) {
 		padding, _, _ := l.scanNext()
 		text += padding
 
-		if (isEndQuote(l.current)) {
+		if (isEndQuote(l.next)) {
 			endQuote, _, _ := l.scanNext();
 			return startQuote + text + endQuote, line, col
 		}
@@ -222,18 +196,18 @@ func (l *Lexer) scanWhileBlockText() (string, int, int) {
 
 		switch {
 		// Line is a block header, capture up to end of last line
-		case isHeader(l.current):
+		case isHeader(l.next):
 			return text, line, col
 
 		// First non-whitespace is an action or insert, capture padding if
 		// not the block start or preceded by non-empty line
-		case isAction(l.current), isInsert(l.current):
+		case isAction(l.next), isInsert(l.next):
 			if text != "" || l.capturedBlockStart {
 				text += padding + linePadding
 			}
 			return text, line, col
 
-		case isEscapeStart(l.current):
+		case isEscapeStart(l.next):
 			escape, _, _ := l.scanEscape()
 			text += padding + linePadding + escape
 			padding = ""
@@ -255,7 +229,7 @@ func (l *Lexer) scanWhileBlockText() (string, int, int) {
 			text += padding + linePadding + lineEnd
 
 			padding = ""
-			if isLineBreak(l.current) {
+			if isLineBreak(l.next) {
 				lineBreak, _, _ := l.scanLineBreak()
 				padding += lineBreak
 			}

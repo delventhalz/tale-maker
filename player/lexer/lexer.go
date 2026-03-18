@@ -3,6 +3,7 @@ package lexer
 import (
 	"fmt"
 	"tale/tokens"
+	"unicode/utf8"
 )
 
 type Lexer struct {
@@ -11,7 +12,7 @@ type Lexer struct {
 	nextPos int
 	line int
 	col int
-	current rune
+	next rune
 	captureStack []tokens.TokenType
 	capturedBlockStart bool
 }
@@ -24,6 +25,28 @@ func isAnyOf[T any](tests ...func(T) bool) func(T) bool {
 			}
 		}
 		return false
+	}
+}
+
+func (l *Lexer) read() {
+	r, w := utf8.DecodeRuneInString(l.input[l.pos:])
+	l.next = r
+	l.nextPos = l.pos + w
+}
+
+func (l *Lexer) advance() {
+	prev := l.next
+
+	l.pos = l.nextPos
+	l.read()
+
+	switch {
+	case isWindowsLineBreak(prev, l.next): // no increment for first char
+	case isLineBreak(prev):
+		l.line++
+		l.col = 1
+	default:
+		l.col++
 	}
 }
 
@@ -89,10 +112,10 @@ func (l *Lexer) Next() tokens.Token {
 			var headerEnd string
 			var endLine, endCol int
 
-			if l.isCapturing(tokens.INPUT_HEADER) && isInputHeader(l.current) {
+			if l.isCapturing(tokens.INPUT_HEADER) && isInputHeader(l.next) {
 				headerEnd, endLine, endCol = l.scanWhile(isInputHeader)
 			}
-			if l.isCapturing(tokens.STATE_HEADER) && isStateHeader(l.current) {
+			if l.isCapturing(tokens.STATE_HEADER) && isStateHeader(l.next) {
 				headerEnd, endLine, endCol = l.scanWhile(isStateHeader)
 			}
 
@@ -122,7 +145,7 @@ func (l *Lexer) Next() tokens.Token {
 		}
 
 		if l.isCapturing(tokens.ACTION) {
-			if isActionEnd(l.current) {
+			if isActionEnd(l.next) {
 				end, line, col := l.scanNext()
 				l.endCurrentCapture()
 				return tokens.Token{tokens.ACTION_END, end, line, col}
@@ -130,7 +153,7 @@ func (l *Lexer) Next() tokens.Token {
 		}
 
 		if l.isCapturing(tokens.INSERT) {
-			if isInsertEnd(l.current) {
+			if isInsertEnd(l.next) {
 				end, line, col := l.scanNext()
 				l.endCurrentCapture()
 				return tokens.Token{tokens.INSERT_END, end, line, col}
@@ -139,11 +162,11 @@ func (l *Lexer) Next() tokens.Token {
 
 		// Capturing an expression in a header, action, or insert
 		if l.isCapturingAny(tokens.INPUT_HEADER, tokens.STATE_HEADER, tokens.ACTION, tokens.INSERT) {
-			if isNumberStart(l.current) {
+			if isNumberStart(l.next) {
 				number, numberLine, numberCol := l.scanWhileNumberLiteral()
 				return tokens.Token{tokens.NUMBER, number, numberLine, numberCol}
 			}
-			if isAnyQuote(l.current) {
+			if isAnyQuote(l.next) {
 				quote, quoteLine, quoteCol := l.scanWhileQuotedText()
 				return tokens.Token{tokens.QUOTED_TEXT, quote, quoteLine, quoteCol}
 			}
@@ -157,14 +180,14 @@ func (l *Lexer) Next() tokens.Token {
 		}
 
 		// Starting a Block Header
-		if isInputHeader(l.current) {
+		if isInputHeader(l.next) {
 			header, line, col := l.scanWhile(isInputHeader)
 			l.startCaptureOf(tokens.INPUT_HEADER)
 			l.capturedBlockStart = false
 			return tokens.Token{tokens.INPUT_HEADER, header, line, col}
 		}
 
-		if isStateHeader(l.current) {
+		if isStateHeader(l.next) {
 			header, line, col := l.scanWhile(isStateHeader)
 			l.startCaptureOf(tokens.STATE_HEADER)
 			l.capturedBlockStart = false
@@ -172,14 +195,14 @@ func (l *Lexer) Next() tokens.Token {
 		}
 
 		// Starting an Action or Enclosing Action
-		if isAction(l.current) {
+		if isAction(l.next) {
 			action, line, col := l.scanStartAction()
 			l.startCaptureOf(tokens.ACTION)
 			return tokens.Token{getActionToken(action), action, line, col}
 		}
 
 		// Starting an Insert
-		if isInsert(l.current) {
+		if isInsert(l.next) {
 			insert, line, col := l.scanNext()
 			l.startCaptureOf(tokens.INSERT)
 			return tokens.Token{tokens.INSERT, insert, line, col}
@@ -196,5 +219,5 @@ func (l *Lexer) Next() tokens.Token {
 		return tokens.Token{tokens.BLOCK_TEXT, text, textLine, textCol}
 	}
 
-	panic(fmt.Sprintf("Repeat position [%d]! %q (%d:%d)", l.pos, l.current, l.line, l.col))
+	panic(fmt.Sprintf("Repeat position [%d]! %q (%d:%d)", l.pos, l.next, l.line, l.col))
 }
