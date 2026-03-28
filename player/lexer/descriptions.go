@@ -38,27 +38,24 @@ func isHeader(r rune) bool {
 	return isInputHeader(r) || isStateHeader(r)
 }
 
-func isAction(r rune) bool {
+func isActionOrComment(r rune) bool {
 	return r == '<'
-}
-
-func isActionEnd(r rune) bool {
-	return r == '>'
 }
 
 func isEnclosingMarker(r rune) bool {
 	return r == '/'
 }
 
-func getActionToken(action string) tokens.TokenType {
-	switch action {
-	case "</":
-		return tokens.ENCLOSING_ACTION
-	case "<":
-		return tokens.ACTION
-	default:
-		panic(fmt.Sprintf("Unknown action %q!", action))
-	}
+func isCommentMarker(r rune) bool {
+	return r == '!'
+}
+
+func isActionEnd(r rune) bool {
+	return r == '>'
+}
+
+func isCommentEnd(r rune) bool {
+	return r == '>'
 }
 
 func isInsert(r rune) bool {
@@ -75,6 +72,10 @@ func isDigit(r rune) bool {
 
 func isMinus(r rune) bool {
 	return r == '-'
+}
+
+func isScannedMinus(s string) bool {
+	return s == "-"
 }
 
 func isDot(r rune) bool {

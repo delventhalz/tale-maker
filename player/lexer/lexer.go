@@ -105,10 +105,43 @@ func (l *Lexer) Next() tokens.Token {
 	for prevPos != l.pos {
 		prevPos = l.pos
 
-		// In a Block Header
 		if l.isCapturingAny(tokens.INPUT_HEADER, tokens.STATE_HEADER) {
 			l.scanWhile(isNonBreakingSpace)
+		}
 
+		if l.isCapturingAny(tokens.ACTION, tokens.INSERT) {
+			l.scanWhile(isWhitespace)
+		}
+
+		if l.atEndOfFile() {
+			return tokens.Token{tokens.EOF, "", l.line, l.col}
+		}
+
+		// Starting an Action, Enclosing Action, or Comment
+		if isActionOrComment(l.next) {
+			ambiguous, line, col := l.scanNext()
+
+			if isCommentMarker(l.next) {
+				l.scanUntil(isCommentEnd)
+				l.scanNext()
+				continue // restart loop without returning token
+			}
+
+			// Cannot start an action inside a comment
+			if l.isCapturingAny(tokens.INPUT_HEADER, tokens.STATE_HEADER, tokens.ACTION, tokens.INSERT) {
+				return tokens.Token{tokens.INVALID, ambiguous, line, col}
+			}
+
+			l.startCaptureOf(tokens.ACTION)
+			if isEnclosingMarker(l.next) {
+				marker, _, _ := l.scanNext()
+				return tokens.Token{tokens.ENCLOSING_ACTION, ambiguous + marker, line, col}
+			}
+			return tokens.Token{tokens.ACTION, ambiguous, line, col}
+		}
+
+		// Check for end of header at end of line
+		if l.isCapturingAny(tokens.INPUT_HEADER, tokens.STATE_HEADER) {
 			var headerEnd string
 			var endLine, endCol int
 
@@ -119,28 +152,24 @@ func (l *Lexer) Next() tokens.Token {
 				headerEnd, endLine, endCol = l.scanWhile(isStateHeader)
 			}
 
-			// Empty to end of line (with or without header chars) and header ends
-			l.scanWhile(isNonBreakingSpace)
+			if headerEnd != "" {
+				l.scanWhile(isNonBreakingSpace)
+				if !l.atEndOfLine() {
+					return tokens.Token{tokens.INVALID, headerEnd, endLine, endCol}
+				}
+			}
+
 			if l.atEndOfLine() {
 				l.endCurrentCapture()
 				lineBreak, breakLine, breakCol := l.scanLineBreak()
 
-				if (headerEnd != "") {
+				if headerEnd != "" {
 					return tokens.Token{tokens.HEADER_END, headerEnd, endLine, endCol}
 				}
 
 				if lineBreak != "" {
 					return tokens.Token{tokens.HEADER_END, lineBreak, breakLine, breakCol}
 				}
-			}
-		}
-
-		// In an Action or Insert
-		if l.isCapturingAny(tokens.ACTION, tokens.INSERT) {
-			l.scanWhile(isWhitespace)
-
-			if l.atEndOfFile() {
-				return tokens.Token{tokens.EOF, "", l.line, l.col}
 			}
 		}
 
@@ -164,19 +193,24 @@ func (l *Lexer) Next() tokens.Token {
 		if l.isCapturingAny(tokens.INPUT_HEADER, tokens.STATE_HEADER, tokens.ACTION, tokens.INSERT) {
 			if isNumberStart(l.next) {
 				number, numberLine, numberCol := l.scanWhileNumberLiteral()
+				if isScannedMinus(number) {
+					return tokens.Token{tokens.INVALID, number, numberLine, numberCol}
+				}
 				return tokens.Token{tokens.NUMBER, number, numberLine, numberCol}
 			}
+
 			if isAnyQuote(l.next) {
 				quote, quoteLine, quoteCol := l.scanWhileQuotedText()
 				return tokens.Token{tokens.QUOTED_TEXT, quote, quoteLine, quoteCol}
 			}
-			word, wordLine, wordCol := l.scanWhileWord()
-			return tokens.Token{getWordToken(word), word, wordLine, wordCol}
-		}
 
-		// Test for EOF after handling special captures states
-		if l.atEndOfFile() {
-			return tokens.Token{tokens.EOF, "", l.line, l.col}
+			if isWordStart(l.next) {
+				word, wordLine, wordCol := l.scanWhileWord()
+				return tokens.Token{getWordToken(word), word, wordLine, wordCol}
+			}
+
+			invalid, invalidLine, invalidCol := l.scanNext()
+			return tokens.Token{tokens.INVALID, invalid, invalidLine, invalidCol}
 		}
 
 		// Starting a Block Header
@@ -194,13 +228,6 @@ func (l *Lexer) Next() tokens.Token {
 			return tokens.Token{tokens.STATE_HEADER, header, line, col}
 		}
 
-		// Starting an Action or Enclosing Action
-		if isAction(l.next) {
-			action, line, col := l.scanStartAction()
-			l.startCaptureOf(tokens.ACTION)
-			return tokens.Token{getActionToken(action), action, line, col}
-		}
-
 		// Starting an Insert
 		if isInsert(l.next) {
 			insert, line, col := l.scanNext()
@@ -208,7 +235,7 @@ func (l *Lexer) Next() tokens.Token {
 			return tokens.Token{tokens.INSERT, insert, line, col}
 		}
 
-		// Text
+		// Block Text
 		text, textLine, textCol := l.scanWhileBlockText()
 
 		if text == "" {

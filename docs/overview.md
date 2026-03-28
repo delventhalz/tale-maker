@@ -335,6 +335,29 @@ Objects have a list of special values which may be used to generate labels, tool
 
 The specifics of how these values change the appearance of the object will depend on the specific game engine, but the text they store can be referenced like any other text value.
 
+## Comments
+
+Comments are sections of text which are ignored and will not be displayed. They are useful for leaving notes for the people _writing_ the tale, whether yourself or a collaborator. A comment starts with `<!` and continues until a closing `>`.
+
+```
+> search >
+You don't find {item <!rename this>}
+<! too short? >
+
+== cave ==
+<!
+    TODO: Fill this in.
+    This is the big opening to the adventure!
+    Make it good!
+>
+```
+
+Note that one place you cannot place a comment is in the middle of quoted text. All characters in quoted text are printed as written. The following action sets the text _"This is <!not> a comment"_ without ignoring anything:
+
+```
+<set message "This is <!not> a comment">
+```
+
 ## Escape Characters
 
 When writing text blocks, it is sometimes ambiguous whether a character is meant to be displayed for the player or if it is a part of the Tale Maker syntax. In those cases, a backslash can be used before a character to specify that it is meant to be displayed.

@@ -37,24 +37,6 @@ func (l *Lexer) scanLineBreak() (string, int, int) {
 	return breakStart, line, col
 }
 
-func (l *Lexer) scanStartAction() (string, int, int) {
-	line, col := l.line, l.col
-
-	if !isAction(l.next) {
-		return "", line, col
-	}
-
-	action, _, _ := l.scanNext();
-
-	if !isEnclosingMarker(l.next) {
-		return action, line, col
-	}
-
-	marker, _, _ := l.scanNext()
-
-	return action + marker, line, col;
-}
-
 func (l *Lexer) scanStartQuote() (string, int, int) {
 	line, col := l.line, l.col
 
@@ -201,7 +183,7 @@ func (l *Lexer) scanWhileBlockText() (string, int, int) {
 
 		// First non-whitespace is an action or insert, capture padding if
 		// not the block start or preceded by non-empty line
-		case isAction(l.next), isInsert(l.next):
+		case isActionOrComment(l.next), isInsert(l.next):
 			if text != "" || l.capturedBlockStart {
 				text += padding + linePadding
 			}
@@ -225,7 +207,7 @@ func (l *Lexer) scanWhileBlockText() (string, int, int) {
 			}
 
 		default:
-			lineEnd, _, _ := l.scanUntil(isAnyOf(isEscapeStart, isLineBreak, isAction, isInsert))
+			lineEnd, _, _ := l.scanUntil(isAnyOf(isEscapeStart, isLineBreak, isActionOrComment, isInsert))
 			text += padding + linePadding + lineEnd
 
 			padding = ""

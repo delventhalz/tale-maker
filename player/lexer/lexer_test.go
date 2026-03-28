@@ -655,6 +655,97 @@ You look over {name of player}. Nice.
 	})
 }
 
+func TestComments(t *testing.T) {
+	input := `<! This is my adventure >
+<!>> search <!Better name?> >
+<!Why this header name?>
+<set header "This is <!not> a comment">
+<!Love this section>
+You don't<!contraction?> find {<!rename>item} <set disappointed <! SORBO > >
+
+= adventure <!
+
+Are we sold on this?
+
+> =
+<!TODO: Fill this in>`
+
+	expectTokens(t, input, []tokens.Token{
+		{tokens.INPUT_HEADER, ">", 2, 4},
+		{tokens.NAME, "search", 2, 6},
+		{tokens.HEADER_END, ">", 2, 29},
+
+		{tokens.ACTION, "<", 4, 1},
+		{tokens.NAME, "set", 4, 2},
+		{tokens.NAME, "header", 4, 6},
+		{tokens.QUOTED_TEXT, "\"This is <!not> a comment\"", 4, 13},
+		{tokens.ACTION_END, ">", 4, 39},
+
+		{tokens.BLOCK_TEXT, "You don't", 6, 1},
+		{tokens.BLOCK_TEXT, " find ", 6, 25},
+		{tokens.INSERT, "{", 6, 31},
+		{tokens.NAME, "item", 6, 41},
+		{tokens.INSERT_END, "}", 6, 45},
+		{tokens.BLOCK_TEXT, " ", 6, 46},
+
+		{tokens.ACTION, "<", 6, 47},
+		{tokens.NAME, "set", 6, 48},
+		{tokens.NAME, "disappointed", 6, 52},
+		{tokens.ACTION_END, ">", 6, 76},
+
+		{tokens.STATE_HEADER, "=", 8, 1},
+		{tokens.NAME, "adventure", 8, 3},
+		{tokens.HEADER_END, "=", 12, 3},
+
+		{tokens.EOF, "", 13, 22},
+	})
+}
+
+func TestInvalidCharacters(t *testing.T) {
+	input := `> $bling <
+== 2heads is * == not
+<? -2heads is in @ <!*?&@!>>
+You-- na1l&d {-it!|?}
+`
+
+	expectTokens(t, input, []tokens.Token{
+		{tokens.INPUT_HEADER, ">", 1, 1},
+		{tokens.INVALID, "$", 1, 3},
+		{tokens.NAME, "bling", 1, 4},
+		{tokens.INVALID, "<", 1, 10},
+		{tokens.HEADER_END, "\n", 1, 11},
+
+		{tokens.STATE_HEADER, "==", 2, 1},
+		{tokens.NUMBER, "2", 2, 4},
+		{tokens.NAME, "heads", 2, 5},
+		{tokens.IS, "is", 2, 11},
+		{tokens.INVALID, "*", 2, 14},
+		{tokens.INVALID, "==", 2, 16},
+		{tokens.NOT, "not", 2, 19},
+		{tokens.HEADER_END, "\n", 2, 22},
+
+		{tokens.ACTION, "<", 3, 1},
+		{tokens.INVALID, "?", 3, 2},
+		{tokens.NUMBER, "-2", 3, 4},
+		{tokens.NAME, "heads", 3, 6},
+		{tokens.IS, "is", 3, 12},
+		{tokens.IN, "in", 3, 15},
+		{tokens.INVALID, "@", 3, 18},
+		{tokens.ACTION_END, ">", 3, 28},
+
+		{tokens.BLOCK_TEXT, "You-- na1l&d ", 4, 1},
+		{tokens.INSERT, "{", 4, 14},
+		{tokens.INVALID, "-", 4, 15},
+		{tokens.IT, "it", 4, 16},
+		{tokens.INVALID, "!", 4, 18},
+		{tokens.INVALID, "|", 4, 19},
+		{tokens.INVALID, "?", 4, 20},
+		{tokens.INSERT_END, "}", 4, 21},
+
+		{tokens.EOF, "", 5, 1},
+	})
+}
+
 func TestEnclosingActions(t *testing.T) {
 	input := `> greet >
 You give a timid wave. They respond.
@@ -743,7 +834,7 @@ You give a timid wave. They respond.
 
 func TestEscapes(t *testing.T) {
 	input := `> do_math >
-\n\n\n    ...finally it comes to you, <b>is 3 \< 2?</b> No! 3 > 2!
+\n\n\n    ...finally it comes to you \<!>: <b>is 3 \< 2?</b> No! 3 > 2!
 
 3
 \>
@@ -760,19 +851,19 @@ Triumph!
 		{tokens.NAME, "do_math", 1, 3},
 		{tokens.HEADER_END, ">", 1, 11},
 
-		{tokens.BLOCK_TEXT, "\\n\\n\\n    ...finally it comes to you, ", 2, 1},
+		{tokens.BLOCK_TEXT, "\\n\\n\\n    ...finally it comes to you \\<!>: ", 2, 1},
 
-		{tokens.ACTION, "<", 2, 39},
-		{tokens.NAME, "b", 2, 40},
-		{tokens.ACTION_END, ">", 2, 41},
+		{tokens.ACTION, "<", 2, 44},
+		{tokens.NAME, "b", 2, 45},
+		{tokens.ACTION_END, ">", 2, 46},
 
-		{tokens.BLOCK_TEXT, "is 3 \\< 2?", 2, 42},
+		{tokens.BLOCK_TEXT, "is 3 \\< 2?", 2, 47},
 
-		{tokens.ENCLOSING_ACTION, "</", 2, 52},
-		{tokens.NAME, "b", 2, 54},
-		{tokens.ACTION_END, ">", 2, 55},
+		{tokens.ENCLOSING_ACTION, "</", 2, 57},
+		{tokens.NAME, "b", 2, 59},
+		{tokens.ACTION_END, ">", 2, 60},
 
-		{tokens.BLOCK_TEXT, " No! 3 > 2!\n\n3\n\\>\n2\n\\=\n", 2, 56},
+		{tokens.BLOCK_TEXT, " No! 3 > 2!\n\n3\n\\>\n2\n\\=\n", 2, 61},
 
 		{tokens.ACTION, "<", 8, 1},
 		{tokens.NAME, "i", 8, 2},
@@ -831,5 +922,9 @@ func TestUnexpectedEof(t *testing.T) {
 		{tokens.INSERT, "{", 1, 13},
 		{tokens.NAME, "na", 1, 14},
 		{tokens.EOF, "", 1, 16},
+	})
+
+	expectTokens(t, "<!TODO: finish comment", []tokens.Token{
+		{tokens.EOF, "", 1, 23},
 	})
 }
