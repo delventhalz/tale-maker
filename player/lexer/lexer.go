@@ -8,40 +8,37 @@ import (
 
 type Lexer struct {
 	input string
+	next rune
+	peek rune
 	pos int
-	nextPos int
+	peekPos int
+	readPos int
 	line int
 	col int
-	next rune
 	captureStack []tokens.TokenType
 	capturedBlockStart bool
 }
 
-func isAnyOf[T any](tests ...func(T) bool) func(T) bool {
-	return func(val T) bool {
-		for _, test := range tests {
-			if test(val) {
-				return true
-			}
-		}
-		return false
+func (l *Lexer) read() (rune, int) {
+	if l.readPos >= len(l.input) {
+		return 0, 0
 	}
-}
-
-func (l *Lexer) read() {
-	r, w := utf8.DecodeRuneInString(l.input[l.pos:])
-	l.next = r
-	l.nextPos = l.pos + w
+	return utf8.DecodeRuneInString(l.input[l.readPos:])
 }
 
 func (l *Lexer) advance() {
-	prev := l.next
+	r, w := l.read()
 
-	l.pos = l.nextPos
-	l.read()
+	prev := l.next
+	l.next = l.peek
+	l.peek = r
+
+	l.pos = l.peekPos
+	l.peekPos = l.readPos
+	l.readPos += w
 
 	switch {
-	case isWindowsLineBreak(prev, l.next): // no increment for first char
+	case isWindowsBreakStart(prev) && isWindowsBreakEnd(l.next): // no increment for first char
 	case isLineBreak(prev):
 		l.line++
 		l.col = 1
@@ -57,16 +54,6 @@ func (l *Lexer) startCaptureOf(t tokens.TokenType) {
 func (l *Lexer) endCurrentCapture() {
 	if len(l.captureStack) > 0 {
 		l.captureStack = l.captureStack[:len(l.captureStack) - 1]
-	}
-}
-
-// Ends any matching captures IN ORDER from top of stack to bottom
-func (l *Lexer) endAnyCapturesOf(ts ...tokens.TokenType) {
-	for _, t := range ts {
-		count := len(l.captureStack)
-		if count > 0 && l.captureStack[count - 1] == t {
-			l.endCurrentCapture()
-		}
 	}
 }
 
@@ -92,8 +79,15 @@ func (l *Lexer) isCapturingAny(ts ...tokens.TokenType) bool {
 }
 
 func New(input string) *Lexer {
-	l := &Lexer{input: input, line: 1, col: 1}
-	l.read()
+	l := &Lexer{ input: input, line: 1, col: 1 }
+
+	l.next, l.peekPos = l.read()
+	l.readPos = l.peekPos
+
+	peek, peekWidth := l.read()
+	l.peek = peek
+	l.readPos = l.peekPos + peekWidth
+
 	return l
 }
 
@@ -113,31 +107,14 @@ func (l *Lexer) Next() tokens.Token {
 			l.scanWhile(isWhitespace)
 		}
 
-		if l.atEndOfFile() {
+		if isEof(l.next) {
 			return tokens.Token{tokens.EOF, "", l.line, l.col}
 		}
 
-		// Starting an Action, Enclosing Action, or Comment
-		if isActionOrComment(l.next) {
-			ambiguous, line, col := l.scanNext()
-
-			if isCommentMarker(l.next) {
-				l.scanUntil(isCommentEnd)
-				l.scanNext()
-				continue // restart loop without returning token
-			}
-
-			// Cannot start an action inside a comment
-			if l.isCapturingAny(tokens.INPUT_HEADER, tokens.STATE_HEADER, tokens.ACTION, tokens.INSERT) {
-				return tokens.Token{tokens.INVALID, ambiguous, line, col}
-			}
-
-			l.startCaptureOf(tokens.ACTION)
-			if isEnclosingMarker(l.next) {
-				marker, _, _ := l.scanNext()
-				return tokens.Token{tokens.ENCLOSING_ACTION, ambiguous + marker, line, col}
-			}
-			return tokens.Token{tokens.ACTION, ambiguous, line, col}
+		if isComment(l.next) && isCommentMarker(l.peek) {
+			l.scanUntil(isCommentEnd)
+			l.scanNext()
+			continue // restart loop without returning token
 		}
 
 		// Check for end of header at end of line
@@ -154,12 +131,12 @@ func (l *Lexer) Next() tokens.Token {
 
 			if headerEnd != "" {
 				l.scanWhile(isNonBreakingSpace)
-				if !l.atEndOfLine() {
+				if !isEndOfLine(l.next) {
 					return tokens.Token{tokens.INVALID, headerEnd, endLine, endCol}
 				}
 			}
 
-			if l.atEndOfLine() {
+			if isEndOfLine(l.next) {
 				l.endCurrentCapture()
 				lineBreak, breakLine, breakCol := l.scanLineBreak()
 
@@ -170,6 +147,8 @@ func (l *Lexer) Next() tokens.Token {
 				if lineBreak != "" {
 					return tokens.Token{tokens.HEADER_END, lineBreak, breakLine, breakCol}
 				}
+
+				continue // Restart loop to capture EOF
 			}
 		}
 
@@ -228,6 +207,13 @@ func (l *Lexer) Next() tokens.Token {
 			return tokens.Token{tokens.STATE_HEADER, header, line, col}
 		}
 
+		// Starting an Action or Enclosing Action
+		if isAction(l.next) {
+			action, line, col := l.scanStartAction()
+			l.startCaptureOf(tokens.ACTION)
+			return tokens.Token{getActionToken(action), action, line, col}
+		}
+
 		// Starting an Insert
 		if isInsert(l.next) {
 			insert, line, col := l.scanNext()
@@ -236,13 +222,22 @@ func (l *Lexer) Next() tokens.Token {
 		}
 
 		// Block Text
-		text, textLine, textCol := l.scanWhileBlockText()
+		if !l.capturedBlockStart {
+			start, startLine, startCol := l.scanTextFromBlockStart()
 
+			if (start == "") {
+				continue
+			}
+
+			l.capturedBlockStart = true
+			return tokens.Token{tokens.BLOCK_TEXT, start, startLine, startCol}
+		}
+
+		text, textLine, textCol := l.scanWhileBlockText()
 		if text == "" {
 			continue
 		}
 
-		l.capturedBlockStart = true
 		return tokens.Token{tokens.BLOCK_TEXT, text, textLine, textCol}
 	}
 

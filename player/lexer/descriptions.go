@@ -6,16 +6,24 @@ import (
 	"tale/tokens"
 )
 
+func isEof(r rune) bool {
+	return r == 0
+}
+
 func isLineBreak(r rune) bool {
 	return r == '\n' || r == '\r' || r == '\f'
 }
 
-func isWindowsLineBreak(first, second rune) bool {
-	return first == '\r' && second == '\n'
+func isWindowsBreakStart(r rune) bool {
+	return r == '\r'
 }
 
-func isScanningWindowsLineBreak(scanned string, next rune) bool {
-	return scanned == "\r" && next == '\n'
+func isWindowsBreakEnd(r rune) bool {
+	return r == '\n'
+}
+
+func isEndOfLine(r rune) bool {
+	return isEof(r) || isLineBreak(r)
 }
 
 func isNonBreakingSpace(r rune) bool {
@@ -38,7 +46,7 @@ func isHeader(r rune) bool {
 	return isInputHeader(r) || isStateHeader(r)
 }
 
-func isActionOrComment(r rune) bool {
+func isAction(r rune) bool {
 	return r == '<'
 }
 
@@ -46,12 +54,27 @@ func isEnclosingMarker(r rune) bool {
 	return r == '/'
 }
 
-func isCommentMarker(r rune) bool {
-	return r == '!'
+func getActionToken(action string) tokens.TokenType {
+	switch action {
+	case "</":
+		return tokens.ENCLOSING_ACTION
+	case "<":
+		return tokens.ACTION
+	default:
+		panic(fmt.Sprintf("Unknown action %q!", action))
+	}
 }
 
 func isActionEnd(r rune) bool {
 	return r == '>'
+}
+
+func isComment(r rune) bool {
+	return r == '<'
+}
+
+func isCommentMarker(r rune) bool {
+	return r == '!'
 }
 
 func isCommentEnd(r rune) bool {
@@ -160,10 +183,6 @@ func isAnyQuote(r rune) bool {
 		r == '›'
 }
 
-func isScanningPaddedStartQuote(scanned string, next rune) bool {
-	return next == ' ' && (scanned == "«" || scanned == "‹")
-}
-
 func isQuote(r rune) bool {
 	return r == '"'
 }
@@ -192,10 +211,6 @@ func isSingleCurlyQuote(r rune) bool {
 	return r == '‘' || r == '’'
 }
 
-func isQuotePadding(r rune) bool {
-	return r == ' '
-}
-
 func isLeftAngleQuote(r rune) bool {
 	return r == '«'
 }
@@ -212,62 +227,39 @@ func isSingleRightAngleQuote(r rune) bool {
 	return r == '›'
 }
 
-func getEndQuoteTest(startQuote string) func(rune) bool {
-	switch startQuote {
-	case "\"":
+func isPaddableStartQuote(r rune) bool {
+	return r == '«' || r == '‹'
+}
+
+func isQuotePadding(r rune) bool {
+	return r == ' '
+}
+
+func getEndQuoteTest(r rune) func(rune) bool {
+	switch r {
+	case '"':
 		return isQuote
-	case "'":
+	case '\'':
 		return isSingleQuote
-	case "`":
+	case '`':
 		return isBacktick
-	case "“", "”":
+	case '“', '”':
 		return isRightQuote
-	case "‘", "’":
+	case '‘', '’':
 		return isSingleRightQuote
-	case "„":
+	case '„':
 		return isCurlyQuote
-	case "‚":
+	case '‚':
 		return isSingleCurlyQuote
-	case "«":
+	case '«':
 		return isRightAngleQuote
-	case "‹":
+	case '‹':
 		return isSingleRightAngleQuote
-	case "»":
+	case '»':
 		return isLeftAngleQuote
-	case "›":
+	case '›':
 		return isSingleLeftAngleQuote
 	default:
-		panic(fmt.Sprintf("Unknown start quote %q!", startQuote))
+		panic(fmt.Sprintf("Unknown start quote %q!", r))
 	}
-}
-
-func getPaddedEndQuoteTests(paddedStartQuote string) (func(rune) bool, func(rune) bool) {
-	switch paddedStartQuote {
-	case "« ":
-		return isQuotePadding, isRightAngleQuote
-	case "‹ ":
-		return isQuotePadding, isSingleRightAngleQuote
-	default:
-		panic(fmt.Sprintf("Unknown padded start quote %q!", paddedStartQuote))
-	}
-}
-
-func isPaddedLeftAngleQuote(quote string) bool {
-	return quote == "« "
-}
-
-func isSinglePaddedLeftAngleQuote(quote string) bool {
-	return quote == "‹ "
-}
-
-func isPaddedRightAngleQuote(quote string) bool {
-	return quote == " »"
-}
-
-func isSinglePaddedRightAngleQuote(quote string) bool {
-	return quote == " ›"
-}
-
-func isPaddedQuoteStart(quote string) bool {
-	return isPaddedLeftAngleQuote(quote) || isSinglePaddedLeftAngleQuote(quote)
 }
