@@ -187,8 +187,8 @@ func (l *Lexer) scanWhileBlockText() (string, int, int) {
 		case l.atLineStart && isHeader(l.next):
 			return text, line, col
 
-		// Hit an action or insert, capture all text and padding
-		case isAction(l.next), isInsert(l.next):
+		// Hit an action, capture all text and padding
+		case isAction(l.next):
 			return text + allPadding + linePadding, line, col
 
 		case isEndOfLine(l.next):
@@ -203,7 +203,7 @@ func (l *Lexer) scanWhileBlockText() (string, int, int) {
 			linePadding = ""
 
 		default:
-			lineEnd, _, _ := l.scanUntil(isAnyOf(isEscapeStart, isLineBreak, isAction, isInsert))
+			lineEnd, _, _ := l.scanUntil(isAnyOf(isEscapeStart, isLineBreak, isAction))
 			text += allPadding + linePadding + lineEnd
 			allPadding = ""
 			linePadding = ""

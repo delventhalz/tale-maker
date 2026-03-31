@@ -46,7 +46,7 @@ func isHeader(r rune) bool {
 }
 
 func isAction(r rune) bool {
-	return r == '<'
+	return r == '{'
 }
 
 func isEnclosingMarker(r rune) bool {
@@ -55,9 +55,9 @@ func isEnclosingMarker(r rune) bool {
 
 func getActionToken(action string) tokens.TokenType {
 	switch action {
-	case "</":
+	case "{/":
 		return tokens.ENCLOSING_ACTION
-	case "<":
+	case "{":
 		return tokens.ACTION
 	default:
 		panic(fmt.Sprintf("Unknown action %q!", action))
@@ -65,11 +65,11 @@ func getActionToken(action string) tokens.TokenType {
 }
 
 func isActionEnd(r rune) bool {
-	return r == '>'
+	return r == '}'
 }
 
 func isComment(r rune) bool {
-	return r == '<'
+	return r == '{'
 }
 
 func isCommentMarker(r rune) bool {
@@ -77,14 +77,6 @@ func isCommentMarker(r rune) bool {
 }
 
 func isCommentEnd(r rune) bool {
-	return r == '>'
-}
-
-func isInsert(r rune) bool {
-	return r == '{'
-}
-
-func isInsertEnd(r rune) bool {
 	return r == '}'
 }
 

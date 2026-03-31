@@ -52,29 +52,29 @@ The beginning of a Tale Maker file, before any block headers, is the start block
 ## Actions
 
 ```
-<set health 100>
+{set health 100}
 ```
 
-Actions allow you to change game state, trigger effects, and style text. An action starts with an opening `<`, is followed by the name of the action, then optionally may include one or more inputs for the action, and ends with a closing `>`. They trigger when the block they are included in triggers.
+Actions allow you to change game state, trigger effects, and style text. An action starts with an opening `{`, is followed by the name of the action, then optionally may include one or more inputs for the action, and ends with a closing `}`. They trigger when the block they are included in triggers.
 
 ```
 = room is dark =
 >> light >>
-<set room is not dark>
+{set room is not dark}
 The light is on. You can see!
 ```
 
-In addition to inputs written within the action, display text can be used as an input with an "enclosing" action. Write the initial action tag including its opening `<` and closing `>`, then write the display text, and finish with a closing tag that starts with `</`, repeats the name of the action, and ends with another `>`. Much like HTML, this is commonly used to style text.
+In addition to aciton inputs written between the curly braces (`{}`), display text can be used as an input with an "enclosing" action.
+
+Write the initial action including its opening `{` and closing `}`, then write the display text, and finish with a closing tag that starts with `{/`, repeats the name of the action, and ends with another `}`. Much like HTML, this is commonly used to style text.
 
 ```
 > insult >
 >> brigand >>
-<b>What did you say!?</b>
+{b}What did you say!?{/b}
 ```
 
-## Inserts
-
-Inserts contain expressions similar to those in state block headers and produce text to be displayed. They start with an opening `{`, are followed by an expression which specifies the text to display, and finish with a closing `}`.
+Finally, actions can be used to produce text to display. The names of [variables](#variables) or other expressions can be put between curly braces and whatever text they produce will be displayed.
 
 ```
 > look >
@@ -84,11 +84,11 @@ You see {name of player} looking back at you. Not bad.
 
 ## Variables
 
-Variables are named values which can change over the course of a game. They can be used in state block headers, actions, and inserts. Their value is typically changed with the "set" action.
+Variables are named values which can change over the course of a game. They can be used in actions and state block headers. Their value is typically changed with the "set" action.
 
 ```
 > shoot >
-<set score 3>
+{set score 3}
 You shoot from downtown. It goes in! {score} points!
 
 = score is 3 =
@@ -106,7 +106,7 @@ A variable which is referenced before it is explicitly assigned a value will be 
 
 ### Variable Names
 
-Variable names must be unique, may not match the names of any built in actions or keywords (e.g. not "set", "is", "of", etc), may not _start_ with a number but may include numbers _after_ at least one other character, and should generally consist of only alphanumeric characters and underscores (\_).
+Variable names must be unique, may not match the names of any actions or keywords (e.g. not "set", "is", "of", etc), may not _start_ with a number but may include numbers _after_ the first character, and should generally consist of only alphanumeric characters and underscores (\_).
 
 The names are not case sensitive, so "score", "Score", and "SCORE" all refer to the same variable. Spaces are not allowed in variable names, so names with multiple words should use underscores (for example, "opponent_score").
 
@@ -120,7 +120,7 @@ The most basic variable type is a flag. These are either set or unset and store 
 
 ```
 > key >
-<set unlocked>
+{set unlocked}
 You unlocked it!
 
 == unlocked ==
@@ -147,11 +147,11 @@ You can also use the "unset" action to revert a variable (flag or otherwise) to 
 > key >
 
 == locked ==
-<unset locked>
+{unset locked}
 You unlocked it!
 
 == not locked ==
-<set locked>
+{set locked}
 You locked it!
 ```
 
@@ -160,11 +160,11 @@ You locked it!
 Variables can store both whole and decimal numbers. You can use a period as a decimal point, a minus sign to designate a negative number, and either commas or underscores as a thousands separator (if desired).
 
 ```
-<set count 4>
-<set cost 3.50>
-<set balance -1000>
-<set big_number 1,000,000>
-<set bigger_number 1_000_000_000>
+{set count 4}
+{set cost 3.50}
+{set balance -1000}
+{set big_number 1,000,000}
+{set bigger_number 1_000_000_000}
 ```
 
 #### Text
@@ -172,22 +172,22 @@ Variables can store both whole and decimal numbers. You can use a period as a de
 Variables can also hold text. When written within an action or header, text values must have quotation marks on either side.
 
 ```
-<set name "Alice">
+{set name "Alice"}
 ```
 
 Although straight double quotation marks are recommended, single quotes, backticks, curly quotes, smart quotes, and non-English quotes are all supported as long as the ending quotation mark matches the starting quotation mark.
 
 ```
-<set city 'Pittsburgh'>
-<set state `Pennsylvania`>
-<set country “United States of America”>
-<set planet «Earth»>
+{set city 'Pittsburgh'}
+{set state `Pennsylvania`}
+{set country “United States of America”}
+{set planet «Earth»}
 ```
 
 You can also use an enclosing action to set text without using quotation marks.
 
 ```
-<set description>A dark foreboding tower</set>
+{set description}A dark foreboding tower{/set}
 ```
 
 ## Aliases
@@ -195,24 +195,24 @@ You can also use an enclosing action to set text without using quotation marks.
 Aliases are similar to variables, but rather than holding values, they hold a list of possible player inputs. If any part of the text a player inputs is found in the list, input blocks containing that alias are triggered. Aliases are set using the "alias" action, followed by the name of the alias, followed by a text list of possible inputs separated by spaces.
 
 ```
-<alias greet "greet wave nod hello hi howdy">
-<alias insult>insult yell spurn disparage cast aspersions</alias>
+{alias greet "greet wave nod hello hi howdy"}
+{alias insult}insult yell spurn disparage cast aspersions{/alias}
 ```
 
 Multi-word inputs can be grouped using quotation marks.
 
 ```
-<alias greet "greet wave nod 'say hello' 'say hi' 'say howdy'">
-<alias insult>insult yell spurn disparage "cast aspersions"</alias>
+{alias greet "greet wave nod 'say hello' 'say hi' 'say howdy'"}
+{alias insult}insult yell spurn disparage "cast aspersions"{/alias}
 ```
 
 Alias declarations respect the conditions of the block they are set in. Inputs added to an alias in a start block will always apply. Inputs added in a state block will only apply when the conditions of that block are met.
 
 ```
-<alias bounce>bounce jump spring</alias>
+{alias bounce}bounce jump spring{/alias}
 
 = player in bounce_house =
-<alias bounce>step move twitch</alias>
+{alias bounce}step move twitch{/alias}
 ```
 
 ## Objects
@@ -220,27 +220,27 @@ Alias declarations respect the conditions of the block they are set in. Inputs a
 Objects are collections of values which typically represent something physical in the game: a room, a sword, the player themselves. The values they contain can be accessed using the "of" keyword or using a colon (":").
 
 ```
-<set name of door>Iron Door</set>
+{set name of door}Iron Door{/set}
 
 > key >
-<set door:locked>
+{set door:locked}
 The door is locked!
 
 == door:locked ==
 You already locked the door!
 ```
 
-For flag values in an object, the "is" keyword can be used to establish whether they are set.
+For flag values in an object, the "is" keyword can be used to establish whether or not they are set.
 
 ```
 > key >
 
 == door is locked ==
-<set door is not locked>
+{set door is not locked}
 You unlocked it!
 
 == door is not locked ==
-<set door is locked>
+{set door is locked}
 You locked it!
 ```
 
@@ -249,7 +249,7 @@ You locked it!
 Each game automatically has an object named "player" which represents the main character of the game. This is a useful place to store values like health, skills, and other details specific to the player.
 
 ```
-<set health of player 100>
+{set health of player 100}
 ```
 
 The [location](#object-location) of the player object is often important for determining the outcome of different conditions.
@@ -259,8 +259,8 @@ The [location](#object-location) of the player object is often important for det
 All objects have a special "location" value which can be set to any other object. This location helps give some underlying structure to the game. It is used to evaluate the "in", "has", and "with" keywords, as well as to determine what the player is and is not able to interact with.
 
 ```
-<set location of player entrance>
-<set door:location entrance>
+{set location of player entrance}
+{set door:location entrance}
 
 > open >
 == player with door ==
@@ -270,8 +270,8 @@ You open the door
 The "place" action can be used as a shorthand for setting an object's location value.
 
 ```
-<place player entrance>
-<place door entrance>
+{place player entrance}
+{place door entrance}
 ```
 
 ### Objects as Aliases
@@ -279,11 +279,11 @@ The "place" action can be used as a shorthand for setting an object's location v
 Objects and aliases may share a name. This is useful to make the game aware of when the player is interacting with an object.
 
 ```
-<alias door>door entryway hatch</alias>
+{alias door}door entryway hatch{/alias}
 
 > lock >
 >> door >>
-<set door is locked>
+{set door is locked}
 You lock the door!
 ```
 
@@ -303,10 +303,10 @@ You get up and walk out. You've lost your appetite.
 
 ### Object Name
 
-Each object has a special "name" value, which contains the text that is displayed when an object is used in an insert.
+Each object has a special "name" value, which contains the text that is displayed when an object is used in an action.
 
 ```
-<set name of door>The Ancient Iron Door</set>
+{set name of door}The Ancient Iron Door{/set}
 
 > knock >
 >> door >>
@@ -316,7 +316,7 @@ Meekly, you wrap your knuckles on {door}... no answer.
 The "name" action can be used as a shorthand for setting an object's name value.
 
 ```
-<name door>The Ancient Iron Door</name>
+{name door}The Ancient Iron Door{/name}
 ```
 
 ### Display Attributes for Objects
@@ -337,25 +337,25 @@ The specifics of how these values change the appearance of the object will depen
 
 ## Comments
 
-Comments are sections of text which are ignored and will not be displayed. They are useful for leaving notes for the people _writing_ the tale, whether yourself or a collaborator. A comment starts with `<!` and continues until a closing `!>`.
+Comments are sections of text which are ignored and will not be displayed. They are useful for leaving notes for the people _writing_ the tale, whether yourself or a collaborator. A comment starts with `{!` and continues until a closing `!}`.
 
 ```
 > search >
-You don't find {item <!rename this!>}
-<! too short? !>
+You don't find {item {!rename this!}}
+{! too short? !}
 
 == cave ==
-<!
+{!
     TODO: Fill this in.
     This is the big opening to the adventure!
     Make it good!
-!>
+!}
 ```
 
 Note that one place you cannot place a comment is in the middle of quoted text. All characters in quoted text are printed as written. The following action sets the text _"This is <!not> a comment"_ without ignoring anything:
 
 ```
-<set message "This is <!not!> a comment">
+{set message "This is {!not!} a comment"}
 ```
 
 ## Escape Characters
@@ -364,9 +364,8 @@ When writing text blocks, it is sometimes ambiguous whether a character is meant
 
 Useful escape characters include:
 
-- `\<` - to display "<"
-- `\>` - to display ">" (only needed at the start of a line)
 - `\{` - to display "{"
+- `\>` - to display ">" (only needed at the start of a line)
 - `\=` - to display "=" (only needed at the start of a line)
 - `\\` - to display a backslash
 - `\s`, `\n`, `\r`, `\t`, `\v`, `\f` - to display a space, new line, carriage return, tab, vertical tab, or form feed. Since text blocks display most white space exactly as written, these escapes are typically not needed. One exception is if you want to display empty lines at the start or end of a block.
@@ -378,13 +377,13 @@ Useful escape characters include:
 \s
 
 
-    ...finally it comes to you, <b>is 3 \< 2?</b> No! 3 > 2!
+    ...finally \{it} comes to you, is 3 < 2? No!
 
 3
 \>
 2
 \=
-<i>\{\{TRUE}}</i>
+\{\{TRUE}}
 
 What a \
 Triumph!\n\n\n
@@ -393,13 +392,13 @@ Triumph!\n\n\n
 By contrast, within _quoted_ text there are no escape characters. Every character in quoted text is included exactly as it is typed, including backslashes and line breaks. This means if you want to include a quotation mark in quoted text, you must use a different kind of quotation mark at the start start and end, or else use an enclosing action instead.
 
 ```
-<set sarcastic_message 'What a "good" job...'>
-<set sarcastic_retort>...what a "witty" insult</set>
+{set sarcastic_message 'What a "good" job...'}
+{set sarcastic_retort}...what a "witty" insult{/set}
 ```
 
 ## Keywords
 
-These keywords can be used to create more complex expressions in block headers, actions, and inserts.
+These keywords can be used to create more complex expressions in block headers and actions.
 
 ### :
 
@@ -519,15 +518,15 @@ This is a list of actions built into Tale Maker. Game engines may specify additi
 Adds a space separated list of possible input text to a named alias.
 
 ```
-<alias greet "greet wave hail">
-<alias hit>strike punch smash</alias>
+{alias greet "greet wave hail"}
+{alias hit}strike punch smash{/alias}
 ```
 
 Use matching quotation marks within the list to specify input text that should include spaces.
 
 ```
-<alias iron_door "'iron door' 'big door' 'entrance door'">
-<alias red_key>"red key" "ruby key"</alias>
+{alias iron_door "'iron door' 'big door' 'entrance door'"}
+{alias red_key}"red key" "ruby key"{/alias}
 ```
 
 ### b
@@ -535,7 +534,7 @@ Use matching quotation marks within the list to specify input text that should i
 Styles enclosed text as bold.
 
 ```
-Here comes my <b>MEGA</b> move!
+Here comes my {b}MEGA{/b} move!
 ```
 
 ### chain
@@ -543,12 +542,12 @@ Here comes my <b>MEGA</b> move!
 Enclose around multiple "choice" actions to display text from each in series. The first "choice" without a condition or with a valid condition is displayed. Afterwards, if the same "chain" action is run again, it will ignore the previously made choice and instead select the next one.
 
 ```
-<chain>
-<choice player is strong>Hey, big fella</choice>
-<choice>Hey</choice>
-<choice>Howdy</choice>
-<choice>How are ya?</choice>
-</chain>
+{chain}
+{choice player is strong}Hey, big fella{/choice}
+{choice}Hey{/choice}
+{choice}Howdy{/choice}
+{choice}How are ya?{/choice}
+{/chain}
 ```
 
 If all valid choices have already been displayed, the chain will repeat. All text within a "chain" must be wrapped in a "choice".
@@ -566,12 +565,12 @@ Encloses text which may be displayed by a [choose](#choose), [chain](#chain), or
 Enclose around multiple "choice" actions to display only text from the first with a valid condition. All later "choice" actions are ignored. May contain a final "choice" without a condition which will act as a default if no earlier "choice" is valid.
 
 ```
-<choose>
-<choice player is strong>You bust through!</choice>
-<choice player is clever>You solve the puzzle!</choice>
-<choice player is fast>You run, no one can catch you!</choice>
-<choice>You're screwed</choice>
-</choose>
+{choose}
+{choice player is strong}You bust through!{/choice}
+{choice player is clever}You solve the puzzle!{/choice}
+{choice player is fast}You run, no one can catch you!{/choice}
+{choice}You're screwed{/choice}
+{/choose}
 ```
 
 Unlike [chain](#chain) and [chance](#chance), "choose" has no memory of which choices have already been displayed and will always select the first valid one. All text within a "choose" must be wrapped in a "choice".
@@ -585,13 +584,13 @@ Triggers another block, including triggering any contained actions and displayin
 You set off running as fast as you can, the sounds of pursuit fresh on your heels.
 
 == player is fast ==
-<set escaped>
+{set escaped}
 You set off running as fast as you can, the sounds of pursuit fading into the distance.
 
 > jump >
 You burst through the window, the tinkling of glass mixing with shouts of confusion from your captors.
-<set player is fast>
-<do run>
+{set player is fast}
+{do run}
 ```
 
 ### i
@@ -599,7 +598,7 @@ You burst through the window, the tinkling of glass mixing with shouts of confus
 Styles enclosed text as italic.
 
 ```
-And what is <i>that</i> supposed to mean??
+And what is {i}that{/i} supposed to mean??
 ```
 
 ### if
@@ -608,7 +607,7 @@ An action which takes a condition and text. The text will only be displayed if t
 
 ```
 > greet >
-"<if player is intimidating><i>*gulp*</i></if> Hello there stranger," squeaks the little goblin.
+"{if player is intimidating}{i}*gulp*{/i}{/if} Hello there stranger," squeaks the little goblin.
 ```
 
 ### name
@@ -616,7 +615,7 @@ An action which takes a condition and text. The text will only be displayed if t
 A shorthand for setting the "name" value of an object.
 
 ```
-<name ship>Excelsior</name>
+{name ship}Excelsior{/name}
 ```
 
 ### place
@@ -624,7 +623,7 @@ A shorthand for setting the "name" value of an object.
 A shorthand for setting the "location" value of an object
 
 ```
-<place lever entrance>
+{place lever entrance}
 ```
 
 ### set
@@ -632,9 +631,9 @@ A shorthand for setting the "location" value of an object
 Sets the value of a variable or an object value. For flag variables, no value needs to be specified.
 
 ```
-<set score 3>
-<set having_fun>
-<set description of door>A big heavy door</set>
+{set score 3}
+{set having_fun}
+{set description of door}A big heavy door{/set}
 ```
 
 ### title
@@ -642,7 +641,7 @@ Sets the value of a variable or an object value. For flag variables, no value ne
 Styles enclosed text as a title or heading.
 
 ```
-<title>An Unexpected Development</title>
+{title}An Unexpected Development{/title}
 ```
 
 ### unset
@@ -650,8 +649,8 @@ Styles enclosed text as a title or heading.
 Reverts a variable or object value back to an unset state. For numbers this means a value of 0, and for text this means no text. Primarily meant to be used with flag variables.
 
 ```
-<unset having_fun>
-<unset door:locked>
+{unset having_fun}
+{unset door:locked}
 ```
 
 ## Built-in Variables
@@ -692,5 +691,5 @@ You give a quick wave.
 A special object representing the overall game itself. Used mostly to specify information about the game, like a name that can be displayed on a list for the player to choose from.
 
 ```
-<name tale>My Awesome Adventure</name>
+{name tale}My Awesome Adventure{/name}
 ```

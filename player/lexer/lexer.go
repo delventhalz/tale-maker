@@ -115,7 +115,7 @@ func (l *Lexer) Next() tokens.Token {
 			l.scanWhile(isNonBreakingSpace)
 		}
 
-		if l.isCapturingAny(tokens.ACTION, tokens.INSERT) {
+		if l.isCapturing(tokens.ACTION) {
 			l.scanWhile(isWhitespace)
 		}
 
@@ -160,7 +160,7 @@ func (l *Lexer) Next() tokens.Token {
 					return tokens.Token{tokens.HEADER_END, lineBreak, breakLine, breakCol}
 				}
 
-				continue // Restart loop to capture EOF
+				continue // restart loop to capture EOF
 			}
 		}
 
@@ -172,16 +172,8 @@ func (l *Lexer) Next() tokens.Token {
 			}
 		}
 
-		if l.isCapturing(tokens.INSERT) {
-			if isInsertEnd(l.next) {
-				end, line, col := l.scanNext()
-				l.endCurrentCapture()
-				return tokens.Token{tokens.INSERT_END, end, line, col}
-			}
-		}
-
-		// Capturing an expression in a header, action, or insert
-		if l.isCapturingAny(tokens.INPUT_HEADER, tokens.STATE_HEADER, tokens.ACTION, tokens.INSERT) {
+		// Capturing an expression in a header or action
+		if l.isCapturingAny(tokens.INPUT_HEADER, tokens.STATE_HEADER, tokens.ACTION) {
 			if isNumberStart(l.next) {
 				number, numberLine, numberCol := l.scanWhileNumberLiteral()
 				if isScannedMinus(number) {
@@ -224,13 +216,6 @@ func (l *Lexer) Next() tokens.Token {
 			action, line, col := l.scanStartAction()
 			l.startCaptureOf(tokens.ACTION)
 			return tokens.Token{getActionToken(action), action, line, col}
-		}
-
-		// Starting an Insert
-		if isInsert(l.next) {
-			insert, line, col := l.scanNext()
-			l.startCaptureOf(tokens.INSERT)
-			return tokens.Token{tokens.INSERT, insert, line, col}
 		}
 
 		// Block Text

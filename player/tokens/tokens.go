@@ -26,8 +26,6 @@ const (
 	ACTION
 	ENCLOSING_ACTION
 	ACTION_END
-	INSERT
-	INSERT_END
 
 	// Keywords
 	IS
@@ -59,8 +57,6 @@ func (tt TokenType) String() string {
 	case ACTION: return "Action"
 	case ENCLOSING_ACTION: return "Enclosing Action"
 	case ACTION_END: return "End of Action"
-	case INSERT: return "Insert"
-	case INSERT_END: return "End of Insert"
 
 	// Keywords
 	case IS: return "Keyword: is"
