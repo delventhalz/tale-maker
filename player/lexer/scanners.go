@@ -11,9 +11,24 @@ func isAnyOf[T any](tests ...func(T) bool) func(T) bool {
 	}
 }
 
+func (l *Lexer) skipComment() {
+	atLineStart := l.atLineStart
+
+	if isComment(l.next) && isCommentMarker(l.peek) {
+		l.advance()
+		l.advance()
+
+		for !isEof(l.next) && !isCommentEnd(l.next) {
+			l.advance()
+		}
+
+		l.advance()
+		l.atLineStart = atLineStart
+	}
+}
+
 func (l *Lexer) scanNext() (string, int, int) {
 	line, col := l.line, l.col
-
 	if isEof(l.next) {
 		return "", line, col
 	}
@@ -191,7 +206,7 @@ func (l *Lexer) scanWhileBlockText() (string, int, int) {
 
 		switch {
 		// Hit a block header, capture up to end of last non-empty line
-		case isHeader(l.next):
+		case l.atLineStart && isHeader(l.next):
 			return text, line, col
 
 		// Hit an action or insert, capture all text and padding

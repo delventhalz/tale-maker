@@ -16,7 +16,8 @@ type Lexer struct {
 	line int
 	col int
 	captureStack []tokens.TokenType
-	capturedBlockStart bool
+	atBlockStart bool
+	atLineStart bool
 }
 
 func (l *Lexer) read() (rune, int) {
@@ -38,12 +39,17 @@ func (l *Lexer) advance() {
 	l.readPos += w
 
 	switch {
+	case isEof(prev): // no increment at end of file
 	case isWindowsBreakStart(prev) && isWindowsBreakEnd(l.next): // no increment for first char
 	case isLineBreak(prev):
 		l.line++
 		l.col = 1
+		l.atLineStart = true
 	default:
 		l.col++
+		if l.atLineStart && !isWhitespace(prev) {
+			l.atLineStart = false
+		}
 	}
 }
 
@@ -79,7 +85,13 @@ func (l *Lexer) isCapturingAny(ts ...tokens.TokenType) bool {
 }
 
 func New(input string) *Lexer {
-	l := &Lexer{ input: input, line: 1, col: 1 }
+	l := &Lexer{
+		input: input,
+		line: 1,
+		col: 1,
+		atBlockStart: true,
+		atLineStart: true,
+	}
 
 	l.next, l.peekPos = l.read()
 	l.readPos = l.peekPos
@@ -112,8 +124,7 @@ func (l *Lexer) Next() tokens.Token {
 		}
 
 		if isComment(l.next) && isCommentMarker(l.peek) {
-			l.scanUntil(isCommentEnd)
-			l.scanNext()
+			l.skipComment()
 			continue // restart loop without returning token
 		}
 
@@ -139,6 +150,7 @@ func (l *Lexer) Next() tokens.Token {
 			if isEndOfLine(l.next) {
 				l.endCurrentCapture()
 				lineBreak, breakLine, breakCol := l.scanLineBreak()
+				l.atBlockStart = true
 
 				if headerEnd != "" {
 					return tokens.Token{tokens.HEADER_END, headerEnd, endLine, endCol}
@@ -193,18 +205,18 @@ func (l *Lexer) Next() tokens.Token {
 		}
 
 		// Starting a Block Header
-		if isInputHeader(l.next) {
-			header, line, col := l.scanWhile(isInputHeader)
-			l.startCaptureOf(tokens.INPUT_HEADER)
-			l.capturedBlockStart = false
-			return tokens.Token{tokens.INPUT_HEADER, header, line, col}
-		}
+		if l.atLineStart {
+			if isInputHeader(l.next) {
+				header, line, col := l.scanWhile(isInputHeader)
+				l.startCaptureOf(tokens.INPUT_HEADER)
+				return tokens.Token{tokens.INPUT_HEADER, header, line, col}
+			}
 
-		if isStateHeader(l.next) {
-			header, line, col := l.scanWhile(isStateHeader)
-			l.startCaptureOf(tokens.STATE_HEADER)
-			l.capturedBlockStart = false
-			return tokens.Token{tokens.STATE_HEADER, header, line, col}
+			if isStateHeader(l.next) {
+				header, line, col := l.scanWhile(isStateHeader)
+				l.startCaptureOf(tokens.STATE_HEADER)
+				return tokens.Token{tokens.STATE_HEADER, header, line, col}
+			}
 		}
 
 		// Starting an Action or Enclosing Action
@@ -222,14 +234,14 @@ func (l *Lexer) Next() tokens.Token {
 		}
 
 		// Block Text
-		if !l.capturedBlockStart {
+		if l.atBlockStart {
 			start, startLine, startCol := l.scanTextFromBlockStart()
 
 			if (start == "") {
 				continue
 			}
 
-			l.capturedBlockStart = true
+			l.atBlockStart = false
 			return tokens.Token{tokens.BLOCK_TEXT, start, startLine, startCol}
 		}
 
