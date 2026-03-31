@@ -184,17 +184,17 @@ func (l *Lexer) scanWhileQuotedText() (string, int, int) {
 	endTest := getEndQuoteTest(l.next)
 
 	if (isPaddableStartQuote(l.next) && isQuotePadding(l.peek)) {
-		quote, _, _ := l.scanPeek()
+		l.scanPeek()
 		text, _, _ := l.scanUntilSequence(isQuotePadding, endTest)
-		endQuote, _, _ := l.scanPeek()
-		return quote + text + endQuote, line, col
+		l.scanPeek()
+		return text, line, col
 	}
 
-	quote, _, _ := l.scanNext()
+	l.scanNext()
 	text, _, _ := l.scanUntil(endTest)
-	endQuote, _, _ := l.scanNext()
+	l.scanNext()
 
-	return quote + text + endQuote, line, col
+	return text, line, col
 }
 
 // Run after the first text in a block has been captured.

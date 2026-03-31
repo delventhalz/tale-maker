@@ -15,8 +15,7 @@ const (
 
 	// Identifiers and values
 	NAME
-	BLOCK_TEXT
-	QUOTED_TEXT
+	TEXT
 	NUMBER
 	FLAG
 
@@ -49,8 +48,7 @@ func (tt TokenType) String() string {
 
 	// Identifiers and values
 	case NAME: return "Name"
-	case BLOCK_TEXT: return "Block Text"
-	case QUOTED_TEXT: return "Quoted Text"
+	case TEXT: return "Text"
 	case NUMBER: return "Number"
 	case FLAG: return "Flag"
 

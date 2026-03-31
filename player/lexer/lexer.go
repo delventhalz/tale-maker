@@ -192,7 +192,7 @@ func (l *Lexer) Next() tokens.Token {
 
 			if isAnyQuote(l.next) {
 				quote, quoteLine, quoteCol := l.scanWhileQuotedText()
-				return tokens.Token{tokens.QUOTED_TEXT, quote, quoteLine, quoteCol}
+				return tokens.Token{tokens.TEXT, quote, quoteLine, quoteCol}
 			}
 
 			if isWordStart(l.next) {
@@ -242,7 +242,7 @@ func (l *Lexer) Next() tokens.Token {
 			}
 
 			l.atBlockStart = false
-			return tokens.Token{tokens.BLOCK_TEXT, start, startLine, startCol}
+			return tokens.Token{tokens.TEXT, start, startLine, startCol}
 		}
 
 		text, textLine, textCol := l.scanWhileBlockText()
@@ -250,7 +250,7 @@ func (l *Lexer) Next() tokens.Token {
 			continue
 		}
 
-		return tokens.Token{tokens.BLOCK_TEXT, text, textLine, textCol}
+		return tokens.Token{tokens.TEXT, text, textLine, textCol}
 	}
 
 	panic(fmt.Sprintf("Repeat position [%d]! %q (%d:%d)", l.pos, l.next, l.line, l.col))
