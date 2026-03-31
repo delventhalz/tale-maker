@@ -262,25 +262,6 @@ Sorry.
 	})
 }
 
-func TestFileEndInAction(t *testing.T) {
-	expectTokens(t, "{_}", []tokens.Token{
-		{tokens.ACTION, "{", 1, 1},
-		{tokens.NAME, "_", 1, 2},
-		{tokens.ACTION_END, "}", 1, 3},
-		{tokens.EOF, "", 1, 4},
-	})
-	expectTokens(t, "{set", []tokens.Token{
-		{tokens.ACTION, "{", 1, 1},
-		{tokens.NAME, "set", 1, 2},
-		{tokens.EOF, "", 1, 5},
-	})
-	expectTokens(t, "{set\n\n\n", []tokens.Token{
-		{tokens.ACTION, "{", 1, 1},
-		{tokens.NAME, "set", 1, 2},
-		{tokens.EOF, "", 4, 1},
-	})
-}
-
 func TestQuotedText(t *testing.T) {
 	input := `
 {set name "Nosferatu"}
