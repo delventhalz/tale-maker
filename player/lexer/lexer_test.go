@@ -657,13 +657,13 @@ You look over {name of player}. Nice.
 
 func TestComments(t *testing.T) {
 	input := `<! This is my adventure >
-<!>> search <!Better name?> >
+> search <!Better name?> >
 <!Why this header name?>
 <set header "This is <!not> a comment">
 <!Love this section>
 You don't<!contraction?> find {<!rename>item} <set disappointed <! SORBO > >
 
-= adventure <!
+<!🤔>= adventure <!
 
 Are we sold on this?
 
@@ -671,9 +671,9 @@ Are we sold on this?
 <!TODO: Fill this in>`
 
 	expectTokens(t, input, []tokens.Token{
-		{tokens.INPUT_HEADER, ">", 2, 4},
-		{tokens.NAME, "search", 2, 6},
-		{tokens.HEADER_END, ">", 2, 29},
+		{tokens.INPUT_HEADER, ">", 2, 1},
+		{tokens.NAME, "search", 2, 3},
+		{tokens.HEADER_END, ">", 2, 26},
 
 		{tokens.ACTION, "<", 4, 1},
 		{tokens.NAME, "set", 4, 2},
@@ -681,8 +681,7 @@ Are we sold on this?
 		{tokens.QUOTED_TEXT, "\"This is <!not> a comment\"", 4, 13},
 		{tokens.ACTION_END, ">", 4, 39},
 
-		{tokens.BLOCK_TEXT, "You don't", 6, 1},
-		{tokens.BLOCK_TEXT, " find ", 6, 25},
+		{tokens.BLOCK_TEXT, "You don't find ", 6, 1},
 		{tokens.INSERT, "{", 6, 31},
 		{tokens.NAME, "item", 6, 41},
 		{tokens.INSERT_END, "}", 6, 45},
@@ -693,8 +692,8 @@ Are we sold on this?
 		{tokens.NAME, "disappointed", 6, 52},
 		{tokens.ACTION_END, ">", 6, 76},
 
-		{tokens.STATE_HEADER, "=", 8, 1},
-		{tokens.NAME, "adventure", 8, 3},
+		{tokens.STATE_HEADER, "=", 8, 5},
+		{tokens.NAME, "adventure", 8, 7},
 		{tokens.HEADER_END, "=", 12, 3},
 
 		{tokens.EOF, "", 13, 22},

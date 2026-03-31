@@ -197,35 +197,42 @@ func (l *Lexer) scanWhileQuotedText() (string, int, int) {
 // Drops empty lines from end if followed by new block header.
 func (l *Lexer) scanWhileBlockText() (string, int, int) {
 	line, col := l.line, l.col
-	padding := ""
+	allPadding := ""
+	linePadding := ""
 	text := ""
 
-
 	for !isEof(l.next) {
-		linePadding, _, _ := l.scanWhile(isNonBreakingSpace)
+		nextPadding, _, _ := l.scanWhile(isNonBreakingSpace)
+		linePadding += nextPadding
 
 		switch {
+		case isComment(l.next) && isCommentMarker(l.peek):
+			l.skipComment()
+
 		// Hit a block header, capture up to end of last non-empty line
 		case l.atLineStart && isHeader(l.next):
 			return text, line, col
 
 		// Hit an action or insert, capture all text and padding
 		case isAction(l.next), isInsert(l.next):
-			return text + padding + linePadding, line, col
+			return text + allPadding + linePadding, line, col
 
 		case isEndOfLine(l.next):
 			lineBreak, _, _ := l.scanLineBreak()
-			padding += linePadding + lineBreak
+			allPadding += linePadding + lineBreak
+			linePadding = ""
 
 		case isEscapeStart(l.next):
 			escape, _, _ := l.scanEscape()
-			text += padding + linePadding + escape
-			padding = ""
+			text += allPadding + linePadding + escape
+			allPadding = ""
+			linePadding = ""
 
 		default:
 			lineEnd, _, _ := l.scanUntil(isAnyOf(isEscapeStart, isLineBreak, isAction, isInsert))
-			text += padding + linePadding + lineEnd
-			padding = ""
+			text += allPadding + linePadding + lineEnd
+			allPadding = ""
+			linePadding = ""
 		}
 	}
 
@@ -236,25 +243,30 @@ func (l *Lexer) scanWhileBlockText() (string, int, int) {
 // both at the start and end (if end is followed by a header)
 func (l *Lexer) scanTextFromBlockStart() (string, int, int) {
 	line, col := l.line, l.col
-	padding := ""
+	linePadding := ""
 
-	// Skip initial empty lines
-	for isWhitespace(l.next) {
-		linePadding, paddingLine, paddingCol := l.scanWhile(isNonBreakingSpace)
+	// Skip all empty lines then scan text normally
+	for !isEof(l.next) {
+		nextPadding, _, _ := l.scanWhile(isNonBreakingSpace)
+		linePadding += nextPadding
 
-		if isLineBreak(l.next) {
+		switch {
+		case isComment(l.next) && isCommentMarker(l.peek):
+			l.skipComment()
+
+		case isLineBreak(l.next):
 			l.scanLineBreak()
 			line, col = l.line, l.col
-		} else {
-			padding = linePadding
-			line, col = paddingLine, paddingCol
+			linePadding = ""
+
+		default:
+			text, _, _ := l.scanWhileBlockText()
+			if (text == "") {
+				return "", line, col
+			}
+			return linePadding + text, line, col
 		}
 	}
 
-	text, _, _ := l.scanWhileBlockText()
-	if (text == "") {
-		return "", line, col
-	}
-
-	return padding + text, line, col
+	return "", line, col
 }
