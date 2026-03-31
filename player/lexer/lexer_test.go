@@ -656,47 +656,49 @@ You look over {name of player}. Nice.
 }
 
 func TestComments(t *testing.T) {
-	input := `<! This is my adventure >
-> search <!Better name?> >
-<!Why this header name?>
-<set header "This is <!not> a comment">
-<!Love this section>
-You don't<!contraction?> find {<!rename>item} <set disappointed <! SORBO > >
+	input := `<! This is my adventure !>
+> search <!Better name?!> >
+<! Why this header name? !>
+<set header "This is <!not!> a comment">
+<!Love this section!>
+You don't<!contraction?!> find {<!rename!>item} <set disappointed <! SORBO !> >
 
-<!🤔>= adventure <!
+<! <set lose_game> !>
+
+<!🤔!>= adventure <!
 
 Are we sold on this?
 
-> =
-<!TODO: Fill this in>`
+!> =
+<!TODO: Fill this in!>`
 
 	expectTokens(t, input, []tokens.Token{
 		{tokens.INPUT_HEADER, ">", 2, 1},
 		{tokens.NAME, "search", 2, 3},
-		{tokens.HEADER_END, ">", 2, 26},
+		{tokens.HEADER_END, ">", 2, 27},
 
 		{tokens.ACTION, "<", 4, 1},
 		{tokens.NAME, "set", 4, 2},
 		{tokens.NAME, "header", 4, 6},
-		{tokens.TEXT, "This is <!not> a comment", 4, 13},
-		{tokens.ACTION_END, ">", 4, 39},
+		{tokens.TEXT, "This is <!not!> a comment", 4, 13},
+		{tokens.ACTION_END, ">", 4, 40},
 
 		{tokens.TEXT, "You don't find ", 6, 1},
-		{tokens.INSERT, "{", 6, 31},
-		{tokens.NAME, "item", 6, 41},
-		{tokens.INSERT_END, "}", 6, 45},
-		{tokens.TEXT, " ", 6, 46},
+		{tokens.INSERT, "{", 6, 32},
+		{tokens.NAME, "item", 6, 43},
+		{tokens.INSERT_END, "}", 6, 47},
+		{tokens.TEXT, " ", 6, 48},
 
-		{tokens.ACTION, "<", 6, 47},
-		{tokens.NAME, "set", 6, 48},
-		{tokens.NAME, "disappointed", 6, 52},
-		{tokens.ACTION_END, ">", 6, 76},
+		{tokens.ACTION, "<", 6, 49},
+		{tokens.NAME, "set", 6, 50},
+		{tokens.NAME, "disappointed", 6, 54},
+		{tokens.ACTION_END, ">", 6, 79},
 
-		{tokens.STATE_HEADER, "=", 8, 5},
-		{tokens.NAME, "adventure", 8, 7},
-		{tokens.HEADER_END, "=", 12, 3},
+		{tokens.STATE_HEADER, "=", 10, 6},
+		{tokens.NAME, "adventure", 10, 8},
+		{tokens.HEADER_END, "=", 14, 4},
 
-		{tokens.EOF, "", 13, 22},
+		{tokens.EOF, "", 15, 23},
 	})
 }
 
@@ -836,7 +838,7 @@ func TestEscapes(t *testing.T) {
 \s
 
 
-    ...finally it comes to you \<!>: <b>is 3 \< 2?</b> No! 3 > 2!
+    ...finally it comes to you \<!!>: <b>is 3 \< 2?</b> No! 3 > 2!
 
 3
 \>
@@ -853,19 +855,19 @@ Triumph!\n\n\n
 		{tokens.NAME, "do_math", 1, 3},
 		{tokens.HEADER_END, ">", 1, 11},
 
-		{tokens.TEXT, " \n\n\n    ...finally it comes to you <!>: ", 2, 1},
+		{tokens.TEXT, " \n\n\n    ...finally it comes to you <!!>: ", 2, 1},
 
-		{tokens.ACTION, "<", 5, 38},
-		{tokens.NAME, "b", 5, 39},
-		{tokens.ACTION_END, ">", 5, 40},
+		{tokens.ACTION, "<", 5, 39},
+		{tokens.NAME, "b", 5, 40},
+		{tokens.ACTION_END, ">", 5, 41},
 
-		{tokens.TEXT, "is 3 < 2?", 5, 41},
+		{tokens.TEXT, "is 3 < 2?", 5, 42},
 
-		{tokens.ENCLOSING_ACTION, "</", 5, 51},
-		{tokens.NAME, "b", 5, 53},
-		{tokens.ACTION_END, ">", 5, 54},
+		{tokens.ENCLOSING_ACTION, "</", 5, 52},
+		{tokens.NAME, "b", 5, 54},
+		{tokens.ACTION_END, ">", 5, 55},
 
-		{tokens.TEXT, " No! 3 > 2!\n\n3\n>\n2\n=\n", 5, 55},
+		{tokens.TEXT, " No! 3 > 2!\n\n3\n>\n2\n=\n", 5, 56},
 
 		{tokens.ACTION, "<", 11, 1},
 		{tokens.NAME, "i", 11, 2},

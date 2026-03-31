@@ -18,10 +18,11 @@ func (l *Lexer) skipComment() {
 		l.advance()
 		l.advance()
 
-		for !isEof(l.next) && !isCommentEnd(l.next) {
+		for !isEof(l.next) && !(isCommentMarker(l.next) && isCommentEnd(l.peek)) {
 			l.advance()
 		}
 
+		l.advance()
 		l.advance()
 		l.atLineStart = atLineStart
 	}

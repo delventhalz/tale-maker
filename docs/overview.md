@@ -337,25 +337,25 @@ The specifics of how these values change the appearance of the object will depen
 
 ## Comments
 
-Comments are sections of text which are ignored and will not be displayed. They are useful for leaving notes for the people _writing_ the tale, whether yourself or a collaborator. A comment starts with `<!` and continues until a closing `>`.
+Comments are sections of text which are ignored and will not be displayed. They are useful for leaving notes for the people _writing_ the tale, whether yourself or a collaborator. A comment starts with `<!` and continues until a closing `!>`.
 
 ```
 > search >
-You don't find {item <!rename this>}
-<! too short? >
+You don't find {item <!rename this!>}
+<! too short? !>
 
 == cave ==
 <!
     TODO: Fill this in.
     This is the big opening to the adventure!
     Make it good!
->
+!>
 ```
 
 Note that one place you cannot place a comment is in the middle of quoted text. All characters in quoted text are printed as written. The following action sets the text _"This is <!not> a comment"_ without ignoring anything:
 
 ```
-<set message "This is <!not> a comment">
+<set message "This is <!not!> a comment">
 ```
 
 ## Escape Characters
