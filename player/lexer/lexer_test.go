@@ -833,7 +833,10 @@ You give a timid wave. They respond.
 
 func TestEscapes(t *testing.T) {
 	input := `> do_math >
-\n\n\n    ...finally it comes to you \<!>: <b>is 3 \< 2?</b> No! 3 > 2!
+\s
+
+
+    ...finally it comes to you \<!>: <b>is 3 \< 2?</b> No! 3 > 2!
 
 3
 \>
@@ -842,7 +845,7 @@ func TestEscapes(t *testing.T) {
 <i>\{\{TRUE}}</i>
 
 What a \
-Triumph!
+Triumph!\n\n\n
 `
 
 	expectTokens(t, input, []tokens.Token{
@@ -850,33 +853,33 @@ Triumph!
 		{tokens.NAME, "do_math", 1, 3},
 		{tokens.HEADER_END, ">", 1, 11},
 
-		{tokens.BLOCK_TEXT, "\\n\\n\\n    ...finally it comes to you \\<!>: ", 2, 1},
+		{tokens.BLOCK_TEXT, " \n\n\n    ...finally it comes to you <!>: ", 2, 1},
 
-		{tokens.ACTION, "<", 2, 44},
-		{tokens.NAME, "b", 2, 45},
-		{tokens.ACTION_END, ">", 2, 46},
+		{tokens.ACTION, "<", 5, 38},
+		{tokens.NAME, "b", 5, 39},
+		{tokens.ACTION_END, ">", 5, 40},
 
-		{tokens.BLOCK_TEXT, "is 3 \\< 2?", 2, 47},
+		{tokens.BLOCK_TEXT, "is 3 < 2?", 5, 41},
 
-		{tokens.ENCLOSING_ACTION, "</", 2, 57},
-		{tokens.NAME, "b", 2, 59},
-		{tokens.ACTION_END, ">", 2, 60},
+		{tokens.ENCLOSING_ACTION, "</", 5, 51},
+		{tokens.NAME, "b", 5, 53},
+		{tokens.ACTION_END, ">", 5, 54},
 
-		{tokens.BLOCK_TEXT, " No! 3 > 2!\n\n3\n\\>\n2\n\\=\n", 2, 61},
+		{tokens.BLOCK_TEXT, " No! 3 > 2!\n\n3\n>\n2\n=\n", 5, 55},
 
-		{tokens.ACTION, "<", 8, 1},
-		{tokens.NAME, "i", 8, 2},
-		{tokens.ACTION_END, ">", 8, 3},
+		{tokens.ACTION, "<", 11, 1},
+		{tokens.NAME, "i", 11, 2},
+		{tokens.ACTION_END, ">", 11, 3},
 
-		{tokens.BLOCK_TEXT, "\\{\\{TRUE}}", 8, 4},
+		{tokens.BLOCK_TEXT, "{{TRUE}}", 11, 4},
 
-		{tokens.ENCLOSING_ACTION, "</", 8, 14},
-		{tokens.NAME, "i", 8, 16},
-		{tokens.ACTION_END, ">", 8, 17},
+		{tokens.ENCLOSING_ACTION, "</", 11, 14},
+		{tokens.NAME, "i", 11, 16},
+		{tokens.ACTION_END, ">", 11, 17},
 
-		{tokens.BLOCK_TEXT, "\n\nWhat a \\\nTriumph!", 8, 18},
+		{tokens.BLOCK_TEXT, "\n\nWhat a Triumph!\n\n\n", 11, 18},
 
-		{tokens.EOF, "", 12, 1},
+		{tokens.EOF, "", 15, 1},
 	})
 }
 

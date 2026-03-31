@@ -360,22 +360,25 @@ Note that one place you cannot place a comment is in the middle of quoted text. 
 
 ## Escape Characters
 
-When writing text blocks, it is sometimes ambiguous whether a character is meant to be displayed for the player or if it is a part of the Tale Maker syntax. In those cases, a backslash can be used before a character to specify that it is meant to be displayed.
+When writing text blocks, it is sometimes ambiguous whether a character is meant to be displayed for the player or if it is a part of the Tale Maker syntax. In those cases, a backslash can be used before the character to specify that it is meant to be displayed.
 
 Useful escape characters include:
 
 - `\<` - to display "<"
-- `\>` - to display ">" (only necessary at the start of a line)
+- `\>` - to display ">" (only needed at the start of a line)
 - `\{` - to display "{"
-- `\=` - to display "=" (only necessary at the start of a line)
-- `\n` - to display a newline or line break (only necessary at the start or end of a block)
+- `\=` - to display "=" (only needed at the start of a line)
 - `\\` - to display a backslash
-- Finally, a `\` followed immediately by a line break will drop the line break from the displayed text
+- `\s`, `\n`, `\r`, `\t`, `\v`, `\f` - to display a space, new line, carriage return, tab, vertical tab, or form feed. Since text blocks display most white space exactly as written, these escapes are typically not needed. One exception is if you want to display empty lines at the start or end of a block.
+- Finally, a `\` followed immediately by a line break will _prevent_ the line break from being displayed, causing two lines to display as one.
 
 
 ```
 > do_math >
-\n\n\n    ...finally it comes to you, <b>is 3 \< 2?</b> No! 3 > 2!
+\s
+
+
+    ...finally it comes to you, <b>is 3 \< 2?</b> No! 3 > 2!
 
 3
 \>
@@ -384,7 +387,7 @@ Useful escape characters include:
 <i>\{\{TRUE}}</i>
 
 What a \
-Triumph!
+Triumph!\n\n\n
 ```
 
 By contrast, within _quoted_ text there are no escape characters. Every character in quoted text is included exactly as it is typed, including backslashes and line breaks. This means if you want to include a quotation mark in quoted text, you must use a different kind of quotation mark at the start start and end, or else use an enclosing action instead.

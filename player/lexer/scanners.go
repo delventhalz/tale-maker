@@ -83,15 +83,19 @@ func (l *Lexer) scanEscape() (string, int, int) {
 		return "", line, col
 	}
 
-	// Escape full two-character windows line breaks
+	// Skip full two-character windows line breaks
 	if isLineBreak(l.peek) {
-		escapeStart, _, _ := l.scanNext()
-		lineBreak, _, _ := l.scanLineBreak()
-		return escapeStart + lineBreak, line, col
+		atLineStart := l.atLineStart
+		l.scanNext()
+		l.scanLineBreak()
+		l.atLineStart = atLineStart
+		return "", line, col
 	}
 
-	escape, _, _ := l.scanPeek()
-	return escape, line, col
+	escaped := getEscaped(l.peek)
+	l.scanPeek()
+
+	return escaped, line, col
 }
 
 func (l *Lexer) scanWhile(test func (rune) bool) (string, int, int) {

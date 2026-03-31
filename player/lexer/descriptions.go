@@ -167,6 +167,25 @@ func isEscapeStart(r rune) bool {
 	return r == '\\'
 }
 
+func getEscaped(r rune) string {
+	switch r {
+	case 's':
+		return " "
+	case 'n':
+		return "\n"
+	case 'r':
+		return "\r"
+	case 't':
+		return "\t"
+	case 'v':
+		return "\v"
+	case 'f':
+		return "\f"
+	default:
+		return string(r)
+	}
+}
+
 func isAnyQuote(r rune) bool {
 	return r == '"' ||
 		r == '\'' ||
