@@ -50,43 +50,23 @@ func (l *Lexer) scanPeek() (string, int, int) {
 }
 
 func (l *Lexer) scanLineBreak() (string, int, int) {
-	line, col := l.line, l.col
-
-	if !isLineBreak(l.next) {
-		return "", line, col
-	}
-
 	if (isWindowsBreakStart(l.next) && isWindowsBreakEnd(l.peek)) {
-		lineBreak, _, _ := l.scanPeek()
-		return lineBreak, line, col
+		return l.scanPeek()
 	}
 
-	lineBreak, _, _ := l.scanNext()
-	return lineBreak, line, col
+	return l.scanNext()
 }
 
 func (l *Lexer) scanStartAction() (string, int, int) {
-	line, col := l.line, l.col
-
-	if !isAction(l.next) {
-		return "", line, col
-	}
-
 	if (isEnclosingMarker(l.peek)) {
-		action, _, _ := l.scanPeek();
-		return action, line, col
+		return l.scanPeek();
 	}
 
-	action, _, _ := l.scanNext();
-	return action, line, col;
+	return l.scanNext();
 }
 
 func (l *Lexer) scanEscape() (string, int, int) {
 	line, col := l.line, l.col
-
-	if !isEscapeStart(l.next) {
-		return "", line, col
-	}
 
 	// Skip full two-character windows line breaks
 	if isLineBreak(l.peek) {
@@ -139,23 +119,12 @@ func (l *Lexer) scanUntilSequence(
 }
 
 func (l *Lexer) scanWhileWord() (string, int, int) {
-	line, col := l.line, l.col
-
-	if !isWordStart(l.next) {
-		return "", line, col
-	}
-
-	word, _, _ := l.scanWhile(isWord)
+	word, line, col := l.scanWhile(isWord)
 	return strings.ToLower(word), line, col
 }
 
 func (l *Lexer) scanWhileNumberLiteral() (string, int, int) {
 	line, col := l.line, l.col
-
-	if (!isNumberStart(l.next)) {
-		return "", line, col
-	}
-
 	number := ""
 
 	if (isMinus(l.next)) {
@@ -181,10 +150,6 @@ func (l *Lexer) scanWhileNumberLiteral() (string, int, int) {
 
 func (l *Lexer) scanWhileQuotedText() (string, int, int) {
 	line, col := l.line, l.col
-
-	if !isAnyQuote(l.next) {
-		return "", line, col
-	}
 
 	endTest := getEndQuoteTest(l.next)
 
