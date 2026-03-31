@@ -2,7 +2,6 @@ package lexer
 
 import (
 	"fmt"
-	"strings"
 	"tale/tokens"
 )
 
@@ -125,17 +124,16 @@ func isWord(r rune) bool {
 }
 
 func isFlag(word string) bool {
-	lower := strings.ToLower(word)
-	return lower == "yes" ||
-		lower == "no" ||
-		lower == "on" ||
-		lower == "off" ||
-		lower == "true" ||
-		lower == "false"
+	return word == "yes" ||
+		word == "no" ||
+		word == "on" ||
+		word == "off" ||
+		word == "true" ||
+		word == "false"
 }
 
 func getWordToken(word string) tokens.TokenType {
-	switch strings.ToLower(word) {
+	switch word {
 	case "is":
 		return tokens.IS
 	case "has":

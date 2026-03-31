@@ -1,5 +1,9 @@
 package lexer
 
+import (
+	"strings"
+)
+
 func isAnyOf[T any](tests ...func(T) bool) func(T) bool {
 	return func(val T) bool {
 		for _, test := range tests {
@@ -142,7 +146,7 @@ func (l *Lexer) scanWhileWord() (string, int, int) {
 	}
 
 	word, _, _ := l.scanWhile(isWord)
-	return word, line, col
+	return strings.ToLower(word), line, col
 }
 
 func (l *Lexer) scanWhileNumberLiteral() (string, int, int) {
