@@ -80,16 +80,60 @@ func isCommentEnd(r rune) bool {
 	return r == '}'
 }
 
+func isOperator(r rune) bool {
+	return r == ':' ||
+		r == '+' ||
+		r == '-' ||
+		r == '*' ||
+		r == '/' ||
+		r == '%' ||
+		r == '>' ||
+		r == '<' ||
+		r == '(' ||
+		r == ')'
+}
+
+func isEqualsableOperator(r rune) bool {
+	return r == '>' || r == '<'
+}
+
+func isEqualsMarker(r rune) bool {
+	return r == '='
+}
+
+func getOperatorToken(operator string) tokens.TokenType {
+	switch operator {
+	case ":":
+		return tokens.COLON
+	case "+":
+		return tokens.PLUS
+	case "-":
+		return tokens.MINUS
+	case "*":
+		return tokens.MULTIPLY
+	case "/":
+		return tokens.DIVIDE
+	case "%":
+		return tokens.REMAINDER
+	case ">":
+		return tokens.GT
+	case "<":
+		return tokens.LT
+	case ">=":
+		return tokens.GTE
+	case "<=":
+		return tokens.LTE
+	case "(":
+		return tokens.PAREN
+	case ")":
+		return tokens.PAREN_END
+	default:
+		return tokens.INVALID
+	}
+}
+
 func isDigit(r rune) bool {
 	return r >= '0' && r <= '9'
-}
-
-func isMinus(r rune) bool {
-	return r == '-'
-}
-
-func isScannedMinus(s string) bool {
-	return s == "-"
 }
 
 func isDot(r rune) bool {
@@ -97,7 +141,7 @@ func isDot(r rune) bool {
 }
 
 func isNumberStart(r rune) bool {
-	return isDigit(r) || isMinus(r) || isDot(r)
+	return isDigit(r) || isDot(r)
 }
 
 func isNumber(r rune) bool {

@@ -639,6 +639,78 @@ Are we sold on this?
 	})
 }
 
+func TestOperators(t *testing.T) {
+	input := `
+> shoot >
+== player:score < goal ==
+{set score of player player:score + 1}
+Almost there! Just {goal - score} more points!
+
+== player:score >= goal ==
+You did it! {(score * 3 / 3 - 0) % 1} points!
+`
+
+	expectTokens(t, input, []tokens.Token{
+		{tokens.INPUT_HEADER, ">", 2, 1},
+		{tokens.NAME, "shoot", 2, 3},
+		{tokens.HEADER_END, ">", 2, 9},
+
+		{tokens.STATE_HEADER, "==", 3, 1},
+		{tokens.NAME, "player", 3, 4},
+		{tokens.COLON, ":", 3, 10},
+		{tokens.NAME, "score", 3, 11},
+		{tokens.LT, "<", 3, 17},
+		{tokens.NAME, "goal", 3, 19},
+		{tokens.HEADER_END, "==", 3, 24},
+
+		{tokens.ACTION, "{", 4, 1},
+		{tokens.NAME, "set", 4, 2},
+		{tokens.NAME, "score", 4, 6},
+		{tokens.OF, "of", 4, 12},
+		{tokens.NAME, "player", 4, 15},
+		{tokens.NAME, "player", 4, 22},
+		{tokens.COLON, ":", 4, 28},
+		{tokens.NAME, "score", 4, 29},
+		{tokens.PLUS, "+", 4, 35},
+		{tokens.NUMBER, "1", 4, 37},
+		{tokens.ACTION_END, "}", 4, 38},
+
+		{tokens.TEXT, "Almost there! Just ", 5, 1},
+		{tokens.ACTION, "{", 5, 20},
+		{tokens.NAME, "goal", 5, 21},
+		{tokens.MINUS, "-", 5, 26},
+		{tokens.NAME, "score", 5, 28},
+		{tokens.ACTION_END, "}", 5, 33},
+		{tokens.TEXT, " more points!", 5, 34},
+
+		{tokens.STATE_HEADER, "==", 7, 1},
+		{tokens.NAME, "player", 7, 4},
+		{tokens.COLON, ":", 7, 10},
+		{tokens.NAME, "score", 7, 11},
+		{tokens.GTE, ">=", 7, 17},
+		{tokens.NAME, "goal", 7, 20},
+		{tokens.HEADER_END, "==", 7, 25},
+
+		{tokens.TEXT, "You did it! ", 8, 1},
+		{tokens.ACTION, "{", 8, 13},
+		{tokens.PAREN, "(", 8, 14},
+		{tokens.NAME, "score", 8, 15},
+		{tokens.MULTIPLY, "*", 8, 21},
+		{tokens.NUMBER, "3", 8, 23},
+		{tokens.DIVIDE, "/", 8, 25},
+		{tokens.NUMBER, "3", 8, 27},
+		{tokens.MINUS, "-", 8, 29},
+		{tokens.NUMBER, "0", 8, 31},
+		{tokens.PAREN_END, ")", 8, 32},
+		{tokens.REMAINDER, "%", 8, 34},
+		{tokens.NUMBER, "1", 8, 36},
+		{tokens.ACTION_END, "}", 8, 37},
+		{tokens.TEXT, " points!", 8, 38},
+
+		{tokens.EOF, "", 9, 1},
+	})
+}
+
 func TestInvalidCharacters(t *testing.T) {
 	input := `> $bling <
 == 2heads is * == not
@@ -650,21 +722,22 @@ You-- na1l&d {-it!|?}
 		{tokens.INPUT_HEADER, ">", 1, 1},
 		{tokens.INVALID, "$", 1, 3},
 		{tokens.NAME, "bling", 1, 4},
-		{tokens.INVALID, "<", 1, 10},
+		{tokens.LT, "<", 1, 10},
 		{tokens.HEADER_END, "\n", 1, 11},
 
 		{tokens.STATE_HEADER, "==", 2, 1},
 		{tokens.NUMBER, "2", 2, 4},
 		{tokens.NAME, "heads", 2, 5},
 		{tokens.IS, "is", 2, 11},
-		{tokens.INVALID, "*", 2, 14},
+		{tokens.MULTIPLY, "*", 2, 14},
 		{tokens.INVALID, "==", 2, 16},
 		{tokens.NOT, "not", 2, 19},
 		{tokens.HEADER_END, "\n", 2, 22},
 
 		{tokens.ACTION, "{", 3, 1},
 		{tokens.INVALID, "?", 3, 2},
-		{tokens.NUMBER, "-2", 3, 4},
+		{tokens.MINUS, "-", 3, 4},
+		{tokens.NUMBER, "2", 3, 5},
 		{tokens.NAME, "heads", 3, 6},
 		{tokens.IS, "is", 3, 12},
 		{tokens.IN, "in", 3, 15},
@@ -673,7 +746,7 @@ You-- na1l&d {-it!|?}
 
 		{tokens.TEXT, "You-- na1l&d ", 4, 1},
 		{tokens.ACTION, "{", 4, 14},
-		{tokens.INVALID, "-", 4, 15},
+		{tokens.MINUS, "-", 4, 15},
 		{tokens.IT, "it", 4, 16},
 		{tokens.INVALID, "!", 4, 18},
 		{tokens.INVALID, "|", 4, 19},

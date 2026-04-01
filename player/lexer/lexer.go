@@ -174,11 +174,13 @@ func (l *Lexer) Next() tokens.Token {
 
 		// Capturing an expression in a header or action
 		if l.isCapturingAny(tokens.INPUT_HEADER, tokens.STATE_HEADER, tokens.ACTION) {
+			if isOperator(l.next) {
+				operator, opLine, opCol := l.scanOperator()
+				return tokens.Token{getOperatorToken(operator), operator, opLine, opCol}
+			}
+
 			if isNumberStart(l.next) {
 				number, numberLine, numberCol := l.scanWhileNumberLiteral()
-				if isScannedMinus(number) {
-					return tokens.Token{tokens.INVALID, number, numberLine, numberCol}
-				}
 				return tokens.Token{tokens.NUMBER, number, numberLine, numberCol}
 			}
 

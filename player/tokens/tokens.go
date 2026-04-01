@@ -27,6 +27,20 @@ const (
 	ENCLOSING_ACTION
 	ACTION_END
 
+	// Operators
+	COLON
+	PLUS
+	MINUS
+	MULTIPLY
+	DIVIDE
+	REMAINDER
+	GT
+	LT
+	GTE
+	LTE
+	PAREN
+	PAREN_END
+
 	// Keywords
 	IS
 	HAS
@@ -57,6 +71,20 @@ func (tt TokenType) String() string {
 	case ACTION: return "Action"
 	case ENCLOSING_ACTION: return "Enclosing Action"
 	case ACTION_END: return "End of Action"
+
+	// Operators
+	case COLON: return "Operator: colon"
+	case PLUS: return "Operator: plus"
+	case MINUS: return "Operator: minus"
+	case MULTIPLY: return "Operator: multiply"
+	case DIVIDE: return "Operator: divide"
+	case REMAINDER: return "Operator: remainder"
+	case GT: return "Operator: gt"
+	case LT: return "Operator: lt"
+	case GTE: return "Operator: gte"
+	case LTE: return "Operator: lte"
+	case PAREN: return "Operator: paren"
+	case PAREN_END: return "Operator: end of paren"
 
 	// Keywords
 	case IS: return "Keyword: is"

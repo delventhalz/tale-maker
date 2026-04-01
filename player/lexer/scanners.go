@@ -65,6 +65,13 @@ func (l *Lexer) scanStartAction() (string, int, int) {
 	return l.scanNext();
 }
 
+func (l *Lexer) scanOperator() (string, int, int) {
+	if (isEqualsableOperator(l.next) && isEqualsMarker(l.peek)) {
+		return l.scanPeek()
+	}
+	return l.scanNext()
+}
+
 func (l *Lexer) scanEscape() (string, int, int) {
 	line, col := l.line, l.col
 
@@ -124,16 +131,7 @@ func (l *Lexer) scanWhileWord() (string, int, int) {
 }
 
 func (l *Lexer) scanWhileNumberLiteral() (string, int, int) {
-	line, col := l.line, l.col
-	number := ""
-
-	if (isMinus(l.next)) {
-		minus, _, _ := l.scanNext()
-		number += minus
-	}
-
-	integer, _, _ := l.scanWhile(isNumber)
-	number += integer
+	number, line, col := l.scanWhile(isNumber)
 
 	if (!isDot(l.next)) {
 		return number, line, col

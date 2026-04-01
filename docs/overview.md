@@ -335,6 +335,20 @@ Objects have a list of special values which may be used to generate labels, tool
 
 The specifics of how these values change the appearance of the object will depend on the specific game engine, but the text they store can be referenced like any other text value.
 
+## Arithmetic
+
+Tale Maker supports basic arithmetic using common math operators including addition (`+`), subtraction (`-`), multiplication (`*`), division (`/`), remainder (`%`), greater than (`>`), less than (`<`), greater than or equals to (`>=`), and less than or equals to (`<=`). All math follows the typical order of operations, with equations in parentheses going first, followed by multiplication, division, and remainder, and then finally addition and subtraction. These operations may only be used with number values and variables that store number values.
+
+```
+> shoot >
+== score < goal ==
+{set score score + 1}
+Almost there! Just {goal - score} more points!
+
+== score >= goal ==
+You did it! {(score * 3 / 3 - 0) % 1} points!
+```
+
 ## Comments
 
 Comments are sections of text which are ignored and will not be displayed. They are useful for leaving notes for the people _writing_ the tale, whether yourself or a collaborator. A comment starts with `{!` and continues until a closing `!}`.
