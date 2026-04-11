@@ -1,0 +1,15 @@
+{alias greet "greet wave 'say hi'"}
+{alias dismiss "dismiss 'say bye'"}
+{alias a_lot "'a lot' enthusiastically 'with vigor'"}
+
+> greet >
+Hullo there
+
+>> a_lot >>
+HOWDY FELLA!
+
+> dismiss >
+See ya
+
+>> a_lot >>
+I'LL NEVER FORGET YOU!
