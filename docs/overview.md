@@ -4,7 +4,7 @@ A high level summary of the Tale Maker syntax.
 
 ## Blocks
 
-Text is organized into blocks which start with a header and continue until the next block or the end of the file. Text in a block is displayed for the player when the conditions specified in the header are met. Line breaks and indentation are included in the displayed text, except for empty lines at the start or end of the block, which are considered padding and ignored.
+Text is organized into blocks which start with a header and continue until the next block or the end of the file. Text in a block is displayed for the player when the conditions specified in the header are met. Line breaks, indentation, and other white space in the block are typically included in the displayed text, with the exception of empty lines at the start or end of the block. These leading and trailing empty lines are considered padding and ignored.
 
 ### Input Block ###
 
@@ -15,7 +15,7 @@ Hail, Adventurer!
 
 The header for an input block starts with one or more `>` characters, is followed by a command input by the player and optionally ends with a matching number of `>` characters.
 
-Multiple `>` characters are used to denote nested blocks. The player must trigger both the outer and inner block conditions for an inner block to trigger. Text in an outer block is not displayed if all conditions for an inner block are met.
+Multiple `>` characters are used to denote nested blocks. When blocks are nested, players must satisfy both the outer and inner block conditions to trigger the inner block. Text in the outer block is a fallback, displaying when no inner block conditions are met.
 
 ```
 > greet >
@@ -34,7 +34,7 @@ It's too dark! You'll need to find a light source.
 
 The header for a state block starts with one or more `=` characters, is followed by a condition, and optionally ends with a matching number of `=` characters.
 
-Multiple `=` characters are used to denote nested blocks. The conditions for both outer and inner blocks must be valid for an inner block to trigger. Text in an outer block is not displayed if all conditions for an inner block are met. Input blocks can be nested inside state blocks and vice versa.
+Multiple `=` characters are used to denote nested blocks. Players must satisfy both outer and inner block conditions to trigger the inner block. Text in the outer block is a fallback, displaying when no inner block conditions are met. Input blocks can be nested inside state blocks and vice versa.
 
 ```
 = room is dark =
@@ -47,7 +47,7 @@ The torch blazes to life. You can see!
 
 ### Start Block
 
-The beginning of a Tale Maker file, before any block headers, is the start block. Any text will be displayed when the game starts. Any [actions](#actions) will run at immediately.
+The beginning of a Tale Maker file, before any block headers, is a special block called the start block. Any text will be displayed when the game starts. Any [actions](#actions) will run immediately.
 
 ## Actions
 
@@ -55,7 +55,7 @@ The beginning of a Tale Maker file, before any block headers, is the start block
 {set health 100}
 ```
 
-Actions allow you to change game state, trigger effects, and style text. An action starts with an opening `{`, is followed by the name of the action, then optionally may include one or more inputs for the action, and ends with a closing `}`. They trigger when the block they are included in triggers.
+Actions allow you to change game state, trigger effects, and style text. An action starts with an opening `{`, is followed by the name of the action, may optionally include one or more inputs for the action, then ends with a closing `}`. They trigger whenever the block they are included in triggers.
 
 ```
 = room is dark =
@@ -64,7 +64,7 @@ Actions allow you to change game state, trigger effects, and style text. An acti
 The light is on. You can see!
 ```
 
-In addition to aciton inputs written between the curly braces (`{}`), display text can be used as an input with an "enclosing" action.
+In addition to writing action inputs between the curly braces (`{}`), display text can be used as an input with an "enclosing" action.
 
 Write the initial action including its opening `{` and closing `}`, then write the display text, and finish with a closing tag that starts with `{/`, repeats the name of the action, and ends with another `}`. Much like HTML, this is commonly used to style text.
 
@@ -84,7 +84,7 @@ You see {name of player} looking back at you. Not bad.
 
 ## Variables
 
-Variables are named values which can change over the course of a game. They can be used in actions and state block headers. Their value is typically changed with the "set" action.
+Variables are named values that can change over the course of a game. They can be used in actions and state block headers. Their value is typically changed with the "set" action.
 
 ```
 > shoot >
@@ -97,7 +97,7 @@ You won!
 
 ### Creating Variables
 
-Variables are created automatically when they are used. There is no explicit creation or initialization step. However, there are two rules to keep in mind:
+Variables are created automatically when used. There is no explicit creation or initialization step. However, there are two rules to keep in mind:
 
 1. While the value of a variable may change, the [type](#variable_types) of value may not. A particular variable must always refer to a value of the same type (i.e. always text or always a number).
 2. Each variable must be consumed at least once and set at least once. Variables which are only referenced but never set, or only set but never referenced, are not allowed.
@@ -110,7 +110,7 @@ Variable names must be unique, may not match the names of any actions or keyword
 
 The names are not case sensitive, so "score", "Score", and "SCORE" all refer to the same variable. Spaces are not allowed in variable names, so names with multiple words should use underscores (for example, "opponent_score").
 
-For names which do not use the English alphabet, Unicode characters like 世 or 😀 are supported, but variable names must _not_ include any special reserved characters. Reserved characters include spaces, all special characters printed on a standard QWERTY keyboard _other_ than underscores (~, ., <, +, etc), and any quotes, smart quotes, or apostrophes (", ', 〝, «, etc).
+For names which do not use the English alphabet, Unicode characters like 世 or 😀 are supported, but variable names must _not_ include any special reserved characters. Reserved characters include spaces, all special characters printed on a standard QWERTY keyboard other than underscores (~, ., <, +, etc), and any quotes, smart quotes, or apostrophes (", ', 〝, «, etc).
 
 ### Variable Types
 
@@ -206,7 +206,7 @@ Multi-word inputs can be grouped using quotation marks.
 {alias insult}insult yell spurn disparage "cast aspersions"{/alias}
 ```
 
-Alias declarations respect the conditions of the block they are set in. Inputs added to an alias in a start block will always apply. Inputs added in a state block will only apply when the conditions of that block are met.
+Alias declarations respect the conditions of the block they are set in. If set in a start block, the inputs added to an alias will always apply, but inputs added in a state block will only apply when the conditions of that block are met.
 
 ```
 {alias bounce}bounce jump spring{/alias}
@@ -333,11 +333,11 @@ Objects have a list of special values which may be used to generate labels, tool
 - "sound"
 - "sound_background"
 
-The specifics of how these values change the appearance of the object will depend on the specific game engine, but the text they store can be referenced like any other text value.
+The specifics of how these values change the representation of an object will depend on the game engine, but the text they store can be referenced like any other text value.
 
 ## Arithmetic
 
-Tale Maker supports basic arithmetic using common math operators including addition (`+`), subtraction (`-`), multiplication (`*`), division (`/`), remainder (`%`), greater than (`>`), less than (`<`), greater than or equals to (`>=`), and less than or equals to (`<=`). All math follows the typical order of operations, with equations in parentheses going first, followed by multiplication, division, and remainder, and then finally addition and subtraction. These operations may only be used with number values and variables that store number values.
+Tale Maker supports basic arithmetic using common math operators including addition (`+`), subtraction (`-`), multiplication (`*`), division (`/`), remainder (`%`), greater than (`>`), less than (`<`), greater than or equal to (`>=`), and less than or equal to (`<=`). All math follows the typical order of operations, with equations in parentheses going first, followed by multiplication, division, and remainder, and then finally addition and subtraction. These operations may only be used with number values and variables that store number values.
 
 ```
 > shoot >
@@ -366,7 +366,7 @@ You don't find {item {!rename this!}}
 !}
 ```
 
-Note that one place you cannot place a comment is in the middle of quoted text. All characters in quoted text are printed as written. The following action sets the text _"This is <!not> a comment"_ without ignoring anything:
+The one place you cannot place a comment is in the middle of quoted text. All characters in quoted text are printed exactly as written. The following action sets the value of "message" to the text _"This is {!not!} a comment"_:
 
 ```
 {set message "This is {!not!} a comment"}
@@ -382,7 +382,7 @@ Useful escape characters include:
 - `\>` - to display ">" (only needed at the start of a line)
 - `\=` - to display "=" (only needed at the start of a line)
 - `\\` - to display a backslash
-- `\s`, `\n`, `\r`, `\t`, `\v`, `\f` - to display a space, new line, carriage return, tab, vertical tab, or form feed. Since text blocks display most white space exactly as written, these escapes are typically not needed. One exception is if you want to display empty lines at the start or end of a block.
+- `\s`, `\n`, `\r`, `\t`, `\v`, `\f` - to display a space, new line, carriage return, tab, vertical tab, or form feed. Since text blocks display most white space exactly as written, these escapes are not typically necessary. One exception is if you want to display empty lines at the start or end of a block.
 - Finally, a `\` followed immediately by a line break will _prevent_ the line break from being displayed, causing two lines to display as one.
 
 
@@ -472,7 +472,7 @@ Drat! Have to find another way in.
 
 ### it
 
-A shorthand specifying a non-player object that is in the block header. Can only be used if there is exactly one non-player object in the immediately wrapping block header.
+A shorthand specifying a non-player object in the block header. Can only be used if there is exactly one non-player object in the immediately wrapping block header.
 
 ```
 > leave >
@@ -485,7 +485,7 @@ You peak out the cracked door of {it}. The coast is clear!
 
 ### not
 
-Negates another condition.
+Negates a condition.
 
 ```
 = door is not locked =
@@ -525,7 +525,7 @@ You give the lever a pull!
 
 ## Available Actions
 
-This is a list of actions built into Tale Maker. Game engines may specify additional actions which trigger visual effects, additional styling, or trigger other effects specific to the engine.
+This is a list of actions built into Tale Maker. Game engines may specify additional actions which trigger visual effects, further styling, or other effects specific to the engine.
 
 ### alias
 
@@ -568,7 +568,7 @@ If all valid choices have already been displayed, the chain will repeat. All tex
 
 ### chance
 
-Similar to [chain](#chain), but unordered. The "chance" action randomly selects a "choice" to display from among all valid choices which have not yet been displayed. Once all valid choices have been displayed, the list will begin to repeat. All text within a "chance" must be wrapped in a "choice".
+Similar to [chain](#chain), but unordered. The "chance" action randomly selects a "choice" to display from among all valid choices which have not yet been displayed. Once all valid choices have been displayed, the list will repeat. All text within a "chance" must be wrapped in a "choice".
 
 ### choice
 
@@ -645,8 +645,8 @@ A shorthand for setting the "location" value of an object
 Sets the value of a variable or an object value. For flag variables, no value needs to be specified.
 
 ```
-{set score 3}
 {set having_fun}
+{set score 3}
 {set description of door}A big heavy door{/set}
 ```
 

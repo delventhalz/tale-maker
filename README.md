@@ -10,12 +10,12 @@ engines to play, as well as export the original Taelmoor scenario format.
 ## How it works
 
 Text is organized into blocks and each block is linked to particular inputs from
-the player and a particular game state. These conditions allow Tale Maker to pick
-a single block of text to display after each player input.
+the player and game state. These conditions allow Tale Maker to pick a single
+block of text to display after each player input.
 
 In order to manipulate game state, tale authors can insert actions into text
-blocks, changing variables, moving the player, or styling text. In this way, an
-interactive narrative can unfold, one player input at a time.
+blocks, changing variables, moving the player, or styling text. In this way,
+an interactive narrative can unfold, one player input at a time.
 
 For more, checkout the high level [overview](./docs/overview.md) of the Tale
 Maker syntax.
