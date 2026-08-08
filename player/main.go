@@ -5,8 +5,8 @@ import (
 	"log"
 	"os"
 	"path"
-	"tale/lexer"
-	"tale/tokens"
+	"tale/blocks"
+	"tale/parser"
 )
 
 func findNestedTalePaths(absDirPath string) []string {
@@ -28,6 +28,18 @@ func findNestedTalePaths(absDirPath string) []string {
 	}
 
 	return talePaths
+}
+
+func streamTaleFile(absTalePath string, blockChan chan blocks.Block) {
+	p := parser.New(absTalePath)
+	block := p.Next()
+
+	for block.Type != blocks.END_OF_BLOCKS {
+		blockChan <- block
+		block = p.Next()
+	}
+
+	blockChan <- block
 }
 
 func main() {
@@ -66,17 +78,23 @@ func main() {
 		log.Fatal("Error: No .tale files found!")
 	}
 
+	blockChan := make(chan blocks.Block)
+
 	for _, talePath := range talePaths {
-		taleBytes, err := os.ReadFile(talePath)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		lex := lexer.New(string(taleBytes))
-		for tok := lex.Next(); tok.Type != tokens.EOF; tok = lex.Next() {
-			fmt.Println(tok)
-		}
-
-		fmt.Println("\n")
+		go streamTaleFile(talePath, blockChan)
 	}
+
+	var streamedBlocks []blocks.Block
+
+	for doneCount := 0; doneCount < len(talePaths); {
+		block :=  <-blockChan
+
+		if block.Type == blocks.END_OF_BLOCKS {
+			doneCount += 1
+		} else {
+			streamedBlocks = append(streamedBlocks, block)
+		}
+	}
+
+	fmt.Printf("Blocks:\n%q\n", streamedBlocks)
 }

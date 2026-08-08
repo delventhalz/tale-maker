@@ -2,6 +2,8 @@
 {alias dismiss "dismiss 'say bye'"}
 {alias a_lot "'a lot' enthusiastically 'with vigor'"}
 
+Greetings!
+
 > greet >
 Hullo there
 
