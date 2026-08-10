@@ -1,7 +1,12 @@
 package blocks
 
+import (
+	"tale/tokens"
+)
+
 type Block struct {
 	Type BlockType
+	Header []Expression
 	Body []BodyNode
 	ChildBlocks []Block
 }
@@ -25,6 +30,12 @@ func (bt BlockType) String() string {
 	case STATE: return "State Block"
 	default: return "Invalid Block Value!"
 	}
+}
+
+type Expression struct {
+	Token tokens.Token
+	Left *Expression
+	Right *Expression
 }
 
 type BodyNode struct {

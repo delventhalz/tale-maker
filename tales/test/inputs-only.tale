@@ -1,7 +1,3 @@
-{alias greet "greet wave 'say hi'"}
-{alias dismiss "dismiss 'say bye'"}
-{alias a_lot "'a lot' enthusiastically 'with vigor'"}
-
 Greetings!
 
 > greet >
@@ -15,3 +11,11 @@ See ya
 
 >> a_lot >>
 I'LL NEVER FORGET YOU!
+
+> greet dismiss >
+
+You seem confused
+
+>> a_lot >>
+
+WHAT??
